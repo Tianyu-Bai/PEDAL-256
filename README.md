@@ -1,2 +1,2 @@
 # 256Ch-Connector
-Connector for 256Ch polymer array
+Open-source 256-channel headstages for neural recording.
