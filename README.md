@@ -28,13 +28,13 @@ The system is optimized for Rats/Non-Human Primates, focusing on minimizing impl
 *The publication of this work can be found at [DOI Link]. The raw design files corresponding to the publication can be found at [Data Link].*
 
 > [!NOTE]
-> Detailed assembly guides and surgical documentation are available at [Link to Docs].
+> Detailed assembly guides are available at [Link to Docs].
 
 ![Pedestal Assembly](./images/pedestal-system.jpg)
 
 | Component | Description |
 | :--: | :---------- |
-| [Housing-V1](housing/README.md)  | 3D-printed/machined PEEK housing for securing the connector and protecting the headstage interface. |
+| [Housing](housing/README.md)  | 3D-printed/machined PEEK housing for securing the connector and protecting the headstage interface. |
 | [Interposer-PCB](pcb/README.md) | High-density interconnect PCB routing signals from neural probes to the Omnetics/Intan connectors. |
 | [Surgical-Cap](cap/README.md) | Protective cap design for maintaining connector integrity during the experimental timeline. |
 
