@@ -1,6 +1,7 @@
 PEDAL-256
 An Open-Source, Solderless, High-Density Pedestal Connector for Neural Interfaces
 <p align="center"> <img src="Images/render_iso.png" alt="PEDAL-256 Isometric View" width="620"> </p> <p align="center"> <em>Figure 1 · Isometric render of the assembled PEDAL-256 pedestal connector.</em> </p> <p align="center"> <a href="LICENSE"><img src="https://img.shields.io/badge/License-CERN--OHL--P_v2-blue.svg"></a> <img src="https://img.shields.io/badge/Hardware-Verified-brightgreen.svg"> <img src="https://img.shields.io/badge/CAD-SolidWorks_2024-red.svg"> <img src="https://img.shields.io/badge/PCB-Altium_%7C_KiCad-orange.svg"> </p>
+
 📖 Overview
 
 PEDAL-256 (Pedestal Elastomeric Dense Array Link) is an open-source, solderless, and scalable pedestal connector system designed for high-density chronic neural recording.
@@ -37,6 +38,7 @@ Component	Description
 Housing	3D-printed or machined PEEK pedestal providing mechanical protection and cranial fixation.
 Interposer PCB	High-density routing interface connecting thin-film probes to Intan/Omnetics connectors.
 Surgical Cap	Protective cap preserving connector integrity throughout the experimental timeline.
+
 📂 Repository Structure
 ├── CAD/                 # Mechanical design files
 │   ├── SolidWorks/      # Native .SLDPRT / .SLDASM files
@@ -56,11 +58,12 @@ Tool	Version	Purpose
 SolidWorks	2024	Mechanical design and assembly
 Altium Designer	24.0	High-density PCB design
 KiCad	8.0.0	Open-source PCB design support
+
 📄 Publication
 
 This work is described in the following publication:
 
-T. Bai et al., “A Scalable, Solderless 256-Channel Pedestal Connector for Thin-Film Neural Interfaces,” IEEE Journal on Flexible Electronics, 2025.
+% T. Bai et al., “xxx,” IEEE Journal on Flexible Electronics, 2026.
 DOI: [to be added]
 
 All design files in this repository correspond directly to the published system.
@@ -71,6 +74,8 @@ Tianyu Bai
 
 Gen Li, Ph.D.
 
+Yongli Qi, Ph.D.
+
 Hui Fang, Ph.D.
 
 Multifunctional Integrated NeuroElectronics (MINE) Lab
@@ -79,7 +84,7 @@ Hanover, NH, USA
 
 📜 License
 
-Copyright © 2025 Tianyu Bai.
+Copyright © 2026 Tianyu Bai.
 
 This project is released as Open Hardware under the
 CERN Open Hardware Licence Version 2 – Permissive (CERN-OHL-P v2).
