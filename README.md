@@ -1,18 +1,17 @@
-# 🚀 PEDAL-256
 <div align="center">
-  <h3>An Open-Source, Solderless, High-Density Pedestal Connector for Neural Interfaces</h3>
-  <img src="Images/01.PNG" alt="PEDAL-256 Isometric View" width="750">
-  <br>
-  <b>Figure 1 · Isometric render of the assembled PEDAL-256 pedestal connector.</b>
+  <h1 style="margin-bottom: 0px; border-bottom: none;">🚀 PEDAL-256</h1>
+  
+  <h3 style="margin-top: 5px; margin-bottom: 15px;">An Open-Source, Solderless, High-Density Pedestal Connector for Neural Interfaces</h3>
+
+  <img src="Images/01.PNG" alt="Exploded-view schematic illustrating the assembly components of the modular 256-channel pedestal connector" width="750">
+  
+  <p style="margin-top: 10px;">
+    <b> Exploded-view schematic illustrating the assembly components of the modular 256-channel pedestal connector </b>
+  </p>
 </div>
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-CERN--OHL--P_v2-blue.svg?style=for-the-badge"></a>
-  <img src="https://img.shields.io/badge/Hardware-Verified-brightgreen.svg?style=for-the-badge">
-  <img src="https://img.shields.io/badge/CAD-SolidWorks_2024-red.svg?style=for-the-badge">
-  <img src="https://img.shields.io/badge/PCB-Altium_%7C_KiCad-orange.svg?style=for-the-badge">
-</p>
 
 ---
+
 
 ## 📖 Overview
 
