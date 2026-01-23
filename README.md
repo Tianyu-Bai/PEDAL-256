@@ -110,7 +110,7 @@ For academic use, please cite this repository until our formal publication is re
 This work is currently **under review**. 
 
 The hardware designs and visual assets in this repository correspond directly to the system described in our submitted manuscript. To maintain the integrity of the peer-review process:
-* **Full Citation:** Will be updated here immediately upon formal acceptance.
+* **Full Citation:** Will be updated here upon formal acceptance.
 * **Inquiries:** For access to the full manuscript or questions regarding the design, please contact **Tianyu Bai** or **Prof. Hui Fang**.
 - **Full Paper:** *Coming Soon.*
 ---
