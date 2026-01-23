@@ -57,8 +57,8 @@
 
 | Component | Description |
 | :--- | :--- |
-| **Housing** | 3D-printed/machined pedestal providing structural support and cranial fixation. |
-| **Customized Headstage** | Form-factor optimized recording interface for high-density 128/256-channel signal acquisition. |
+| **Pedestal Housing** | 3D-printed/machined pedestal providing structural support and cranial fixation. |
+| **Customized 256Ch Headstage** | Form-factor optimized recording interface for high-density 128/256-channel signal acquisition. |
 | **Foam Washer** | Provides compliant compression to ensure uniform electrical contact across the elastomeric interface. |
 | **Adapter PCB** | High-density interposer PCB for routing signals from thin-film probes to standardized connector arrays. |
 | **Surgical Cap** | Protective enclosure preserving electrical and mechanical integrity throughout chronic experiments. |
