@@ -4,14 +4,10 @@
 
   <br />
 
-  <img src="Videos/DEMO new.gif" alt="PEDAL-256 Assembly Demo" width="750" style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-
-  <br /><br />
-
-  <img src="Images/001.PNG" alt="PEDAL-256 Exploded View" width="750">
-
-  <p style="margin-top: 15px; font-size: 0.95em; color: #333;">
-    <b>Figure 1 · Mating Dynamics (Top) and Structural Breakdown (Bottom) of the PEDAL-256</b>
+  <img src="Videos/DEMO new.gif" 
+       alt="PEDAL-256 Assembly Demo" 
+       width="750" 
+       style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: block;">
   </p>
 </div>
 
@@ -50,10 +46,8 @@
 ---
 
 ## 🧩 System Components
-
+<div align="center">
 <p align="center">
-  <img src="./images/02.jpg" alt="PEDAL-256 System Overview" width="680">
-</p>
 
 | Component | Description |
 | :--- | :--- |
@@ -62,7 +56,14 @@
 | **Foam Washer** | Provides compliant compression to ensure uniform electrical contact across the elastomeric interface. |
 | **Adapter PCB** | High-density interposer PCB for routing signals from thin-film probes to standardized connector arrays. |
 | **Surgical Cap** | Protective enclosure preserving electrical and mechanical integrity throughout chronic experiments. |
----
+
+  <img src="Images/001.PNG" alt="PEDAL-256 Exploded View" width="750">
+
+  <p style="margin-top: 5px; font-size: 0.95em; color: #333;">
+    <b> Mating Dynamics (left) and Structural Breakdown (right) of the PEDAL-256</b>
+  </p>
+</div>
+
 
 ## 👥 Developers & Lab
 This project is developed by the Multifunctional Integrated NeuroElectronics (MINE) Lab at Dartmouth College.
