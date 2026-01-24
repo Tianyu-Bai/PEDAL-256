@@ -3,27 +3,20 @@
   <h3 style="font-weight: normal; margin-top: 0; color: #555;">An Open-Source, Solderless, High-Density Pedestal Connector for Neural Interfaces</h3>
 
   <p style="margin-top: 15px;">
-    <a href="https://sites.dartmouth.edu/fang-group/">
-      <img src="https://img.shields.io/badge/Dartmouth-MINE--Lab-00693E?style=flat-square" alt="MINE Lab">
-    </a>
+    <a href="https://sites.dartmouth.edu/fang-group/"><img src="https://img.shields.io/badge/Dartmouth-MINE--Lab-00693E?style=flat-square" alt="MINE Lab"></a>
     <img src="https://img.shields.io/badge/Copyright-%C2%A9%20Tianyu%20Bai-blue?style=flat-square" alt="Copyright">
-   <a href="https://www.linkedin.com/in/tianyubai/">
-    <img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn">
+    <a href="https://www.linkedin.com/in/tianyubai/"><img src="https://img.shields.io/badge/-LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
     <img src="https://img.shields.io/badge/Verified-128%20%2F%20256ch%20Tested-brightgreen?style=flat-square" alt="Verified">
-    <img src="https://img.shields.io/badge/License-MIT-red?style=flat-square" alt="License">
-
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-red?style=flat-square" alt="License"></a>
   </p>
-
 </div>
-
   <br />
 <div align="center">
   <img src="Videos/Demo new new.gif" 
        alt="PEDAL-256 Assembly Demo GIF" 
        width="750" 
        style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: block;">
-       
-  </p>
+
 </div>
 
 ## 📖 Overview
