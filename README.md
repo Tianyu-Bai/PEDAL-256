@@ -52,7 +52,7 @@
     Textured sidewalls for superior adhesion with dental cement or UV-curable resin.
 <div align="center">
   <br />
-  <img src="Videos/Animation latest.gif" 
+  <img src="Videos/Animation repeat.gif" 
        alt="PEDAL-256 Animation GIF" 
        width="500" 
        style="border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: block;">
