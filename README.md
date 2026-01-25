@@ -145,7 +145,9 @@ Special thanks to the members of the **MINE Lab** and the **Thayer School of Eng
 Copyright © 2026 **<font color="#00693E">Tianyu Bai</font>**.
 
 This project is open-source and available under the **MIT License**. Click the badge for full license details.
-
+<div align="center">
+<p align="center">
+  
 <a href="LICENSE">
   <img src="https://img.shields.io/badge/License-MIT-A31F34?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License">
 </a>
