@@ -94,21 +94,17 @@
 
 
 ## 👥 Developers & Lab
-This project is developed by the Multifunctional Integrated NeuroElectronics (MINE) Lab at Dartmouth College.
+This project is developed by the Multifunctional Integrated NeuroElectronics (MINE) Lab at Dartmouth College <a href="[https://engineering.dartmouth.edu/research/labs/multifunctional-integrated-neuroelectronics-lab](https://sites.dartmouth.edu/fang-group/)">
+    <img src="https://img.shields.io/badge/MINE--Lab-00693E?style=flat-square" alt="MINE Lab">
 
-Tianyu Bai - Lead Designer
+<p><strong>Tianyu Bai</strong> <img src="https://img.shields.io/badge/Lead%20Designer-FFD700?style=flat-square&logo=adobelightroom&logoColor=black" /></p>
 
-Gen Li, Ph.D.
+<p>Gen Li, Ph.D.
 
-Yongli Qi, Ph.D.
+<p>Yongli Qi, Ph.D.
 
-Hui Fang, Ph.D. - Principal Investigator
+<p><strong>Hui Fang, Ph.D.</strong> <img src="https://img.shields.io/badge/Principal%20Investigator-444444?style=flat-square&logoColor=white" /></p>
 
-<p align="left">
-  <a href="[https://engineering.dartmouth.edu/research/labs/multifunctional-integrated-neuroelectronics-lab](https://sites.dartmouth.edu/fang-group/)">
-    <img src="https://img.shields.io/badge/Dartmouth-MINE--Lab-00693E?style=flat-square" alt="MINE Lab">
-  </a>
-</p>
 
 ## 📑 Citation & Feedback
 
@@ -133,4 +129,4 @@ The developers gratefully acknowledge support from the **NIH (R01MH139342)** and
 Special thanks to the members of the **MINE Lab** and the **Thayer School of Engineering** for their technical support and feedback throughout the development of the PEDAL-256 system.
 
 ## 📜 License
-Copyright © 2026 Tianyu Bai. Copyright © 2026 Tianyu Bai. This project is licensed under the MIT License. See the LICENSE file for details.
+Copyright © 2026 Tianyu Bai. This project is licensed under the MIT License. See the LICENSE file for details.
