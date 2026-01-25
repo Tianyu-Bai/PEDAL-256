@@ -112,9 +112,7 @@ This project is developed by the Multifunctional Integrated NeuroElectronics (MI
 
 <p><strong>Tianyu Bai</strong> <a href="https://tianyu-bai.github.io/"><img src="https://img.shields.io/badge/Lead%20Designer-FFD700?style=flat-square&logo=adobelightroom&logoColor=black" /></a></p>
 
-<p>Gen Li, Ph.D.
-
-<p>Yongli Qi, Ph.D.
+<p><strong>Gen Li, Ph.D.
 
 <p><strong>Hui Fang, Ph.D.</strong> <a href="https://engineering.dartmouth.edu/community/faculty/hui-fang"><img src="https://img.shields.io/badge/Principal%20Investigator-444444?style=flat-square&logoColor=white" /></p>
 
