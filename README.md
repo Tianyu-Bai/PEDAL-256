@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Verified-256ch-FFA500?style=flat-square" alt="Verified" />
     <a href="https://tianyu-bai.github.io/"><img src="https://img.shields.io/badge/Website-Tianyu%20Bai-0077B5?style=flat-square&logo=github&logoColor=white" alt="Website"></a>
     <a href="https://www.linkedin.com/in/tianyubai/"><img src="https://img.shields.io/badge/LinkedIn-Profile-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
-    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-A31F34?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License"></a>
+     <a href="https://github.com/tianyu-bai/PEDAL-256/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-A31F34?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License"></a>
   </p>
 
   <br />
@@ -238,7 +238,7 @@ Copyright © 2026 <font color="#00693E">Tianyu Bai</font>   <a href="https://tia
 This project is open-source and available under the **MIT License**. Click the badge below for full license details.
 
 <div align="center">
-  <a href="LICENSE">
+  <a href="https://github.com/tianyu-bai/PEDAL-256/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-A31F34?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License">
   </a>
 </div>
