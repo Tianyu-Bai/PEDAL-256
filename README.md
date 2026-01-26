@@ -78,7 +78,6 @@
   Separable housing, PCBs, and protective cap for rapid iteration and troubleshooting.
 * **🧪 Surgical-Grade Design**
   Textured sidewalls for superior adhesion with dental cement or UV-curable resin.
-
 <div align="center">
   <img src="Videos/Animation%20repeat.gif" 
        alt="PEDAL-256 Animation GIF" 
@@ -201,7 +200,6 @@ This project is developed by the **Multifunctional Integrated NeuroElectronics L
 
 * **Tianyu Bai** (Lead Designer) <a href="https://tianyu-bai.github.io/"><img src="https://img.shields.io/badge/Website-Tianyu%20Bai-0077B5?style=flat-square&logo=github&logoColor=white" alt="Website"></a>
 * **Gen Li, Ph.D.**
-
 * **Hui Fang, Ph.D.**  <a href="https://engineering.dartmouth.edu/community/faculty/hui-fang"><img src="https://img.shields.io/badge/Principal%20Investigator-444444?style=flat-square&logoColor=white" />
 
 ---
