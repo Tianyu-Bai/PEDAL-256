@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" class="nav-badges">
   <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Overview"></a>
   <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Features"></a>
   <a href="#-quick-specifications"><img src="https://img.shields.io/badge/📊_Specs-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Specs"></a>
