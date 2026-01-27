@@ -15,26 +15,13 @@
         margin: 0; padding: 0; color: #475569; 
         font-family: 'Inter', -apple-system, sans-serif; 
         line-height: 1.6; overflow-x: hidden; 
-        /* 隐藏默认滚动条，使用自定义的 */
-        scrollbar-width: thin; 
-        scrollbar-color: #d8b4fe transparent;
+        scrollbar-width: thin; scrollbar-color: #d8b4fe transparent;
       }
-
-      /* 🔥 3. 定制极简滚动条 (Webkit) 🔥 */
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { 
-        background: rgba(168, 85, 247, 0.3); 
-        border-radius: 10px; 
-      }
+      ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.3); border-radius: 10px; }
       ::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.6); }
-
-      /* 🔥 2. 霓虹选中态 (Selection) 🔥 */
-      ::selection {
-        background: #a855f7; /* 紫色背景 */
-        color: #ffffff;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* 文字发光 */
-      }
+      ::selection { background: #a855f7; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
 
       /* --- 📏 顶部阅读进度条 --- */
       #progress-bar {
@@ -44,16 +31,36 @@
         box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
       }
 
-      /* --- 背景层 --- */
+      /* --- 背景层 (Vanta) --- */
       #vanta-bg {
-        position: fixed; z-index: -1; top: 0; left: 0; width: 100%; height: 100%;
+        position: fixed; z-index: -2; /* 放在最底层 */
+        top: 0; left: 0; width: 100%; height: 100%;
         background: #f3e8ff; 
       }
+
+      /* --- 🌠 流星层 (Shooting Stars) --- */
+      #stars-container {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1; /* 在Vanta之上，在内容之下 */
+        pointer-events: none; overflow: hidden;
+      }
+      .star {
+        position: absolute;
+        /* 流星本体：一个淡淡的紫色渐变长条 */
+        width: 150px; height: 2px;
+        background: linear-gradient(90deg, rgba(255,255,255,0), rgba(168, 85, 247, 0.6));
+        transform: rotate(-45deg); /* 倾斜角度 */
+        opacity: 0; /* 默认不可见 */
+      }
+      /* 分别定义三颗流星的轨道和时间，制造随机感 */
+      .star:nth-child(1) { top: 20%; left: -20%; animation: shooting 12s linear infinite 3s; }
+      .star:nth-child(2) { top: 50%; left: -30%; animation: shooting 18s linear infinite 8s; }
+      .star:nth-child(3) { top: -10%; left: 40%; animation: shooting 15s linear infinite 1s; }
+
       
-      /* --- 容器 (增加 position relative 用于定位光晕) --- */
+      /* --- 容器 (带鼠标追光) --- */
       .container { 
-        position: relative; /* 关键 */
-        max-width: 860px; margin: 60px auto; padding: 60px 80px; 
+        position: relative; max-width: 860px; margin: 60px auto; padding: 60px 80px; 
         background: rgba(255, 255, 255, 0.75); 
         backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         border-radius: 20px; 
@@ -61,27 +68,15 @@
         border: 1px solid rgba(255, 255, 255, 0.8); 
         border-top: 4px solid #a855f7; 
         opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; 
-        overflow: hidden; /* 防止光晕溢出 */
+        overflow: hidden; 
       }
-
-      /* 🔥 1. 鼠标追光层 (Spotlight) 🔥 */
+      /* 鼠标追光层 */
       .container::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: -1; /* 在内容之下，背景之上 */
-        background: radial-gradient(
-          800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-          rgba(168, 85, 247, 0.06), /* 中心是淡淡的紫色光 */
-          transparent 40% /* 向外透明 */
-        );
-        opacity: 0; /* 默认隐藏，JS检测到鼠标进入才显示 */
-        transition: opacity 0.5s ease;
-        pointer-events: none; /* 不干扰点击 */
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(168, 85, 247, 0.06), transparent 40%);
+        opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
       }
-      /* 鼠标进入容器时显示光晕 */
       .container:hover::before { opacity: 1; }
-
 
       /* --- 手机适配 --- */
       @media screen and (max-width: 768px) { 
@@ -116,12 +111,12 @@
         border-bottom: none !important; text-decoration: none !important; line-height: 0; 
         opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
       }
-      .nav-badges a:nth-child(1) { animation-delay: 0.30s; }
-      .nav-badges a:nth-child(2) { animation-delay: 0.45s; }
-      .nav-badges a:nth-child(3) { animation-delay: 0.60s; }
-      .nav-badges a:nth-child(4) { animation-delay: 0.75s; }
-      .nav-badges a:nth-child(5) { animation-delay: 0.90s; }
-      .nav-badges a:nth-child(6) { animation-delay: 1.05s; }
+      .nav-badges a:nth-child(1) { animation-delay: 0.20s; }
+      .nav-badges a:nth-child(2) { animation-delay: 0.25s; }
+      .nav-badges a:nth-child(3) { animation-delay: 0.30s; }
+      .nav-badges a:nth-child(4) { animation-delay: 0.35s; }
+      .nav-badges a:nth-child(5) { animation-delay: 0.40s; }
+      .nav-badges a:nth-child(6) { animation-delay: 0.45s; }
       
       /* 按钮本体 */
       .nav-badges img { 
@@ -130,25 +125,11 @@
         border: 1.5px solid white; 
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         margin: 0 !important; cursor: pointer;
-        animation-delay: var(--ripple-delay, 0s); /* 接收波浪延迟 */
+        animation-delay: var(--ripple-delay, 0s);
       }
-      
-      /* 悬停 */
-      .nav-badges a:hover img { 
-        animation: float-hover 2s ease-in-out infinite;
-        box-shadow: 0 8px 20px rgba(168, 85, 247, 0.35); 
-        z-index: 10; 
-      }
-
-      /* 波浪涟漪类 */
+      .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.35); z-index: 10; }
       .nav-badges img.rippling { animation: ripple-wave 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
-      
-      /* 点击按下 */
-      .nav-badges a.clicked img { 
-        animation: none !important; transform: scale(0.9) !important; 
-        filter: brightness(0.85); box-shadow: 0 0 0 rgba(0,0,0,0) !important; 
-        transition: transform 0.1s ease, filter 0.1s ease;
-      }
+      .nav-badges a.clicked img { animation: none !important; transform: scale(0.9) !important; filter: brightness(0.85); box-shadow: 0 0 0 rgba(0,0,0,0) !important; transition: transform 0.1s ease, filter 0.1s ease; }
 
       /* --- 表格 --- */
       table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; margin: 1rem 0; background-color: #ffffff; border-radius: 8px; border: 1px solid #f3e8ff; }
@@ -160,6 +141,14 @@
       @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
       @keyframes float-hover { 0% { transform: scale(1.15) translateY(-2px); } 50% { transform: scale(1.15) translateY(-6px); } 100% { transform: scale(1.15) translateY(-2px); } }
       @keyframes ripple-wave { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.12) translateY(-5px); box-shadow: 0 12px 24px rgba(168, 85, 247, 0.4); } 100% { transform: scale(1) translateY(0); } }
+      
+      /* 🌠 新增：流星划过动画 */
+      @keyframes shooting {
+        0% { transform: rotate(-45deg) translateX(0); opacity: 0; } /* 起点：不可见 */
+        10% { opacity: 0.4; } /* 划过途中：微微发亮（关键：透明度不要太高，0.4足够微妙） */
+        80% { opacity: 0; }
+        100% { transform: rotate(-45deg) translateX(1200px); opacity: 0; } /* 终点：划出屏幕并消失 */
+      }
     </style>
 
     <link rel="stylesheet" href="assets/css/academicons.css"/>
@@ -171,6 +160,13 @@
 
   <body>
     <div id="progress-bar"></div>
+    
+    <div id="stars-container">
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+    </div>
+
     <div id="vanta-bg"></div>
 
     <div class="container">
@@ -197,27 +193,19 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        
-        // --- 1. 鼠标追光逻辑 (Spotlight) ---
         const container = document.querySelector('.container');
         container.addEventListener('mousemove', function(e) {
           const rect = container.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          // 将坐标传给 CSS 变量
-          container.style.setProperty('--mouse-x', `${x}px`);
-          container.style.setProperty('--mouse-y', `${y}px`);
+          container.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+          container.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
         });
 
-        // --- 2. 导航栏涟漪与跳转逻辑 ---
         const links = Array.from(document.querySelectorAll('.nav-badges a'));
         links.forEach((link, clickedIndex) => {
           link.addEventListener('click', function(e) {
             e.preventDefault();
             const targetUrl = this.href;
             const clickedElement = this;
-
-            // 触发波浪
             links.forEach((sibling, siblingIndex) => {
                 const img = sibling.querySelector('img');
                 const distance = Math.abs(clickedIndex - siblingIndex);
@@ -226,19 +214,14 @@
                 img.classList.add('rippling');
                 setTimeout(() => { img.classList.remove('rippling'); }, 600 + (delay * 1000)); 
             });
-
-            // 跳转流程
             setTimeout(() => { clickedElement.classList.add('clicked'); }, 50);
             setTimeout(() => { clickedElement.classList.remove('clicked'); }, 350);
             setTimeout(() => { window.location.href = targetUrl; }, 500); 
           });
         });
-
         window.addEventListener('pageshow', function(event) {
             links.forEach(link => { link.classList.remove('clicked'); });
         });
-        
-        // --- 3. 滚动进度条 ---
         window.addEventListener('scroll', () => {
           const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
           const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
