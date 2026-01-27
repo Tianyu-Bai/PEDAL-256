@@ -10,11 +10,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     
     <style>
-      /* --- 全局 --- */
+      /* --- 全局与重置 --- */
       body { 
         margin: 0; padding: 0; color: #475569; 
         font-family: 'Inter', -apple-system, sans-serif; 
         line-height: 1.6; overflow-x: hidden; 
+        /* 隐藏默认滚动条，使用自定义的 */
+        scrollbar-width: thin; 
+        scrollbar-color: #d8b4fe transparent;
+      }
+
+      /* 🔥 3. 定制极简滚动条 (Webkit) 🔥 */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { 
+        background: rgba(168, 85, 247, 0.3); 
+        border-radius: 10px; 
+      }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.6); }
+
+      /* 🔥 2. 霓虹选中态 (Selection) 🔥 */
+      ::selection {
+        background: #a855f7; /* 紫色背景 */
+        color: #ffffff;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); /* 文字发光 */
       }
 
       /* --- 📏 顶部阅读进度条 --- */
@@ -31,8 +50,9 @@
         background: #f3e8ff; 
       }
       
-      /* --- 容器 --- */
+      /* --- 容器 (增加 position relative 用于定位光晕) --- */
       .container { 
+        position: relative; /* 关键 */
         max-width: 860px; margin: 60px auto; padding: 60px 80px; 
         background: rgba(255, 255, 255, 0.75); 
         backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -41,7 +61,27 @@
         border: 1px solid rgba(255, 255, 255, 0.8); 
         border-top: 4px solid #a855f7; 
         opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; 
+        overflow: hidden; /* 防止光晕溢出 */
       }
+
+      /* 🔥 1. 鼠标追光层 (Spotlight) 🔥 */
+      .container::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1; /* 在内容之下，背景之上 */
+        background: radial-gradient(
+          800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+          rgba(168, 85, 247, 0.06), /* 中心是淡淡的紫色光 */
+          transparent 40% /* 向外透明 */
+        );
+        opacity: 0; /* 默认隐藏，JS检测到鼠标进入才显示 */
+        transition: opacity 0.5s ease;
+        pointer-events: none; /* 不干扰点击 */
+      }
+      /* 鼠标进入容器时显示光晕 */
+      .container:hover::before { opacity: 1; }
+
 
       /* --- 手机适配 --- */
       @media screen and (max-width: 768px) { 
@@ -70,21 +110,18 @@
       code { font-family: 'JetBrains Mono', monospace; background: rgba(168, 85, 247, 0.1); padding: 2px 4px; border-radius: 4px; color: #7e22ce; }
       pre code { background: none; padding: 0; color: inherit; }
 
-      /* --- 🪐 导航区域 --- */
-      .nav-badges { 
-        margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; 
-      }
+      /* --- 🪐 导航区域 (涟漪版) --- */
+      .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
       .nav-badges a { 
         border-bottom: none !important; text-decoration: none !important; line-height: 0; 
         opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; 
       }
-      /* 独立入场延迟 */
-      .nav-badges a:nth-child(1) { animation-delay: 0.20s; }
-      .nav-badges a:nth-child(2) { animation-delay: 0.25s; }
-      .nav-badges a:nth-child(3) { animation-delay: 0.30s; }
-      .nav-badges a:nth-child(4) { animation-delay: 0.35s; }
-      .nav-badges a:nth-child(5) { animation-delay: 0.40s; }
-      .nav-badges a:nth-child(6) { animation-delay: 0.45s; }
+      .nav-badges a:nth-child(1) { animation-delay: 0.30s; }
+      .nav-badges a:nth-child(2) { animation-delay: 0.45s; }
+      .nav-badges a:nth-child(3) { animation-delay: 0.60s; }
+      .nav-badges a:nth-child(4) { animation-delay: 0.75s; }
+      .nav-badges a:nth-child(5) { animation-delay: 0.90s; }
+      .nav-badges a:nth-child(6) { animation-delay: 1.05s; }
       
       /* 按钮本体 */
       .nav-badges img { 
@@ -93,28 +130,23 @@
         border: 1.5px solid white; 
         transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         margin: 0 !important; cursor: pointer;
-        /* 准备接收 JS 传来的延迟变量 */
-        animation-delay: var(--ripple-delay, 0s);
+        animation-delay: var(--ripple-delay, 0s); /* 接收波浪延迟 */
       }
       
-      /* ✨ 悬停特效 ✨ */
+      /* 悬停 */
       .nav-badges a:hover img { 
         animation: float-hover 2s ease-in-out infinite;
         box-shadow: 0 8px 20px rgba(168, 85, 247, 0.35); 
         z-index: 10; 
       }
 
-      /* 🌊 核心：涟漪波动特效类 🌊 */
-      .nav-badges img.rippling {
-        animation: ripple-wave 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-      }
+      /* 波浪涟漪类 */
+      .nav-badges img.rippling { animation: ripple-wave 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
       
-      /* 🔥 点击特效 (按下状态，优先级最高) 🔥 */
+      /* 点击按下 */
       .nav-badges a.clicked img { 
-        animation: none !important; /* 停止所有漂浮和涟漪，准备按下 */
-        transform: scale(0.9) !important; 
-        filter: brightness(0.85); 
-        box-shadow: 0 0 0 rgba(0,0,0,0) !important; 
+        animation: none !important; transform: scale(0.9) !important; 
+        filter: brightness(0.85); box-shadow: 0 0 0 rgba(0,0,0,0) !important; 
         transition: transform 0.1s ease, filter 0.1s ease;
       }
 
@@ -127,13 +159,7 @@
       @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
       @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
       @keyframes float-hover { 0% { transform: scale(1.15) translateY(-2px); } 50% { transform: scale(1.15) translateY(-6px); } 100% { transform: scale(1.15) translateY(-2px); } }
-      
-      /* 🌊 新增：涟漪波动动画 Keyframes */
-      @keyframes ripple-wave {
-        0% { transform: scale(1) translateY(0); }
-        30% { transform: scale(1.12) translateY(-5px); box-shadow: 0 12px 24px rgba(168, 85, 247, 0.4); } /* 快速冲顶 */
-        100% { transform: scale(1) translateY(0); } /* 回落 */
-      }
+      @keyframes ripple-wave { 0% { transform: scale(1) translateY(0); } 30% { transform: scale(1.12) translateY(-5px); box-shadow: 0 12px 24px rgba(168, 85, 247, 0.4); } 100% { transform: scale(1) translateY(0); } }
     </style>
 
     <link rel="stylesheet" href="assets/css/academicons.css"/>
@@ -171,54 +197,48 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        // 获取所有链接，转成数组以便使用 index
-        const links = Array.from(document.querySelectorAll('.nav-badges a'));
         
+        // --- 1. 鼠标追光逻辑 (Spotlight) ---
+        const container = document.querySelector('.container');
+        container.addEventListener('mousemove', function(e) {
+          const rect = container.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          // 将坐标传给 CSS 变量
+          container.style.setProperty('--mouse-x', `${x}px`);
+          container.style.setProperty('--mouse-y', `${y}px`);
+        });
+
+        // --- 2. 导航栏涟漪与跳转逻辑 ---
+        const links = Array.from(document.querySelectorAll('.nav-badges a'));
         links.forEach((link, clickedIndex) => {
           link.addEventListener('click', function(e) {
             e.preventDefault();
             const targetUrl = this.href;
             const clickedElement = this;
 
-            // --- 🌊 触发涟漪效果 (Ripple Effect) ---
+            // 触发波浪
             links.forEach((sibling, siblingIndex) => {
                 const img = sibling.querySelector('img');
-                
-                // 1. 计算距离：当前按钮离被点击按钮有几个位置远
                 const distance = Math.abs(clickedIndex - siblingIndex);
-                
-                // 2. 计算延迟：距离越远，延迟越大 (每个单位距离增加 0.06秒延迟)
                 const delay = distance * 0.06;
-
-                // 3. 设置 CSS 变量并添加动画类
                 img.style.setProperty('--ripple-delay', `${delay}s`);
                 img.classList.add('rippling');
-
-                // 4. 动画结束后清理 class，方便下次触发
-                setTimeout(() => {
-                    img.classList.remove('rippling');
-                }, 600 + (delay * 1000)); 
+                setTimeout(() => { img.classList.remove('rippling'); }, 600 + (delay * 1000)); 
             });
 
-            // --- 🔥 触发点击按下效果 (Depress Effect) ---
-            // 稍微延迟一点点触发按下，让涟漪先起步，视觉更顺滑
-            setTimeout(() => {
-                 clickedElement.classList.add('clicked');
-            }, 50);
-            
-            // 350ms 后回弹
+            // 跳转流程
+            setTimeout(() => { clickedElement.classList.add('clicked'); }, 50);
             setTimeout(() => { clickedElement.classList.remove('clicked'); }, 350);
-            // 500ms 后跳转
             setTimeout(() => { window.location.href = targetUrl; }, 500); 
           });
         });
 
-        // 页面显示时复原状态
         window.addEventListener('pageshow', function(event) {
             links.forEach(link => { link.classList.remove('clicked'); });
         });
         
-        // 滚动进度条
+        // --- 3. 滚动进度条 ---
         window.addEventListener('scroll', () => {
           const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
           const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
