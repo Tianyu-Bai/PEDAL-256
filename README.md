@@ -26,6 +26,7 @@
   <img src="Videos/Demo%20new%20new.gif" 
        alt="PEDAL-256 Assembly Demo GIF" 
        width="750" 
+       class="gif-blend" 
        style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: block;">
 </div>
 
@@ -92,6 +93,7 @@
 <div align="center">
   <img src="Videos/Animation%20repeat.gif" 
        alt="PEDAL-256 Animation GIF" 
+       class="gif-blend" 
        width="500" 
        style="border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: block;">
 </div>
