@@ -140,12 +140,12 @@
       pre code { background: none; padding: 0; color: inherit; }
       
           /* 🚀 PEDAL-256 演示 GIF 专属融合样式 */
-.gif-blend {
-  /* 核心：正片叠底。让白色部分透明化，使 GIF 线条直接浮在紫色背景上 */
-  mix-blend-mode: multiply !important;
+            .gif-blend {
+          /* 核心：正片叠底。让白色部分透明化，使 GIF 线条直接浮在紫色背景上 */
+             mix-blend-mode: multiply !important;
 
-  /* 滤镜组合：对比度略微调高，确保 GIF 背景被彻底“漂白”从而被 multiply 过滤 */
-  filter: contrast(1.15) brightness(1.05) !important;
+          /* 滤镜组合：对比度略微调高，确保 GIF 背景被彻底“漂白”从而被 multiply 过滤 */
+             filter: contrast(1.15) brightness(1.05) !important;
 
   /* 布局与美化 */
   display: block;
@@ -220,14 +220,40 @@
         </div>
       </div>
 
-      <div class="container">
-        <section id="main_content">
-          {{ content }}
-        </section>
-        <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e9d5ff; text-align: center; color: #94a3b8; font-size: 0.85rem;">
-          <p>PEDAL-256 • Open Source Neural Interfaces</p>
-        </footer>
-      </div>
+<style>
+  @keyframes pulse-dot {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .live-pulse {
+    animation: pulse-dot 2s infinite ease-in-out;
+    display: inline-block;
+  }
+</style>
+      
+   <div class="container">
+  <section id="main_content">
+    {{ content }}
+  </section>
+
+  <footer style="margin-top: 60px; padding: 30px 0; border-top: 1px solid rgba(168, 85, 247, 0.2); text-align: center; font-family: 'JetBrains Mono', monospace;">
+    
+    <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 12px; letter-spacing: 0.5px;">
+      PEDAL-256 • &copy; 2026 Tianyu Bai. All Rights Reserved.
+    </p>
+
+    <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; opacity: 0.8; background: rgba(168, 85, 247, 0.05); padding: 6px 15px; border-radius: 20px;">
+      <span style="color: #a855f7;">[SYS_MONITOR]</span> 
+      <span style="color: #64748b;">Traffic_Inbound:</span> 
+      
+      <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftianyu-bai.github.io&count_bg=%237E22CE00&title_bg=%2355555500&icon=&icon_color=%23E7E7E7&title=%20&edge_flat=true" 
+           style="height: 18px; vertical-align: middle; mix-blend-mode: multiply; filter: contrast(1.2) hue-rotate(280deg);">
+      
+      <span class="live-pulse" style="color: #3fb950; font-weight: bold; margin-left: 2px;">● LIVE</span>
+    </div>
+  </footer>
+</div>
 
     </div>
 
