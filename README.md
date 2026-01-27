@@ -1,10 +1,10 @@
 <div align="center" class="nav-badges">
-  <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Overview"></a>
-  <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Features"></a>
-  <a href="#-quick-specifications"><img src="https://img.shields.io/badge/📊_Specs-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Specs"></a>
-  <a href="#-system-components"><img src="https://img.shields.io/badge/🧩_Components-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Components"></a>
-  <a href="#-bill-of-materials-bom-of-the-headstage"><img src="https://img.shields.io/badge/🛠_BOM-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="BOM"></a>
-  <a href="#-repository--downloads"><img src="https://img.shields.io/badge/🔗_Downloads-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Downloads"></a>
+  <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-3b82f6?style=flat-square&logoColor=white" alt="Overview"></a>
+  <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-3b82f6?style=flat-square&logoColor=white" alt="Features"></a>
+  <a href="#-quick-specifications"><img src="https://img.shields.io/badge/📊_Specs-3b82f6?style=flat-square&logoColor=white" alt="Specs"></a>
+  <a href="#-system-components"><img src="https://img.shields.io/badge/🧩_Components-3b82f6?style=flat-square&logoColor=white" alt="Components"></a>
+  <a href="#-bill-of-materials-bom-of-the-headstage"><img src="https://img.shields.io/badge/🛠_BOM-3b82f6?style=flat-square&logoColor=white" alt="BOM"></a>
+  <a href="#-repository--downloads"><img src="https://img.shields.io/badge/🔗_Downloads-3b82f6?style=flat-square&logoColor=white" alt="Downloads"></a>
 </div>
   
 <div align="center">
