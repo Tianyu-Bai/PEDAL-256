@@ -59,7 +59,7 @@
       }
 
       /* 代码块复制按钮 */
-      pre { position: relative; } /* 为绝对定位按钮做参照 */
+      pre { position: relative; } 
       .copy-btn {
         position: absolute; top: 10px; right: 10px;
         background: rgba(255, 255, 255, 0.8); border: 1px solid #e9d5ff;
@@ -110,7 +110,7 @@
       }
       .container:hover::before { opacity: 1; }
 
-      /* --- 手机适配 (保持你最喜欢的原样：隐藏机器人) --- */
+      /* --- 手机适配 --- */
       @media screen and (max-width: 768px) { 
         .layout-wrapper { margin: 15px; perspective: none; }
         .container { padding: 30px 15px; border-radius: 12px; transform: none !important; } 
@@ -118,14 +118,18 @@
         h1 { font-size: 1.45rem !important; line-height: 1.3; } 
       }
       
-      /* --- 内容排版 --- */
+      /* --- 内容排版 (H1 修复) --- */
       h1 { 
         font-size: 2.25rem; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.02em; 
+        /* 核心：流光渐变背景 */
         background: linear-gradient(45deg, #7e22ce, #3b82f6, #db2777);
         background-size: 200% 200%; -webkit-background-clip: text; background-clip: text; color: transparent; 
-        opacity: 0; /* 初始隐藏，交给JS打字机或fadeUp */
+        /* 🔥 关键修复：确保动画在运行 */
+        animation: gradientMove 6s ease infinite;
+        /* 初始透明度由 JS 控制 */
+        opacity: 0; 
       }
-      /* 一个光标动画，模拟打字机的光标 */
+      /* 打字机光标 */
       .typing-cursor::after { content: '|'; animation: blink-text 1s step-end infinite; color: #a855f7; margin-left: 2px; }
 
       h2 { color: #581c87; margin-top: 2rem; font-weight: 600; }
@@ -195,7 +199,7 @@
 
       <div class="container">
         <section id="main_content">
-          <h1 id="typewriter-title" class="typing-cursor" data-text="{{ page.title }}"></h1>
+          <h1 id="typewriter-title" class="typing-cursor" data-text="PEDAL"></h1>
           
           {{ content }}
         </section>
@@ -230,97 +234,67 @@
         const interactiveElements = document.querySelectorAll('a, button, .nav-badges img, #bot-container, img, .copy-btn');
         const addHover = () => document.body.classList.add('hovering');
         const removeHover = () => document.body.classList.remove('hovering');
-        // 使用事件委托或者在生成动态元素后再次绑定，这里简单处理静态
         interactiveElements.forEach(el => { el.addEventListener('mouseenter', addHover); el.addEventListener('mouseleave', removeHover); });
 
         // --- 2. 打字机特效 (H1) ---
         const titleEl = document.getElementById('typewriter-title');
         if(titleEl) {
-            const text = titleEl.getAttribute('data-text') || "Welcome";
+            // 这里已经强制读 PEDAL 了，因为 HTML 改了
+            const text = titleEl.getAttribute('data-text') || "PEDAL-256";
             let i = 0;
-            titleEl.style.opacity = 1; // 开始打字前显示元素
+            titleEl.style.opacity = 1; 
             function typeWriter() {
                 if (i < text.length) {
                     titleEl.textContent += text.charAt(i);
                     i++;
-                    setTimeout(typeWriter, 50); // 打字速度 50ms
+                    setTimeout(typeWriter, 150); // 改慢点，更有质感
                 } else {
-                    titleEl.classList.remove('typing-cursor'); // 打完移除光标
+                    titleEl.classList.remove('typing-cursor'); 
                 }
             }
-            // 稍微延迟一点开始打
             setTimeout(typeWriter, 500);
-        } else {
-            // 如果页面没H1的fallback
-            const h1 = document.querySelector('h1');
-            if(h1) h1.style.opacity = 1;
         }
 
-        // --- 3. 图片点击放大 (Medium Zoom) ---
+        // --- 3. 图片点击放大 ---
         const overlay = document.querySelector('.zoom-overlay');
         const images = document.querySelectorAll('#main_content img');
-        
         images.forEach(img => {
           img.addEventListener('click', function(e) {
-            e.stopPropagation(); // 防止冒泡
+            e.stopPropagation(); 
             if(this.classList.contains('zoomed')) {
-              this.classList.remove('zoomed');
-              overlay.classList.remove('active');
+              this.classList.remove('zoomed'); overlay.classList.remove('active');
             } else {
-              // 关闭其他已打开的
               images.forEach(i => i.classList.remove('zoomed'));
-              this.classList.add('zoomed');
-              overlay.classList.add('active');
+              this.classList.add('zoomed'); overlay.classList.add('active');
             }
           });
         });
-        
-        // 点击遮罩关闭
-        overlay.addEventListener('click', () => {
-          images.forEach(i => i.classList.remove('zoomed'));
-          overlay.classList.remove('active');
-        });
-        
-        // 滚动也关闭
-        window.addEventListener('scroll', () => {
-          if(overlay.classList.contains('active')) {
-            images.forEach(i => i.classList.remove('zoomed'));
-            overlay.classList.remove('active');
-          }
-        });
+        overlay.addEventListener('click', () => { images.forEach(i => i.classList.remove('zoomed')); overlay.classList.remove('active'); });
+        window.addEventListener('scroll', () => { if(overlay.classList.contains('active')) { images.forEach(i => i.classList.remove('zoomed')); overlay.classList.remove('active'); }});
 
         // --- 4. 代码块复制按钮 ---
         const preBlocks = document.querySelectorAll('pre');
         preBlocks.forEach(pre => {
           const btn = document.createElement('button');
-          btn.className = 'copy-btn';
-          btn.innerText = 'Copy';
-          // 重新绑定光标悬停
-          btn.addEventListener('mouseenter', addHover);
-          btn.addEventListener('mouseleave', removeHover);
-          
+          btn.className = 'copy-btn'; btn.innerText = 'Copy';
+          btn.addEventListener('mouseenter', addHover); btn.addEventListener('mouseleave', removeHover);
           btn.addEventListener('click', () => {
              const code = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
              navigator.clipboard.writeText(code).then(() => {
-               btn.innerText = 'Copied!';
-               btn.classList.add('copied');
-               setTimeout(() => {
-                 btn.innerText = 'Copy';
-                 btn.classList.remove('copied');
-               }, 2000);
+               btn.innerText = 'Copied!'; btn.classList.add('copied');
+               setTimeout(() => { btn.innerText = 'Copy'; btn.classList.remove('copied'); }, 2000);
              });
           });
           pre.appendChild(btn);
         });
 
-        // --- 5. 其他现有逻辑 (机器人眼球、3D Tilt等) ---
+        // --- 5. 机器人与悬浮 ---
         const container = document.querySelector('.container');
         const pupils = document.querySelectorAll('.bot-pupil');
         const eyes = document.querySelectorAll('.bot-eye');
         const botContainer = document.getElementById('bot-container');
 
         window.addEventListener('mousemove', (e) => {
-           // 3D Tilt
            if (window.innerWidth > 768 && container) {
              const x = (window.innerWidth / 2 - e.clientX) / 50; 
              const y = (window.innerHeight / 2 - e.clientY) / 50;
@@ -329,7 +303,6 @@
              container.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
              container.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
            }
-           // 机器人眼球
            pupils.forEach((pupil, index) => {
              const eye = eyes[index];
              const rect = eye.getBoundingClientRect();
