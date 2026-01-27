@@ -1,3 +1,8 @@
+---
+layout: default
+title: PEDAL-256
+---
+
 <p align="center">
   <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Overview"></a>
   <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-F2F2F2?style=for-the-badge&labelColor=white&logoColor=black" alt="Features"></a>
