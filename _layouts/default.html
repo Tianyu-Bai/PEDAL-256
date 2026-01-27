@@ -103,25 +103,29 @@
       }
 
       /* --- 7. 图片优化 --- */
+  /* --- 7. 图片与徽章优化 (修复版) --- */
       img {
         max-width: 100%;
         height: auto;
-        border-radius: 8px;
-        display: block;
-        margin: 2rem auto;
-        /* 给图片加一点淡淡的影子，让它从白纸上浮起来 */
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-      }
-      
-      /* 引用块 */
-      blockquote {
-        border-left: 4px solid #cbd5e1;
-        margin: 1.5rem 0;
-        padding-left: 1rem;
-        font-style: italic;
-        color: #64748b;
+        border-radius: 6px;
+        
+        /* 关键修改：默认允许并排显示 */
+        display: inline-block; 
+        vertical-align: middle; 
+        
+        /* 给图片之间留一点呼吸空间，防止徽章粘在一起 */
+        margin: 4px; 
       }
 
+      /* 针对大图的优化：如果你在 Markdown 里把图片单独放在一行 */
+      /* 这里利用了 CSS 的特性：如果 P 标签里只有一张图，就让它居中 */
+      p {
+        text-align: left; /* 默认文字左对齐 */
+      }
+      
+      /* 如果你想让某个大图居中，只需在 Markdown 里这样写：
+         <div align="center">![图](...)</div> 
+         或者不用改代码，直接用下面的自动规则 */
     </style>
   </head>
 
