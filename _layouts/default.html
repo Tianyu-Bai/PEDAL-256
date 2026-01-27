@@ -10,106 +10,118 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     
     <style>
-      /* --- 1. 全局基础 --- */
+      /* --- 全局 --- */
       body { 
         margin: 0; 
         padding: 0; 
-        background-color: #f8fafc; 
-        color: #334155; 
+        color: #334155; /* 深灰字，保证可读性 */
         font-family: 'Inter', -apple-system, sans-serif; 
         line-height: 1.6; 
+        overflow-x: hidden; 
+      }
+
+      /* --- 动画背景层 --- */
+      #vanta-bg {
+        position: fixed;
+        z-index: -1; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f0f9ff; /* 默认浅蓝底色，防闪烁 */
       }
       
-      /* --- 2. 容器 (电脑端) --- */
+      /* --- 内容容器 (白底毛玻璃) --- */
       .container { 
         max-width: 860px; 
         margin: 60px auto; 
         padding: 60px 80px; 
-        background: #ffffff; 
-        border-radius: 12px; 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
-        border-top: 4px solid #3b82f6; 
+        
+        /* 关键：半透明白色背景 */
+        background: rgba(255, 255, 255, 0.85); 
+        backdrop-filter: blur(12px); /* 磨砂效果 */
+        -webkit-backdrop-filter: blur(12px);
+        
+        border-radius: 16px; 
+        box-shadow: 0 10px 40px rgba(59, 130, 246, 0.1); /* 淡淡的蓝光阴影 */
+        border: 1px solid rgba(255, 255, 255, 0.6); 
+        border-top: 4px solid #3b82f6; /* 顶部蓝条 */
       }
       
-      /* --- 3. 手机端适配 --- */
+      /* --- 手机适配 --- */
       @media screen and (max-width: 768px) { 
-        .container { 
-          width: auto; 
-          margin: 15px; 
-          padding: 30px 20px; 
-          border-radius: 8px; 
-        } 
+        .container { width: auto; margin: 15px; padding: 30px 20px; border-radius: 12px; } 
         body { font-size: 16px; } 
         h1 { font-size: 1.8rem; } 
       }
       
-      /* --- 4. 排版细节 --- */
+      /* --- 排版细节 --- */
       h1 { font-size: 2.25rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
       h2 { color: #1e293b; margin-top: 2rem; font-weight: 600; }
       h3 { color: #334155; margin-top: 1.5rem; font-weight: 600; }
-      a { color: #2563eb; text-decoration: none; font-weight: 500; }
+      a { color: #2563eb; text-decoration: none; font-weight: 500; transition: color 0.2s; }
+      a:hover { color: #1d4ed8; }
       
-      /* --- 5. 普通图片 --- */
-      img { 
-        max-width: 100%; 
-        height: auto; 
-        border-radius: 6px; 
-        display: inline-block; 
-        vertical-align: middle; 
-      }
+      /* --- 图片 --- */
+      img { max-width: 100%; height: auto; border-radius: 8px; display: inline-block; vertical-align: middle; }
       
-      /* --- 6. 代码块 --- */
-      pre { background: #f1f5f9; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #e2e8f0; font-size: 0.9rem; }
-      code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px; color: #0369a1; }
+      /* --- 代码块 --- */
+      pre { background: #f1f5f9; padding: 15px; border-radius: 8px; overflow-x: auto; border: 1px solid #e2e8f0; font-size: 0.9rem; color: #334155; }
+      code { font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px; color: #0284c7; }
       pre code { background: none; padding: 0; color: inherit; }
 
-      /* --- 🌟 7. 徽章导航 (大按钮特效版) --- */
-      .nav-badges {
-        margin: 2.5rem 0;          
-        display: flex;             
-        flex-wrap: wrap;           
-        justify-content: center;   
-        gap: 12px;                 
-      }
-      .nav-badges a {
-        border-bottom: none !important; 
-        text-decoration: none !important;
-        line-height: 0;            
-      }
-      .nav-badges img {
-        height: 36px !important;   /* 🔥 强制变大 */
-        width: auto;               
-        border-radius: 6px;        
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.15); 
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 果冻弹性 */
-        margin: 0 !important;      /* 覆盖默认边距 */
-      }
-      /* 鼠标悬停 */
-      .nav-badges a:hover img {
-        transform: scale(1.15) translateY(-3px); 
-        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3); 
-        z-index: 10;
-      }
+      /* --- 🌟 徽章导航 (保留你的大按钮特效) --- */
+      .nav-badges { margin: 2.5rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+      .nav-badges a { border-bottom: none !important; text-decoration: none !important; line-height: 0; }
+      .nav-badges img { height: 36px !important; width: auto; border-radius: 6px; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin: 0 !important; }
+      /* 悬停特效 */
+      .nav-badges a:hover img { transform: scale(1.15) translateY(-3px); box-shadow: 0 12px 24px rgba(59, 130, 246, 0.35); z-index: 10; }
     </style>
 
     <link rel="stylesheet" href="assets/css/academicons.css"/>
     <script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
-    </script>
+    <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } }); </script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-MML-AM_CHTML' async></script>
 
   </head>
 
   <body>
+    <div id="vanta-bg"></div>
+
     <div class="container">
       <section id="main_content">
         {{ content }}
       </section>
       
-      <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; color: #94a3b8; font-size: 0.85rem;">
+      <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 0.85rem;">
         <p>PEDAL-256 • Open Source Neural Interfaces</p>
       </footer>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    
+    <script>
+      VANTA.NET({
+        el: "#vanta-bg",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        
+        /* --- 🎨 调色板 --- */
+        color: 0x3b82f6,         /* 连线和点的颜色 (亮蓝) */
+        backgroundColor: 0xf0f9ff, /* 背景底色 (非常浅的蓝白，像天空一样) */
+        
+        /* --- ⚙️ 密度设置 --- */
+        points: 10.00,           /* 节点数量 */
+        maxDistance: 22.00,      /* 连接距离 */
+        spacing: 18.00,          /* 空间分布 */
+        showDots: true
+      })
+    </script>
   </body>
 </html>
