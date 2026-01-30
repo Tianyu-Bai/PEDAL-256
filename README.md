@@ -34,7 +34,7 @@
 
 ## 📖 Overview
 
-**Elink-256** (Elastomer Interconnection-based connector) is an open-source, solderless, and scalable pedestal connector system designed for high-density chronic neural recording. It provides a mechanically robust and electrically reliable interface between thin-film implanted neural probes and external headstages, with a form factor optimized for freely moving animal studies.
+**E-Link** (Elastomer Interconnection-based connector) is an open-source, solderless, and scalable pedestal connector system designed for high-density chronic neural recording. It provides a mechanically robust and electrically reliable interface between thin-film implanted neural probes and external headstages, with a form factor optimized for freely moving animal studies.
 
 > [!NOTE]
 > **Key Innovation:** The system integrates two high-density PCBs, an anisotropic elastomeric contact interface, and a lightweight pedestal housing into a fully integrated, headstage-ready solution.
@@ -48,7 +48,7 @@
     <thead>
       <tr style="background-color: #f6f8fa; border-bottom: 2px solid #e1e4e8;">
         <th style="padding: 10px; border: 1px solid #e1e4e8;">Specification</th>
-        <th style="padding: 10px; border: 1px solid #e1e4e8;">ELINK-256_V1.0</th>
+        <th style="padding: 10px; border: 1px solid #e1e4e8;">E-Link(256)_V1.0</th>
       </tr>
     </thead>
     <tbody>
