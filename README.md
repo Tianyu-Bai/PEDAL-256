@@ -223,7 +223,7 @@ This work is currently **under review**.
 
 The hardware designs and visual assets in this repository correspond directly to the system described in our submitted manuscript. To maintain the integrity of the peer-review process:
 * **Full Citation:** Will be updated here upon formal acceptance.
-* **Inquiries:** For access to the full manuscript or questions regarding the design, please contact **Tianyu Bai** or **Prof. Hui Fang**.
+* **Inquiries:** For access to the full manuscript or technical design files, please contact **Tianyu Bai(Tianyu.Bai.TH@Dartmouth.edu)** or **Prof. Hui Fang(Hui.Fang@Dartmouth.edu)**.
 * **Full Paper:** *Coming Soon.*
 
 ---
