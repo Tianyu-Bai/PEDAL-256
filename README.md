@@ -1,3 +1,12 @@
+
+<div class="github-only">
+  <p align="center">
+    <a href="https://your-username.github.io/your-repo">
+      🌐 Click here to view the interactive web documentation
+    </a>
+  </p>
+</div>
+
 <div align="center" class="nav-badges">
   <a href="#-overview"><img src="https://img.shields.io/badge/📖_Overview-3b82f6?style=flat-square&logoColor=white" alt="Overview"></a>
   <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Features-3b82f6?style=flat-square&logoColor=white" alt="Features"></a>
