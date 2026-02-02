@@ -25,11 +25,8 @@
     }
     @media (pointer: coarse) { body { cursor: auto; } }
  
-    /* 核心修复：手机端图片不溢出 */
     img, video, iframe {
-      max-width: 100% !important;
-      height: auto !important;
-      box-sizing: border-box;
+      max-width: 100% !important; height: auto !important; box-sizing: border-box;
     }
  
     ::-webkit-scrollbar { width: 6px; }
@@ -72,14 +69,58 @@
  
     /* --- 4. 布局包裹器 --- */
     .layout-wrapper {
-      position: relative; max-width: 860px; 
-      margin: 100px auto 60px; 
-      z-index: 10;
+      position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10;
       perspective: 1000px;
     }
  
-    /* --- 5. 机器人 --- */
-    #bot-container { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 120px; height: 70px; z-index: 9999; cursor: pointer; opacity: 0; animation: botEnter 0.8s ease-out 0.8s forwards; transition: transform 0.3s ease; }
+    /* --- 5. 机器人核心 --- */
+    #bot-container { 
+      position: absolute; top: -45px; left: 50%; 
+      transform: translateX(-50%); 
+      width: 120px; height: 70px; 
+      z-index: 9999; cursor: pointer; 
+      opacity: 0; 
+      animation: botEnter 0.8s ease-out 0.8s forwards; 
+      transition: transform 0.3s ease; 
+    }
+    
+    /* [新增] 呼吸光环：暗示我是可点击的 */
+    .pulse-ring {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      border: 2px solid rgba(59, 130, 246, 0.6);
+      opacity: 0;
+      z-index: -1;
+      animation: pulse-ring-anim 3s infinite;
+      pointer-events: none;
+    }
+
+    /* [新增] 任务标记 (!) */
+    .bot-hint {
+      position: absolute;
+      top: -35px; /* 在天线旁边 */
+      right: 15px; 
+      width: 24px; height: 24px;
+      background: #ef4444; /* 醒目的红色提醒 */
+      color: white;
+      border-radius: 50%;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: bold;
+      font-size: 16px;
+      display: flex; justify-content: center; align-items: center;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+      animation: bounce-hint 1.5s infinite;
+      z-index: 10001;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    /* 点击后隐藏提示 */
+    #bot-container.hint-removed .bot-hint,
+    #bot-container.hint-removed .pulse-ring {
+      opacity: 0; animation: none;
+    }
+
     .bot-head { width: 100px; height: 50px; background: #ffffff; border: 2px solid #e0e7ff; border-bottom: none; border-radius: 50px 50px 20px 20px; margin: 0 auto; position: relative; box-shadow: 0 -5px 15px rgba(59, 130, 246, 0.15); display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 5px; animation: float-bot 3s ease-in-out infinite; }
     .bot-eye { width: 28px; height: 28px; background: #bfdbfe; border-radius: 50%; border: 1px solid #93c5fd; position: relative; overflow: hidden; }
     .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
@@ -88,10 +129,10 @@
     .bot-antenna { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; }
     .bot-antenna::after { content: ''; position: absolute; top: -6px; left: -3px; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; animation: pulse-antenna 2s infinite; }
  
-    /* --- 5.5 机器人普通气泡 (仅作为装饰或短提示) --- */
+    /* --- 对话气泡 (普通) --- */
     #bot-speech {
       position: absolute;
-      top: -40px; left: 50%;
+      top: -45px; left: 50%;
       transform: translateX(-50%) scale(0);
       transform-origin: bottom center;
       background: rgba(30, 41, 59, 0.95);
@@ -117,87 +158,36 @@
     }
     #bot-container.speaking #bot-speech { transform: translateX(-50%) scale(1); opacity: 1; }
 
-    /* --- [新增] RPG 互动对话框 --- */
+    /* --- RPG 互动对话框 --- */
     #rpg-dialogue {
       position: absolute;
-      top: 60px; /* 在机器人下方 */
-      left: 50%;
+      top: 60px; left: 50%;
       transform: translateX(-50%) translateY(20px);
-      width: 90%;
-      max-width: 320px;
+      width: 90%; max-width: 320px;
       background: rgba(15, 23, 42, 0.95);
       border: 1px solid #3b82f6;
       border-radius: 12px;
       padding: 15px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 15px rgba(59, 130, 246, 0.2);
       z-index: 20000;
-      opacity: 0;
-      pointer-events: none; /* 默认不可点 */
+      opacity: 0; pointer-events: none;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display: flex; flex-direction: column; gap: 10px;
       font-family: 'JetBrains Mono', monospace;
     }
-    
-    #rpg-dialogue.active {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-
-    /* 对话内容文字 */
-    #rpg-text {
-      color: #bfdbfe;
-      font-size: 0.9rem;
-      min-height: 40px; /* 预留高度防止跳动 */
-      line-height: 1.5;
-    }
-    /* 打字光标 */
-    #rpg-cursor {
-      display: inline-block;
-      width: 8px; height: 14px;
-      background: #3b82f6;
-      vertical-align: middle;
-      animation: blink 1s infinite;
-    }
-
-    /* 选项按钮区 */
-    #rpg-options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 5px;
-    }
+    #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    #rpg-text { color: #bfdbfe; font-size: 0.9rem; min-height: 40px; line-height: 1.5; }
+    #rpg-cursor { display: inline-block; width: 8px; height: 14px; background: #3b82f6; vertical-align: middle; animation: blink 1s infinite; }
+    #rpg-options { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
     .rpg-btn {
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      text-align: left;
-      transition: all 0.2s;
-      opacity: 0;
-      transform: translateX(-10px);
-      animation: slideIn 0.3s forwards;
+      background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd;
+      padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; text-align: left;
+      transition: all 0.2s; opacity: 0; transform: translateX(-10px); animation: slideIn 0.3s forwards;
     }
-    .rpg-btn:hover {
-      background: rgba(59, 130, 246, 0.25);
-      border-color: #60a5fa;
-      color: #fff;
-      transform: translateX(2px);
-    }
+    .rpg-btn:hover { background: rgba(59, 130, 246, 0.25); border-color: #60a5fa; color: #fff; transform: translateX(2px); }
     @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-
-    /* 关闭按钮 */
-    .rpg-close {
-      position: absolute; top: 5px; right: 8px;
-      font-size: 18px; color: #475569; cursor: pointer;
-    }
+    .rpg-close { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #475569; cursor: pointer; }
     .rpg-close:hover { color: #fff; }
-
 
     /* --- 6. 容器 & 打字机 --- */
     .container { 
@@ -210,45 +200,23 @@
       transform-style: preserve-3d; transition: transform 0.1s ease-out; 
       overflow: hidden; 
     }
-
     .container::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(
-        800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(255, 255, 255, 0.07),
-        transparent 40%
-      );
-      z-index: -1; 
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.5s;
+      content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.07), transparent 40%);
+      z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.5s;
     }
     .container:hover::before { opacity: 1; }
- 
-    /* 表格精准修复 */
-    #main_content table {
-      width: 100% !important; border-collapse: collapse; margin: 20px 0;
-      background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden;
-    }
+    #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
     #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
     #main_content tr:first-child, #main_content thead tr { background: rgba(30, 41, 59, 0.8) !important; }
     #main_content th { color: #60a5fa; font-weight: 600; }
- 
     .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
     .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
  
     /* --- 7. Badge 样式 --- */
     .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
     .nav-badges a { opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; position: relative; z-index: 2; }
-    .nav-badges img { 
-      height: 28px !important; width: auto; border-radius: 50px; 
-      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); 
-      border: 1.5px solid white; 
-      transition: all 0.3s; 
-      mix-blend-mode: normal !important;
-    }
+    .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
     .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
     .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
       
@@ -261,8 +229,10 @@
     @keyframes blink-cursor { from, to { opacity: 1; } 50% { opacity: 0; } }
     @keyframes pulse-bg { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
     @keyframes ripple-wave { 0% { transform: scale(1); } 30% { transform: scale(1.15) translateY(-5px); } 100% { transform: scale(1); } }
-    @keyframes eye-focus { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.1); } }
-    @keyframes marquee-blink-blue { 0%, 100% { opacity: 1; box-shadow: 0 0 15px #3b82f6; background: #60a5fa; } 50% { opacity: 0.6; box-shadow: 0 0 5px #2563eb; background: #2563eb; } }
+    /* [新增] 任务标记跳动动画 */
+    @keyframes bounce-hint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    /* [新增] 呼吸光环动画 */
+    @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } }
  
     @media (max-width: 768px) { 
       .cursor-dot, .cursor-outline, #bot-container { display: none; } 
@@ -280,6 +250,10 @@
  
   <div class="layout-wrapper">
     <div id="bot-container" title="Click to chat!">
+      
+      <div class="pulse-ring"></div>
+      <div class="bot-hint">!</div>
+
       <div id="bot-speech">System Online.</div>
       
       <div id="rpg-dialogue">
@@ -317,10 +291,8 @@
   <script>
     /* =========================================
        >>> 配置你的 Connector 剧情 <<<
-       在这里修改机器人的对话内容
        ========================================= */
     const dialogData = {
-      // 开始节点
       "start": {
         text: "Hi! I'm the Connector Guardian. Need a quick guide?",
         options: [
@@ -329,7 +301,6 @@
           { text: "Just looking around", next: "close" }
         ]
       },
-      // 介绍节点
       "what_is": {
         text: "The Connector is a powerful bridge between data sources. It simplifies complex workflows into one click.",
         options: [
@@ -337,7 +308,6 @@
           { text: "Got it, thanks!", next: "close" }
         ]
       },
-      // 使用节点
       "how_to": {
         text: "Simply click the badges below to integrate. Documentation is available in the repo.",
         options: [
@@ -345,14 +315,12 @@
           { text: "Back to menu", next: "start" }
         ]
       },
-      // 技术细节
       "tech_details": {
         text: "It runs on Python & Node.js with ultra-low latency. Check the GitHub link below!",
         options: [
           { text: "Awesome!", next: "close" }
         ]
       },
-      // 结束节点
       "show_badges": {
         text: "Look down! 👇 Those shiny icons are your gateway.",
         options: [
@@ -362,7 +330,7 @@
     };
 
     /* =========================================
-       >>> 系统核心逻辑 (勿动) <<<
+       >>> 系统核心逻辑 <<<
        ========================================= */
     let vantaEffect = VANTA.NET({
       el: "#vanta-bg",
@@ -392,14 +360,12 @@
       const botContainer = document.getElementById('bot-container');
       const botSpeech = document.getElementById('bot-speech');
       
-      // RPG 变量
       const rpgDialogue = document.getElementById('rpg-dialogue');
       const rpgText = document.getElementById('rpg-text');
       const rpgOptions = document.getElementById('rpg-options');
       const rpgClose = document.querySelector('.rpg-close');
       let typeTimer = null;
 
-      // 简单气泡控制
       function botSay(text, duration = 2000) {
         if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
         botSpeech.textContent = text;
@@ -421,38 +387,39 @@
         const node = dialogData[nodeKey];
         if(!node) return;
 
-        // 清空当前
         rpgOptions.innerHTML = '';
         rpgText.textContent = '';
         if(typeTimer) clearInterval(typeTimer);
 
-        // 打字效果
         let i = 0;
         typeTimer = setInterval(() => {
           rpgText.textContent += node.text.charAt(i);
           i++;
           if(i >= node.text.length) {
             clearInterval(typeTimer);
-            // 显示选项
             node.options.forEach((opt, idx) => {
               const btn = document.createElement('div');
               btn.className = 'rpg-btn';
               btn.textContent = '> ' + opt.text;
               btn.style.animationDelay = `${idx * 0.1}s`;
               btn.onclick = (e) => {
-                e.stopPropagation(); // 防止冒泡关闭
+                e.stopPropagation();
                 showDialogueNode(opt.next);
               };
               rpgOptions.appendChild(btn);
             });
           }
-        }, 30); // 打字速度
+        }, 30);
       }
 
       function openDialogue() {
         if(rpgDialogue.classList.contains('active')) return;
         rpgDialogue.classList.add('active');
-        botContainer.classList.add('speaking'); // 保持眼睛睁开
+        botContainer.classList.add('speaking');
+        
+        // [新增] 第一次点击后，移除引导提示 (!) 和光环
+        botContainer.classList.add('hint-removed');
+        
         showDialogueNode('start');
       }
 
@@ -465,7 +432,6 @@
         }, 300);
       }
 
-      // 点击机器人触发对话
       if(botContainer) {
         botContainer.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -477,7 +443,6 @@
         });
       }
 
-      // 点击关闭按钮
       if(rpgClose) {
         rpgClose.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -485,16 +450,14 @@
         });
       }
 
-      // 点击页面其他地方关闭对话框
       document.addEventListener('click', (e) => {
         if(rpgDialogue.classList.contains('active') && !botContainer.contains(e.target)) {
           closeDialogue();
         }
       });
 
-
-      // 初始欢迎语
-      setTimeout(() => botSay("Click the badges below to learn more info.", 3500), 1000);
+      // [新增] 页面加载后的引导语
+      setTimeout(() => botSay("Hi! Click me for a quick guide.", 4000), 1000);
 
       window.addEventListener('mousemove', (e) => {
         const { clientX: px, clientY: py } = e;
