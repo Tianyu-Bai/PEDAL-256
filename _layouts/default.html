@@ -120,14 +120,14 @@
     .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.2s; }
     .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
     
-    /* 说话时的眯眯眼 + 果冻跳动 */
+    /* 说话时的灵动摇摆眼 (Playful Wiggle) */
     #bot-container.speaking .bot-eye { 
-      height: 10px; width: 32px; /* 变扁变宽 */
+      height: 10px; width: 32px; 
       border-radius: 50% 50% 0 0; 
       background: transparent; 
       border: 3px solid #3b82f6; border-bottom: none; 
       box-shadow: none; margin-top: 6px;
-      animation: happy-eye-bounce 0.4s ease-in-out infinite alternate; /* Q弹跳动 */
+      animation: happy-eye-wiggle 0.8s ease-in-out infinite; 
     }
     #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
 
@@ -232,15 +232,13 @@
     @keyframes ripple-wave { 0% { transform: scale(1); } 30% { transform: scale(1.15) translateY(-5px); } 100% { transform: scale(1); } }
     @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } }
     @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
-    /* [新增] 眼睛快乐跳动动画 */
-    @keyframes happy-eye-bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-3px) scaleX(1.1); } }
+    @keyframes happy-eye-wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
  
-    /* --- [完美手机端适配] --- */
+    /* --- [关键修正] 手机端适配 (左右钉死策略) --- */
     @media (max-width: 768px) { 
       .cursor-dot, .cursor-outline { display: none; } 
       .layout-wrapper { margin-top: 40px !important; }
 
-      /* 机器人固定在右下角 */
       #bot-container { 
         display: block !important;
         position: fixed !important;
@@ -251,23 +249,22 @@
         animation: none !important;
       }
 
-      /* [关键修正] 对话框使用居中定位 + 94vw 宽度 */
+      /* [重点] 左右各留 10px，强制宽度撑满中间，绝对不溢出 */
       #bot-container #rpg-dialogue {
-        position: fixed !important; /* 相对于窗口 */
+        position: fixed !important;
         top: auto !important; 
-        bottom: 100px !important; /* 在机器人上方 */
-        left: 50% !important; /* 锚定中心 */
-        width: 94vw !important; /* 94% 屏幕宽度 */
-        max-width: none !important; /* 取消限制 */
-        right: auto !important;
+        bottom: 100px !important;
         
-        /* 初始状态：居中 + 稍微向下偏移 */
-        transform: translateX(-50%) translateY(10px) !important; 
+        left: 10px !important;  /* 左边距 10px */
+        right: 10px !important; /* 右边距 10px */
+        width: auto !important; /* 宽度自动计算 */
+        max-width: none !important; /* 取消最大宽度限制 */
+        
+        transform: translateY(10px) !important; /* 只做垂直位移，不左右位移 */
       }
       
-      /* 激活状态：居中 + 正常显示 */
       #bot-container #rpg-dialogue.active {
-        transform: translateX(-50%) translateY(0) !important;
+        transform: translateY(0) !important;
       }
 
       .container { padding: 30px 20px; } 
@@ -410,7 +407,6 @@
         const pb = document.getElementById("progress-bar");
         if(pb) pb.style.width = scrolled + "%";
 
-        // PC端滚动切换逻辑
         if(botContainer && window.innerWidth > 768) {
           if(window.scrollY > 200) {
             botContainer.classList.add('fixed-mode');
