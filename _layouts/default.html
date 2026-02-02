@@ -111,13 +111,33 @@
 
     .bot-head { width: 100px; height: 50px; background: #ffffff; border: 2px solid #e0e7ff; border-bottom: none; border-radius: 50px 50px 20px 20px; margin: 0 auto; position: relative; box-shadow: 0 -5px 15px rgba(59, 130, 246, 0.15); display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 5px; animation: float-bot 3s ease-in-out infinite; }
     
-    /* 眼睛 & 微笑特效 */
-    .bot-eye { width: 28px; height: 28px; background: #bfdbfe; border-radius: 50%; border: 1px solid #93c5fd; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    /* 眼睛基础样式 */
+    .bot-eye { 
+      width: 28px; height: 28px; 
+      background: #bfdbfe; 
+      border-radius: 50%; border: 1px solid #93c5fd; 
+      position: relative; overflow: hidden; 
+      /* 使用弹性贝塞尔曲线，让变形更Q弹 */
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+    }
     .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.2s; }
     .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
     
-    #bot-container.speaking .bot-eye { height: 12px; border-radius: 50% 50% 0 0; background: transparent; border: 3px solid #3b82f6; border-bottom: none; box-shadow: none; margin-top: 5px; }
-    #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
+    /* --- [升级版] 灵动笑眼特效 --- */
+    #bot-container.speaking .bot-eye { 
+      height: 10px; /* 压得更扁一点，更像笑眼 */
+      width: 32px; /* 稍微变宽一点 */
+      border-radius: 50% 50% 0 0; /* 倒U形 */
+      background: transparent; 
+      border: 3px solid #3b82f6; 
+      border-bottom: none; 
+      box-shadow: none; 
+      margin-top: 6px;
+      /* 核心：添加快乐跳动动画 */
+      animation: happy-eye-bounce 0.4s ease-in-out infinite alternate;
+    }
+    #bot-container.speaking .bot-pupil, 
+    #bot-container.speaking .bot-lid { opacity: 0; }
 
     /* 天线 & 呼吸灯 */
     .bot-antenna { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; }
@@ -219,15 +239,19 @@
     @keyframes ripple-wave { 0% { transform: scale(1); } 30% { transform: scale(1.15) translateY(-5px); } 100% { transform: scale(1); } }
     @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } }
     @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
+    
+    /* [新增] 眼睛快乐跳动动画 */
+    @keyframes happy-eye-bounce {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-3px) scaleX(1.1); }
+    }
  
-    /* --- [关键修复] 手机端适配 --- */
+    /* --- [关键修复] 手机端适配 (极限拉宽版) --- */
     @media (max-width: 768px) { 
       .cursor-dot, .cursor-outline { display: none; } 
       
-      /* 1. 消除顶部大空隙 */
       .layout-wrapper { margin-top: 40px !important; }
 
-      /* 2. 手机端机器人强制固定右下角 */
       #bot-container { 
         display: block !important;
         position: fixed !important;
@@ -238,23 +262,21 @@
         animation: none !important;
       }
 
-      /* 3. [核心修复] 强制左右定位，防止被表格挤出屏幕 */
+      /* 对话框极限宽度设置 */
       #bot-container #rpg-dialogue {
-        position: fixed !important; /* 脱离机器人定位，使用窗口定位 */
+        position: fixed !important;
         top: auto !important; 
-        bottom: 100px !important; /* 在机器人上方 */
-        
-        /* 左右各留 15px 边距，强制宽度自适应屏幕，忽略 body 宽度 */
-        left: 15px !important; 
-        right: 15px !important;
-        width: auto !important; 
-        max-width: none !important; /* 取消最大宽度限制，让它撑满左右 */
-        
-        transform: translateY(10px) !important; /* 仅保留Y轴位移，去掉X轴 */
+        bottom: 100px !important;
+        /* 左右仅留 2.5vw 的极窄边距 */
+        left: 2.5vw !important; 
+        right: auto !important;
+        /* 强制宽度为 95% 屏幕宽度 */
+        width: 95vw !important; 
+        max-width: none !important; /* 取消限制 */
+        transform: translateX(0) translateY(10px) !important; /* 取消居中偏移，直接靠左定位 */
       }
-      /* 激活状态 */
       #bot-container #rpg-dialogue.active {
-        transform: translateY(0) !important;
+        transform: translateX(0) translateY(0) !important;
       }
 
       .container { padding: 30px 20px; } 
@@ -397,6 +419,7 @@
         const pb = document.getElementById("progress-bar");
         if(pb) pb.style.width = scrolled + "%";
 
+        // PC端滚动切换逻辑
         if(botContainer && window.innerWidth > 768) {
           if(window.scrollY > 200) {
             botContainer.classList.add('fixed-mode');
