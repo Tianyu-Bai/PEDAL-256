@@ -70,7 +70,8 @@
     /* --- 4. 布局包裹器 --- */
     .layout-wrapper {
       position: relative; max-width: 860px; 
-      margin: 140px auto 60px; 
+      /* [修改点] 减少顶部留白，整体上移 (原140px -> 100px) */
+      margin: 100px auto 60px; 
       z-index: 10;
       perspective: 1000px;
     }
@@ -79,8 +80,8 @@
     #bot-container { 
       /* [默认状态 - PC顶部] */
       position: absolute; 
-      /* [修改点] 从 70px 改为 110px，让它下移，贴近内容 */
-      top: 110px; 
+      /* [修改点] 配合内容上移，机器人也上移 (原110px -> 70px) */
+      top: 70px; 
       left: 50%; 
       transform: translateX(-50%); 
       width: 120px; height: 70px; 
@@ -100,10 +101,12 @@
       opacity: 1 !important;
     }
 
+    /* [修改点] 紫色光圈 */
     .pulse-ring {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 100px; height: 100px;
-      border-radius: 50%; border: 2px solid rgba(168, 85, 247, 0.6);
+      border-radius: 50%; 
+      border: 2px solid rgba(168, 85, 247, 0.6); /* 改为紫色 */
       opacity: 0; z-index: -1; animation: pulse-ring-anim 3s infinite; pointer-events: none;
     }
     #bot-container.hint-removed .pulse-ring { opacity: 0; animation: none; }
@@ -247,10 +250,10 @@
     @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } }
     @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
     
-    /* 嘴巴动效：高度变化模拟说话 */
+    /* 嘴巴动效 */
     @keyframes mouth-talk { 0% { height: 2px; } 100% { height: 8px; border-radius: 50%; } }
  
-    /* --- [手机端精准适配 - 左右钉死版] --- */
+    /* --- [手机端适配 - 左右钉死版] --- */
     @media (max-width: 768px) { 
       .cursor-dot, .cursor-outline { display: none; } 
       .layout-wrapper { margin-top: 40px !important; }
@@ -348,7 +351,7 @@
         options: [ { text: "Show me the badges", next: "show_badges" }, { text: "Back to menu", next: "start" } ]
       },
       "tech_details": {
-        text: "It is a an open-source, Interconnection-based based pedestal connector. Check the GitHub link to know more!",
+        text: "It runs on Python & Node.js with ultra-low latency. Check the GitHub link below!",
         options: [ { text: "Awesome!", next: "close" } ]
       },
       "show_badges": {
@@ -491,8 +494,8 @@
         if(rpgDialogue.classList.contains('active') && !botContainer.contains(e.target)) closeDialogue();
       });
 
-      // [修改点] 停留时间改为 16秒
-      setTimeout(() => botSay("Click me for guide!", 16000), 1000);
+      // [修改点] 停留时间改为 10秒
+      setTimeout(() => botSay("Click me for guide!", 10000), 1000);
 
       const badges = document.querySelectorAll('.nav-badges a');
       badges.forEach(b => {
