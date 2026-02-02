@@ -70,7 +70,6 @@
     /* --- 4. 布局包裹器 --- */
     .layout-wrapper {
       position: relative; max-width: 860px; 
-      /* PC端默认顶部边距 */
       margin: 140px auto 60px; 
       z-index: 10;
       perspective: 1000px;
@@ -78,7 +77,6 @@
  
     /* --- 5. 机器人核心 --- */
     #bot-container { 
-      /* [默认状态 - PC顶部] */
       position: absolute; 
       top: 70px; left: 50%; 
       transform: translateX(-50%); 
@@ -89,7 +87,6 @@
       transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
     }
 
-    /* [状态 - PC端滚动后固定在角落] */
     #bot-container.fixed-mode {
       position: fixed !important;
       top: auto !important;
@@ -110,30 +107,48 @@
 
     .bot-head { width: 100px; height: 50px; background: #ffffff; border: 2px solid #e0e7ff; border-bottom: none; border-radius: 50px 50px 20px 20px; margin: 0 auto; position: relative; box-shadow: 0 -5px 15px rgba(59, 130, 246, 0.15); display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 5px; animation: float-bot 3s ease-in-out infinite; }
     
-    /* 眼睛 & 灵动微笑特效 */
+    /* --- 眼睛基础样式 --- */
     .bot-eye { 
-      width: 28px; height: 28px; background: #bfdbfe; 
+      width: 28px; height: 28px; 
+      background: #bfdbfe; 
       border-radius: 50%; border: 1px solid #93c5fd; 
       position: relative; overflow: hidden; 
-      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+      /* 平滑过渡 */
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
     }
     .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.2s; }
     .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
     
-    /* 说话时的灵动摇摆眼 (Playful Wiggle) */
+    /* --- [关键优化] 说话时的开心月牙眼 (Happy Arch) --- */
     #bot-container.speaking .bot-eye { 
-      height: 10px; width: 32px; 
-      border-radius: 50% 50% 0 0; 
       background: transparent; 
-      border: 3px solid #3b82f6; border-bottom: none; 
-      box-shadow: none; margin-top: 6px;
-      animation: happy-eye-wiggle 0.8s ease-in-out infinite; 
+      border: none; /* 去掉原来的边框 */
+      box-shadow: none; 
+      
+      /* 用 border-top 画出完美的弧线 */
+      width: 24px; height: 12px;
+      border-top: 4px solid #3b82f6; 
+      border-radius: 24px 24px 0 0; /* 完美的半圆拱门 */
+      
+      margin-top: 8px; /* 位置微调 */
+      animation: happy-eye-wiggle 0.3s ease-in-out infinite alternate; /* 眼睛也会开心得发抖 */
     }
-    #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
+    #bot-container.speaking .bot-pupil, 
+    #bot-container.speaking .bot-lid { opacity: 0; /* 隐藏瞳孔 */ }
 
-    /* 天线 & 呼吸灯 */
-    .bot-antenna { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; }
+    /* 天线基础 */
+    .bot-antenna { 
+      position: absolute; top: -25px; left: 50%; 
+      transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; 
+      transform-origin: bottom center; /* 设置摇摆支点在底部 */
+      transition: transform 0.2s;
+    }
     .bot-antenna::after { content: ''; position: absolute; top: -6px; left: -3px; width: 8px; height: 8px; border-radius: 50%; animation: pulse-antenna-breath 2s infinite ease-in-out; }
+    
+    /* --- [关键优化] 说话时的天线摇摆 (Antenna Wiggle) --- */
+    #bot-container.speaking .bot-antenna {
+      animation: antenna-wiggle 0.15s ease-in-out infinite alternate; /* 快速摇摆 */
+    }
  
     /* --- 机器人说话气泡 --- */
     #bot-speech {
@@ -170,7 +185,7 @@
     }
     #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
     
-    /* PC端：底部固定模式下，对话框向上弹 */
+    /* PC端：底部固定模式 */
     #bot-container.fixed-mode #rpg-dialogue {
         top: auto; bottom: 80px; 
         left: auto; right: 0; 
@@ -232,9 +247,16 @@
     @keyframes ripple-wave { 0% { transform: scale(1); } 30% { transform: scale(1.15) translateY(-5px); } 100% { transform: scale(1); } }
     @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } }
     @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
-    @keyframes happy-eye-wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(4deg); } 75% { transform: rotate(-4deg); } }
+    @keyframes happy-eye-wiggle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+    /* 天线摇摆动画 */
+    @keyframes antenna-wiggle { 
+      0% { transform: translateX(-50%) rotate(0deg); } 
+      25% { transform: translateX(-50%) rotate(15deg); } 
+      75% { transform: translateX(-50%) rotate(-15deg); } 
+      100% { transform: translateX(-50%) rotate(0deg); } 
+    }
  
-    /* --- [关键修正] 手机端适配 (左右钉死策略) --- */
+    /* --- [手机端适配 - 左右钉死版] --- */
     @media (max-width: 768px) { 
       .cursor-dot, .cursor-outline { display: none; } 
       .layout-wrapper { margin-top: 40px !important; }
@@ -249,18 +271,18 @@
         animation: none !important;
       }
 
-      /* [重点] 左右各留 10px，强制宽度撑满中间，绝对不溢出 */
+      /* 左右留 10px，绝对不会超出屏幕 */
       #bot-container #rpg-dialogue {
         position: fixed !important;
         top: auto !important; 
         bottom: 100px !important;
         
-        left: 10px !important;  /* 左边距 10px */
-        right: 10px !important; /* 右边距 10px */
-        width: auto !important; /* 宽度自动计算 */
-        max-width: none !important; /* 取消最大宽度限制 */
+        left: 10px !important; 
+        right: 10px !important;
+        width: auto !important;
+        max-width: none !important;
         
-        transform: translateY(10px) !important; /* 只做垂直位移，不左右位移 */
+        transform: translateY(10px) !important;
       }
       
       #bot-container #rpg-dialogue.active {
