@@ -589,7 +589,7 @@
       const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
       document.getElementById('typewriter-text').textContent = display;
       let speed = isDeleting ? 50 : 100;
-      if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
+      if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
       else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
       setTimeout(type, speed);
     }
@@ -614,19 +614,41 @@
       const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
       const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
       const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
-      let modalIsZh = false; 
+      let modalIsZh = false; 
 
       // 0.1秒后显示弹窗
       setTimeout(() => {
         welcomeModal.classList.add('show');
       }, 100);
 
+      // --- 🤖 新增：空闲时自动轮播提示语 ---
+      let idleInterval;
+      let tipIndex = 0;
+
+      function startIdleTips() {
+        if(idleInterval) clearInterval(idleInterval);
+        
+        const enTips = ["Click me for guide!", "I'm here to help!"];
+        const zhTips = ["点击我答疑解惑", "有问题问我！"];
+        const tips = currentLang === 'en' ? enTips : zhTips;
+        
+        // 立即显示第一句
+        botSay(tips[tipIndex], 3000); 
+        
+        // 开始循环
+        idleInterval = setInterval(() => {
+            tipIndex = (tipIndex + 1) % 2; // 0 和 1 之间切换
+            const currentTips = currentLang === 'en' ? enTips : zhTips; // 实时获取当前语言
+            botSay(currentTips[tipIndex], 3000);
+        }, 3000);
+      }
+
       function closeModal() {
         welcomeModal.classList.remove('show');
         
         if (modalIsZh) {
           if (currentLang !== 'zh') {
-             langToggle.click(); 
+             langToggle.click(); 
           }
         } else {
           if (currentLang === 'zh') {
@@ -635,9 +657,11 @@
         }
 
         setTimeout(() => {
-            botContainer.classList.add('attention-jump'); 
-            const guideText = currentLang === 'en' ? "I'm here to help!" : "有问题问我！";
-            botSay(guideText, 5000);
+            botContainer.classList.add('attention-jump'); 
+            
+            // 🔥 这里修改：不再只说一句话，而是开始循环
+            startIdleTips();
+
             setTimeout(() => {
                 botContainer.classList.remove('attention-jump');
             }, 5000);
@@ -647,8 +671,8 @@
       modalKeepDarkBtn.addEventListener('click', closeModal);
       
       modalSwitchLightBtn.addEventListener('click', () => {
-        themeToggle.click(); 
-        closeModal();        
+        themeToggle.click(); 
+        closeModal();        
       });
 
       // 弹窗内的 Toggle Switch 监听
@@ -660,7 +684,7 @@
 
         if (modalIsZh) {
           enTexts.forEach(el => el.style.display = 'none');
-          zhTexts.forEach(el => el.style.display = 'inline'); 
+          zhTexts.forEach(el => el.style.display = 'inline'); 
         } else {
           zhTexts.forEach(el => el.style.display = 'none');
           enTexts.forEach(el => el.style.display = 'inline');
@@ -677,12 +701,12 @@
         document.body.classList.toggle('light-mode');
         
         if (isLight) {
-          themeToggle.textContent = "🌙"; 
+          themeToggle.textContent = "🌙"; 
           if (vantaEffect) {
             vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
           }
         } else {
-          themeToggle.textContent = "☀️"; 
+          themeToggle.textContent = "☀️"; 
           if (vantaEffect) {
             vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
           }
@@ -695,8 +719,8 @@
 
         if (currentLang === 'en') {
             currentLang = 'zh';
-            dialogData = dialogData_ZH; 
-            texts = textsZH;            
+            dialogData = dialogData_ZH; 
+            texts = textsZH;            
             langToggle.textContent = "中 / 英";
             
             enContent.forEach(el => el.style.display = 'none');
@@ -716,21 +740,18 @@
         
         if(rpgDialogue.classList.contains('active')) closeDialogue();
         
-        const feedbackText = currentLang === 'zh' ? "系统语言已切换" : "Language Switched";
-        botSpeech.textContent = feedbackText;
-        botContainer.classList.add('speaking');
-
-        if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
-
-        botContainer.speechTimer = setTimeout(() => {
-            const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
-            botSay(guideText, 60000); 
-        }, 1500); 
+        // 切换语言时，如果对话框没打开，立即更新提示语
+        if (!rpgDialogue.classList.contains('active') && idleInterval) {
+             // 不用做额外操作，startIdleTips 里的 interval 会在下一次 tick 自动检测 currentLang
+             // 为了即时反馈，我们重置一下循环
+             startIdleTips();
+        }
       });
 
       let mouseX = window.innerWidth / 2;
       let mouseY = 100;
- 
+      
+      // ... (mousemove logic same as before) ...
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -758,13 +779,13 @@
         const pb = document.getElementById("progress-bar");
         if(pb) pb.style.width = scrolled + "%";
         if(botContainer && window.innerWidth > 768) {
-          if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
+          if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
           else { botContainer.classList.remove('fixed-mode'); }
         }
       });
  
       function botSay(text, duration = 2000) {
-        if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
+        if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
         botSpeech.textContent = text;
         botContainer.classList.add('speaking');
         if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
@@ -774,13 +795,13 @@
       }
  
       function showDialogueNode(nodeKey) {
-        if(nodeKey === 'close') { 
-            closeDialogue(); 
+        if(nodeKey === 'close') { 
+            closeDialogue(); 
             botContainer.classList.add('interaction-done');
             const byeText = currentLang === 'en' ? "Nice chatting with you. Have a good day!" : "很高兴与你交谈。祝你今天愉快！";
-            botSay(byeText, 3600); 
-            return; 
-        }    
+            botSay(byeText, 3600); 
+            return; 
+        }    
         
         const node = dialogData[nodeKey];
         if(!node) return;
@@ -806,7 +827,7 @@
         if(rpgDialogue.classList.contains('active')) return;
         rpgDialogue.classList.add('active');
         botContainer.classList.add('speaking');
-        botContainer.classList.add('hint-removed'); 
+        botContainer.classList.add('hint-removed'); 
         showDialogueNode('start');
       }
  
@@ -819,19 +840,22 @@
       if(botContainer) {
         botContainer.addEventListener('click', (e) => {
           e.stopPropagation();
-          if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
-          botSpeech.textContent = "";                  
-          botContainer.classList.remove('speaking'); 
+          // 🔥 只要用户点击了机器人，就永久停止提示语循环
+          if (idleInterval) {
+              clearInterval(idleInterval);
+              idleInterval = null;
+          }
+          if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
+          botSpeech.textContent = "";                  
+          botContainer.classList.remove('speaking'); 
           if(rpgDialogue.classList.contains('active')) closeDialogue();
           else openDialogue();
         });
       }
  
-      // 初始加载时显示提示语
-      setTimeout(() => {
-          const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
-          botSay(guideText, 60000); 
-      }, 1000);
+      // 初始加载时显示提示语 (如果弹窗被绕过或其他情况)
+      // 但现在主要靠 closeModal 触发，这里留作备用或移除均可
+      // setTimeout(() => { ... }, 1000); 
  
       const badges = document.querySelectorAll('.nav-badges a');
       badges.forEach(b => {
