@@ -450,11 +450,11 @@ This project is open-source and available under the **MIT License**. Click the b
       </tr>
       <tr>
         <td><b>泡沫垫圈 (Foam Washer)</b></td>
-        <td>提供柔性压缩，确保弹性体接口上的电气接触均匀</td>
+        <td>提供柔性压缩，确保弹性导电基体上方的电气接触均匀</td>
       </tr>
       <tr>
         <td><b>转接板 PCB (Adapter PCB)</b></td>
-        <td>高密度 4 层 PCB，用于将信号从薄膜探针路由到头部放大器的球栅阵列图案</td>
+        <td>高密度 4 层 PCB，用于将信号从薄膜探针路由到放大器的球栅阵列图案转换</td>
       </tr>
       <tr>
         <td><b>手术保护盖 (Surgical Cap)</b></td>
@@ -467,7 +467,7 @@ This project is open-source and available under the **MIT License**. Click the b
 ---
 
 <span id="cn-bom"></span>
-### 🛠 头部放大器物料清单 (BOM)
+### 🛠 放大器物料清单 (BOM)
 
 <div align="center">
   <table style="margin-left: auto; margin-right: auto; width: 90%; text-align: center; border-collapse: collapse; border: 1px solid #e1e4e8;">
@@ -541,16 +541,16 @@ This project is open-source and available under the **MIT License**. Click the b
 
 ## 📄 出版物
 
-这项工作目前正在 **IEEE Journal on Flexible Electronics (JFLEX)** 审稿中。
+本工作目前正在 **IEEE Journal on Flexible Electronics (JFLEX)** 审稿中。
 
-本仓库中的硬件设计和视觉资产直接对应于投稿中描述的系统。为了维护同行评审过程的完整性：
+本仓库中的硬件设计和视觉资产直接对应于投稿中描述的系统。
 
 * **完整引用**：正式录用后，最终论文的永久链接将立即在此处更新。
 * **预印本/全文**：*即将推出。*
   
 * 我们欢迎神经工程科研社区的反馈与合作！
 
-* **咨询**：如需获取技术设计文件或有任何疑问，请邮件联系：
+* **咨询**：如需获取技术设计文件或有任何相关疑问，请邮件联系：
     * **白天宇** ([<font color="#60a5fa">Tianyu.Bai.TH@Dartmouth.edu</font>](mailto:Tianyu.Bai.TH@Dartmouth.edu))
     * **方辉教授** ([<font color="#60a5fa">Hui.Fang@Dartmouth.edu</font>](mailto:Hui.Fang@Dartmouth.edu))
 
@@ -583,7 +583,7 @@ This project is open-source and available under the **MIT License**. Click the b
 
 ## 🤝 致谢
 
-开发者衷心感谢 **NIH (R01MH139342)** 和 **达特茅斯博士创新奖学金 (Dartmouth PhD Innovation Fellowship)** 的支持。
+开发者衷心感谢 **NIH (R01MH139342)** 和 **达特茅斯博士生创新奖学金 (Dartmouth PhD Innovation Fellowship)** 的支持。
 
 特别感谢 **MINE Lab** 和 **Thayer 工程学院** 的成员在 E-Link (256) 系统开发过程中提供的技术支持和反馈。
 
