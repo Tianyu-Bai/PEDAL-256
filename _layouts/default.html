@@ -2,7 +2,7 @@
 <html lang="en">
  <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
    
   <title>{{ page.title }}</title>
   <link rel="shortcut icon" type="image/x-icon" href="{{ '/Images/icon/favicon.ico' | relative_url }}">
@@ -17,8 +17,6 @@
   <style>
     /* --- 0. 全局设置 --- */
     .github-only { display: none !important; }
-    
-    /* 🔥 默认隐藏中文，显示英文，并添加淡入动画 */
     .lang-zh { display: none; animation: fadeIn 0.5s ease; }
     .lang-en { display: block; animation: fadeIn 0.5s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -41,7 +39,7 @@
     ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
     ::selection { background: #3b82f6; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
  
-    /* --- 1. 自定义光标 --- */
+    /* --- 1. 光标 & 进度条 --- */
     .cursor-dot, .cursor-outline {
       position: fixed; top: 0; left: 0; 
       transform: translate(-50%, -50%); border-radius: 50%; z-index: 99999; pointer-events: none;
@@ -53,14 +51,13 @@
     }
     body.hovering .cursor-outline { width: 60px; height: 60px; background-color: rgba(59, 130, 246, 0.1); border-color: transparent; }
  
-    /* --- 2. 进度条 --- */
     #progress-bar {
       position: fixed; top: 0; left: 0; height: 3px;
       background: linear-gradient(90deg, #3b82f6, #60a5fa); 
       width: 0%; z-index: 99999; transition: width 0.1s;
     }
  
-    /* --- 3. 背景 --- */
+    /* --- 2. 背景 --- */
     #vanta-bg { 
       position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; 
       background: #0a0a0f; 
@@ -72,7 +69,7 @@
       transition: background 0.5s ease;
     }
  
-    /* --- 4. 布局包裹器 --- */
+    /* --- 3. 布局 --- */
     .layout-wrapper {
       position: relative; max-width: 860px; 
       margin: 100px auto 60px; 
@@ -80,7 +77,7 @@
       perspective: 1000px;
     }
  
-    /* --- 5. 机器人核心 --- */
+    /* --- 4. 机器人核心 --- */
     #bot-container { 
       position: absolute; top: 70px; left: 50%; 
       transform: translateX(-50%); width: 120px; height: 70px; 
@@ -93,66 +90,61 @@
       bottom: 30px !important; right: 30px !important;
       transform: scale(0.9) !important; opacity: 1 !important;
     }
+    
+    /* 机器人引导跳跃动画 */
+    #bot-container.attention-jump {
+      animation: attention-bounce 0.6s ease infinite alternate;
+    }
+    @keyframes attention-bounce {
+      0% { transform: translateX(-50%) translateY(0) scale(1); }
+      100% { transform: translateX(-50%) translateY(-15px) scale(1.1); }
+    }
+    #bot-container.fixed-mode.attention-jump {
+      animation: attention-bounce-fixed 0.6s ease infinite alternate;
+    }
+    @keyframes attention-bounce-fixed {
+      0% { transform: scale(0.9) translateY(0); }
+      100% { transform: scale(0.9) translateY(-15px); }
+    }
 
-    /* 🔥 修改部分：涟漪光圈 */
+    /* 涟漪光圈 */
     .pulse-ring {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: 100px; height: 100px; border-radius: 50%; 
-      border: 2px solid rgba(168, 85, 247, 0.5); /* 稍微调低透明度 */
-      opacity: 0; z-index: -1; 
-      pointer-events: none;
-      
-      /* 修改 1: 默认改为 6秒，非常缓慢的涟漪 */
+      border: 2px solid rgba(168, 85, 247, 0.5); 
+      opacity: 0; z-index: -1; pointer-events: none;
       animation: pulse-ring-anim 6s infinite cubic-bezier(0.4, 0, 0.6, 1);
+      transition: opacity 0.5s; /* 添加过渡效果，消失更自然 */
     }
-
-    /* 🔥 修改 2: 当机器人处于 speaking (点击/交互) 状态时，动画加速到 1.5秒 */
     #bot-container.speaking .pulse-ring {
       animation-duration: 1.5s;
-      border-color: rgba(59, 130, 246, 0.8); /* 点击变蓝，反馈更明显 */
+      border-color: rgba(59, 130, 246, 0.8); 
+    }
+    
+    /* 🔥 新增：当机器人被标记为“互动完成”后，隐藏光圈 */
+    #bot-container.interaction-done .pulse-ring {
+      opacity: 0 !important;
+      animation: none !important;
     }
 
-    /* 🔥 修改 3: 优化动画关键帧，扩散范围更大 (scale 2.5) */
     @keyframes pulse-ring-anim { 
       0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 
       30% { opacity: 0.6; }
       100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } 
     }
 
-    /* 注意：我删除了 .hint-removed 隐藏光圈的代码，这样点击后光圈依然存在 */
-
     .bot-head { width: 100px; height: 50px; background: #ffffff; border: 2px solid #e0e7ff; border-bottom: none; border-radius: 50px 50px 20px 20px; margin: 0 auto; position: relative; box-shadow: 0 -5px 15px rgba(59, 130, 246, 0.15); display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 5px; animation: float-bot 3s ease-in-out infinite; }
-     
-    .bot-eye { 
-      width: 28px; height: 28px; background: #bfdbfe; 
-      border-radius: 50%; border: 1px solid #93c5fd; 
-      position: relative; overflow: hidden; 
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    }
+    .bot-eye { width: 28px; height: 28px; background: #bfdbfe; border-radius: 50%; border: 1px solid #93c5fd; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.2s; }
     .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
-     
-    #bot-container.speaking .bot-eye { 
-      background: transparent; border: none; box-shadow: none; 
-      width: 22px; height: 12px; border-top: 3px solid #3b82f6; 
-      border-radius: 22px 22px 0 0; margin-top: 8px;
-    }
+    #bot-container.speaking .bot-eye { background: transparent; border: none; box-shadow: none; width: 22px; height: 12px; border-top: 3px solid #3b82f6; border-radius: 22px 22px 0 0; margin-top: 8px; }
     #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
-
-    .bot-mouth {
-      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-      width: 6px; height: 6px; background: #3b82f6; border-radius: 4px;
-      opacity: 0; transition: all 0.2s;
-    }
-    #bot-container.speaking .bot-mouth {
-      opacity: 1; width: 14px; background: transparent; border: 2px solid #3b82f6;
-      animation: mouth-talk 0.25s infinite alternate; 
-    }
-
+    .bot-mouth { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: #3b82f6; border-radius: 4px; opacity: 0; transition: all 0.2s; }
+    #bot-container.speaking .bot-mouth { opacity: 1; width: 14px; background: transparent; border: 2px solid #3b82f6; animation: mouth-talk 0.25s infinite alternate; }
     .bot-antenna { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; }
     .bot-antenna::after { content: ''; position: absolute; top: -6px; left: -3px; width: 8px; height: 8px; border-radius: 50%; animation: pulse-antenna-breath 2s infinite ease-in-out; }
  
-    /* --- 机器人说话气泡 --- */
+    /* --- 机器人气泡 & 对话框 --- */
     #bot-speech {
       position: absolute; top: -45px; left: 50%;
       transform: translateX(-50%) scale(0); transform-origin: bottom center;
@@ -171,7 +163,6 @@
     }
     #bot-container.speaking #bot-speech { transform: translateX(-50%) scale(1); opacity: 1; }
 
-    /* --- RPG 互动对话框 --- */
     #rpg-dialogue {
       position: absolute; top: 65px; left: 50%;
       transform: translateX(-50%) translateY(20px);
@@ -185,13 +176,8 @@
       font-family: 'JetBrains Mono', monospace;
     }
     #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-     
-    #bot-container.fixed-mode #rpg-dialogue {
-        top: auto; bottom: 80px; left: auto; right: 0; 
-        transform: translateY(20px);
-    }
+    #bot-container.fixed-mode #rpg-dialogue { top: auto; bottom: 80px; left: auto; right: 0; transform: translateY(20px); }
     #bot-container.fixed-mode #rpg-dialogue.active { transform: translateY(0); }
-
     #rpg-text { color: #bfdbfe; font-size: 0.9rem; min-height: 40px; line-height: 1.5; }
     #rpg-cursor { display: inline-block; width: 8px; height: 14px; background: #3b82f6; vertical-align: middle; animation: blink 1s infinite; }
     #rpg-options { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
@@ -205,7 +191,7 @@
     .rpg-close { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #475569; cursor: pointer; }
     .rpg-close:hover { color: #fff; }
 
-    /* --- 6. 容器 & 徽章 --- */
+    /* --- 内容容器 --- */
     .container { 
       position: relative; padding: 60px 80px; 
       background: rgba(255, 255, 255, 0.05); 
@@ -221,49 +207,24 @@
       z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.5s;
     }
     .container:hover::before { opacity: 1; }
-     
     #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
     #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
     #main_content tr:first-child, #main_content thead tr { background: rgba(30, 41, 59, 0.8) !important; }
     #main_content th { color: #60a5fa; font-weight: 600; }
-     
     .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
     .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
- 
     .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
     .nav-badges a { opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; position: relative; z-index: 2; }
     .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
     .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
     .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
        
-    /* --- 8. 功能按钮组 (右上角) --- */
-    .controls-container {
-      position: fixed; top: 20px; right: 20px;
-      display: flex; gap: 15px; z-index: 10000;
-    }
-    .ctrl-btn {
-      width: 40px; height: 40px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      display: flex; justify-content: center; align-items: center;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      font-size: 1.2rem;
-      user-select: none;
-    }
+    /* --- 按钮 & 模式 --- */
+    .controls-container { position: fixed; top: 20px; right: 20px; display: flex; gap: 15px; z-index: 10000; }
+    .ctrl-btn { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease; font-size: 1.2rem; user-select: none; }
     .ctrl-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
-     
-    /* 语言按钮专属样式 */
-    #lang-toggle {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: bold;
-      width: auto; padding: 0 10px; border-radius: 20px; /* 椭圆形 */
-    }
+    #lang-toggle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: bold; width: auto; padding: 0 10px; border-radius: 20px; }
 
-    /* --- 9. 浅色模式适配 --- */
     body.light-mode { color: #1e293b; }
     body.light-mode #vanta-bg::after { background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.6) 100%); }
     body.light-mode .container { background: rgba(255, 255, 255, 0.65); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); }
@@ -279,21 +240,53 @@
     body.light-mode .rpg-close:hover { color: #ef4444; }
     body.light-mode .ctrl-btn { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.1); color: #334155; }
     body.light-mode .ctrl-btn:hover { background: rgba(0, 0, 0, 0.1); }
-     
-    /* 浅色模式下图片标题适配 */
-    .img-caption { color: #3b82f6; } /* 默认蓝色，黑白通吃 */
+    .img-caption { color: #3b82f6; } 
 
-    /* 动画定义 */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes float-bot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     @keyframes blink { 0%, 48%, 52%, 100% { height: 0%; } 50% { height: 100%; } }
     @keyframes botEnter { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     @keyframes blink-cursor { from, to { opacity: 1; } 50% { opacity: 0; } }
-    @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 30% { opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } }
     @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
     @keyframes mouth-talk { 0% { height: 2px; } 100% { height: 8px; border-radius: 50%; } }
- 
-    /* --- 移动端适配 --- */
+    
+    /* 移动端弹窗绝对居中 */
+    .welcome-modal {
+      position: fixed; inset: 0; 
+      background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+      z-index: 100001; 
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+      padding: 20px; 
+    }
+    .welcome-modal.show { opacity: 1; pointer-events: auto; }
+    
+    .modal-content {
+      background: rgba(30, 41, 59, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20px);
+      padding: 30px; border-radius: 20px; 
+      width: 90%; max-width: 400px; text-align: center;
+      margin: auto; 
+      max-height: 90vh; overflow-y: auto; 
+      transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .welcome-modal.show .modal-content { transform: scale(1); }
+    
+    .modal-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; font-weight: 600; }
+    .modal-body { font-size: 1rem; color: #cbd5e1; margin-bottom: 25px; line-height: 1.6; }
+    
+    .modal-btns { display: flex; flex-direction: column; gap: 10px; }
+    .btn-primary, .btn-secondary {
+      padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+      border: none; font-family: inherit;
+    }
+    .btn-primary { background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+    .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+    .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
+
     @media (max-width: 768px) { 
       #bot-speech {
         white-space: normal !important; max-width: 200px !important; width: max-content !important; height: auto !important; line-height: 1.5;
@@ -301,13 +294,11 @@
         transform: translateX(0) scale(0) !important; transform-origin: bottom right !important; 
       }
       #bot-container.speaking #bot-speech { transform: translateX(0) scale(1) !important; }
-
       .cursor-dot, .cursor-outline { display: none; } 
       .layout-wrapper { margin-top: 40px !important; }
       .controls-container { top: 15px; right: 15px; gap: 8px; }
       .ctrl-btn { width: 35px; height: 35px; font-size: 1rem; }
       #lang-toggle { font-size: 0.7rem; padding: 0 8px; }
-
       #bot-container { 
         display: block !important; position: fixed !important; top: auto !important; left: auto !important;
         right: 20px !important; bottom: 30px !important; transform: scale(0.85) translateX(0) !important;
@@ -325,6 +316,22 @@
  </head>
  
  <body>
+  <div id="welcome-modal" class="welcome-modal">
+    <div class="modal-content">
+      <div class="modal-title">👋 Welcome! / 欢迎</div>
+      <div class="modal-body">
+        Would you like to try <b>Daylight Mode</b>? <br>
+        You can switch Language & Theme anytime at the top-right corner. <br><br>
+        是否切换到<b>日光模式</b>？<br>
+        您可以随时在右上角切换语言和主题。
+      </div>
+      <div class="modal-btns">
+        <button id="modal-switch-btn" class="btn-primary">☀️ Yes, switch to Light Mode</button>
+        <button id="modal-close-btn" class="btn-secondary">I acknowledged / 知道了</button>
+      </div>
+    </div>
+  </div>
+
   <div class="controls-container">
     <div id="lang-toggle" class="ctrl-btn" title="Switch Language">EN/CN</div>
     <div id="theme-toggle" class="ctrl-btn" title="Switch Theme">☀️</div>
@@ -558,7 +565,7 @@
         options: [ { text: "用户友好。", next: "usage_menu" } ]
       },
       "system": {
-        text: "完美兼容 Intan RHD 记录系统。支持 64、128 和 256 通道配置。",
+        text: "完美兼容 Intan RHD 记录系统。支持 64、128 和 256 channel configurations.",
         options: [ { text: "完美。", next: "usage_menu" } ]
       },
       "animal": {
@@ -613,12 +620,41 @@
       const rpgClose = document.querySelector('.rpg-close');
       let typeTimer = null;
 
+      // --- 🔥 弹窗逻辑 ---
+      const welcomeModal = document.getElementById('welcome-modal');
+      const modalSwitchBtn = document.getElementById('modal-switch-btn');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+
+      // 0.5秒后显示弹窗
+      setTimeout(() => {
+        welcomeModal.classList.add('show');
+      }, 500);
+
+      function closeModal() {
+        welcomeModal.classList.remove('show');
+        // 弹窗关闭后，触发机器人引导动画
+        setTimeout(() => {
+            botContainer.classList.add('attention-jump'); // 开始跳动
+            const guideText = currentLang === 'en' ? "I'm here to help!" : "有问题问我！";
+            botSay(guideText, 5000);
+            // 5秒后停止跳动
+            setTimeout(() => {
+                botContainer.classList.remove('attention-jump');
+            }, 5000);
+        }, 500);
+      }
+
+      modalSwitchBtn.addEventListener('click', () => {
+        themeToggle.click(); 
+        closeModal();
+      });
+      modalCloseBtn.addEventListener('click', closeModal);
+
       // --- 切换逻辑 ---
       const themeToggle = document.getElementById('theme-toggle');
       const langToggle = document.getElementById('lang-toggle');
       let isLight = false;
        
-      // 主题切换
       themeToggle.addEventListener('click', () => {
         isLight = !isLight;
         document.body.classList.toggle('light-mode');
@@ -636,19 +672,16 @@
         }
       });
 
-      // 语言切换
       langToggle.addEventListener('click', () => {
-        // 获取所有双语内容区块
         const enContent = document.querySelectorAll('.lang-en');
         const zhContent = document.querySelectorAll('.lang-zh');
 
         if (currentLang === 'en') {
             currentLang = 'zh';
-            dialogData = dialogData_ZH; // 切换机器人数据
-            texts = textsZH;            // 切换打字机文本
+            dialogData = dialogData_ZH; 
+            texts = textsZH;            
             langToggle.textContent = "中 / 英";
             
-            // 切换正文内容
             enContent.forEach(el => el.style.display = 'none');
             zhContent.forEach(el => el.style.display = 'block');
 
@@ -658,30 +691,25 @@
             texts = textsEN;
             langToggle.textContent = "EN / CN";
 
-            // 切换正文内容
             enContent.forEach(el => el.style.display = 'block');
             zhContent.forEach(el => el.style.display = 'none');
         }
         
-        // 重置打字机
         textIdx = 0; charIdx = 0; isDeleting = false;
         
-        // 如果对话框开着，强制关闭以防数据错乱
         if(rpgDialogue.classList.contains('active')) closeDialogue();
         
-        // --- 🤖 机器人提示语逻辑修改 ---
-        // 1. 立即显示反馈
+        // --- 🤖 机器人提示语逻辑 ---
         const feedbackText = currentLang === 'zh' ? "系统语言已切换" : "Language Switched";
         botSpeech.textContent = feedbackText;
         botContainer.classList.add('speaking');
 
-        // 2. 清除之前的定时器，防止提前关闭
         if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
 
-        // 3. 设置一个新的定时器：1.5秒后，自动切换成“向导提示词”并停留很久 (60秒)
+        // 1.5秒后显示引导语
         botContainer.speechTimer = setTimeout(() => {
             const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
-            botSay(guideText, 60000); // 60秒超长待机
+            botSay(guideText, 60000); 
         }, 1500); 
       });
 
@@ -733,6 +761,9 @@
       function showDialogueNode(nodeKey) {
         if(nodeKey === 'close') { 
             closeDialogue(); 
+            // 🔥 这里添加：对话结束后，给机器人添加 .interaction-done 类
+            botContainer.classList.add('interaction-done');
+            
             const byeText = currentLang === 'en' ? "Nice chatting with you. Have a good day!" : "很高兴与你交谈。祝你今天愉快！";
             botSay(byeText, 3600); 
             return; 
@@ -783,7 +814,7 @@
         });
       }
  
-      // 🔥 修改：初始加载时显示提示语，并持续 60 秒
+      // 初始加载时显示提示语
       setTimeout(() => {
           const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
           botSay(guideText, 60000); 
