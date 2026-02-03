@@ -260,7 +260,7 @@
  
     /* --- [手机端适配 - 左右钉死版] --- */
     @media (max-width: 768px) { 
-      /* ▼▼▼ 新增：让机器人气泡在手机上自动换行 & 完美定位 ▼▼▼ */
+      /* 新增：让机器人气泡在手机上自动换行 & 完美定位 */
       #bot-speech {
         white-space: normal !important;  /* 核心：允许文字换行 */
         max-width: 200px !important;     /* 限制最大宽度，变成窄条 */
@@ -285,7 +285,7 @@
       #bot-container.speaking #bot-speech {
         transform: translateX(0) scale(1) !important;
       }
-      /* ▲▲▲ 新增结束 ▲▲▲ */
+      /* ▲新增结束 ▲ */
 
       .cursor-dot, .cursor-outline { display: none; } 
       .layout-wrapper { margin-top: 40px !important; }
@@ -565,7 +565,7 @@
       }
 
       function showDialogueNode(nodeKey) {
-        if(nodeKey === 'close') { closeDialogue(); botSay("Nice chatting with you. Have a good day!", 4600); return; }   // 修改了文字内容，并将时间延长到了 4600 毫秒 (4.6秒)
+        if(nodeKey === 'close') { closeDialogue(); botSay("Nice chatting with you. Have a good day!", 3600); return; }   // 修改了文字内容，并将时间延长到了 3600 毫秒 (3.6秒)
        
         const node = dialogData[nodeKey];
         if(!node) return;
@@ -604,14 +604,18 @@
       if(botContainer) {
         botContainer.addEventListener('click', (e) => {
           e.stopPropagation();
+
+          // ▼▼▼ 新增：只要点击机器人，立刻清除头顶的 "Click me" 提示 ▼▼▼
+          if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); // 停止倒计时
+          botSpeech.textContent = "";                // 清空文字
+          botContainer.classList.remove('speaking'); // 立即隐藏气泡
+          // ▲▲▲ 新增结束 ▲▲▲
+
+          // 原有的开关对话框逻辑
           if(rpgDialogue.classList.contains('active')) closeDialogue();
           else openDialogue();
         });
       }
-      if(rpgClose) rpgClose.addEventListener('click', (e) => { e.stopPropagation(); closeDialogue(); });
-      document.addEventListener('click', (e) => {
-        if(rpgDialogue.classList.contains('active') && !botContainer.contains(e.target)) closeDialogue();
-      });
 
       // [修改点] 停留时间改为 10秒
       setTimeout(() => botSay("Click me for guide!", 10000), 1000);
