@@ -58,8 +58,17 @@
     .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
  
     /* --- 4. 机器人核心 --- */
-    #bot-container { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); width: 120px; height: 70px; z-index: 9999; cursor: pointer; opacity: 0; animation: botEnter 0.5s ease-out forwards; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+    #bot-container { 
+      position: absolute; top: 70px; left: 50%; 
+      transform: translateX(-50%); width: 120px; height: 70px; 
+      z-index: 9999; cursor: pointer; 
+      /* 🔥 关键修改：透明度直接为1，删除了 animation: botEnter */
+      opacity: 1; 
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+    }
     #bot-container.fixed-mode { position: fixed !important; top: auto !important; left: auto !important; bottom: 30px !important; right: 30px !important; transform: scale(0.9) !important; opacity: 1 !important; }
+    
+    /* 跳动动画 */
     #bot-container.attention-jump { animation: attention-bounce 0.6s ease infinite alternate; }
     @keyframes attention-bounce { 0% { transform: translateX(-50%) translateY(0) scale(1); } 100% { transform: translateX(-50%) translateY(-15px) scale(1.1); } }
     #bot-container.fixed-mode.attention-jump { animation: attention-bounce-fixed 0.6s ease infinite alternate; }
@@ -469,7 +478,7 @@
 
     const dialogData_ZH = {
       "start": {
-        text: "你好啊！我是易连的守护者。由我来保护你的脑机探针。",
+        text: "你好！我是易连的守护者。由我来保护你的脑机探针。",
         options: [ { text: "🚀 开始探索！", next: "root_menu" } ]
       },
       "root_menu": {
@@ -487,7 +496,7 @@
         options: [
           { text: "“零插入力”有什么好处？", next: "zero_force" },
           { text: "通道数能扩展吗？", next: "scalability" },
-          { text: "返回主菜单", next: "root_menu" } 
+          { text: "返回主菜单", next: "root_menu" } 
         ]
       },
       "zero_force": {
@@ -589,7 +598,7 @@
       const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
       document.getElementById('typewriter-text').textContent = display;
       let speed = isDeleting ? 50 : 100;
-      if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
+      if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
       else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
       setTimeout(type, speed);
     }
@@ -614,7 +623,7 @@
       const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
       const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
       const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
-      let modalIsZh = false; 
+      let modalIsZh = false; 
 
       // 0.1秒后显示弹窗
       setTimeout(() => {
@@ -630,17 +639,20 @@
         
         const enTips = ["Click me for guide!", "I'm here to help!"];
         const zhTips = ["我是易连助手", "有问题随时问我！"];
-        const tips = currentLang === 'en' ? enTips : zhTips;
         
-        // 立即显示第一句
-        botSay(tips[tipIndex], 3000); 
+        // 循环执行函数
+        const runCycle = () => {
+           const tips = currentLang === 'en' ? enTips : zhTips;
+           // 显示当前提示语，停留 3000ms
+           botSay(tips[tipIndex], 3000); 
+           // 准备下一句的索引
+           tipIndex = (tipIndex + 1) % 2;
+        };
+
+        runCycle(); // 立即执行第一次
         
-        // 开始循环
-        idleInterval = setInterval(() => {
-            tipIndex = (tipIndex + 1) % 2; // 0 和 1 之间切换
-            const currentTips = currentLang === 'en' ? enTips : zhTips; // 实时获取当前语言
-            botSay(currentTips[tipIndex], 3000);
-        }, 3000);
+        // 每 3.5 秒执行一次 (留出 0.5 秒的气泡消失动画时间)
+        idleInterval = setInterval(runCycle, 3500);
       }
 
       function closeModal() {
@@ -648,7 +660,7 @@
         
         if (modalIsZh) {
           if (currentLang !== 'zh') {
-             langToggle.click(); 
+             langToggle.click(); 
           }
         } else {
           if (currentLang === 'zh') {
@@ -657,7 +669,7 @@
         }
 
         setTimeout(() => {
-            botContainer.classList.add('attention-jump'); 
+            botContainer.classList.add('attention-jump'); 
             
             // 🔥 这里修改：不再只说一句话，而是开始循环
             startIdleTips();
@@ -671,8 +683,8 @@
       modalKeepDarkBtn.addEventListener('click', closeModal);
       
       modalSwitchLightBtn.addEventListener('click', () => {
-        themeToggle.click(); 
-        closeModal();        
+        themeToggle.click(); 
+        closeModal();        
       });
 
       // 弹窗内的 Toggle Switch 监听
@@ -684,7 +696,7 @@
 
         if (modalIsZh) {
           enTexts.forEach(el => el.style.display = 'none');
-          zhTexts.forEach(el => el.style.display = 'inline'); 
+          zhTexts.forEach(el => el.style.display = 'inline'); 
         } else {
           zhTexts.forEach(el => el.style.display = 'none');
           enTexts.forEach(el => el.style.display = 'inline');
@@ -701,12 +713,12 @@
         document.body.classList.toggle('light-mode');
         
         if (isLight) {
-          themeToggle.textContent = "🌙"; 
+          themeToggle.textContent = "🌙"; 
           if (vantaEffect) {
             vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
           }
         } else {
-          themeToggle.textContent = "☀️"; 
+          themeToggle.textContent = "☀️"; 
           if (vantaEffect) {
             vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
           }
@@ -719,8 +731,8 @@
 
         if (currentLang === 'en') {
             currentLang = 'zh';
-            dialogData = dialogData_ZH; 
-            texts = textsZH;            
+            dialogData = dialogData_ZH; 
+            texts = textsZH;            
             langToggle.textContent = "中 / 英";
             
             enContent.forEach(el => el.style.display = 'none');
@@ -742,16 +754,14 @@
         
         // 切换语言时，如果对话框没打开，立即更新提示语
         if (!rpgDialogue.classList.contains('active') && idleInterval) {
-             // 不用做额外操作，startIdleTips 里的 interval 会在下一次 tick 自动检测 currentLang
-             // 为了即时反馈，我们重置一下循环
+             // 重置循环以即时刷新语言
              startIdleTips();
         }
       });
 
       let mouseX = window.innerWidth / 2;
       let mouseY = 100;
-      
-      // ... (mousemove logic same as before) ...
+ 
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -779,13 +789,13 @@
         const pb = document.getElementById("progress-bar");
         if(pb) pb.style.width = scrolled + "%";
         if(botContainer && window.innerWidth > 768) {
-          if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
+          if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
           else { botContainer.classList.remove('fixed-mode'); }
         }
       });
  
       function botSay(text, duration = 2000) {
-        if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
+        if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
         botSpeech.textContent = text;
         botContainer.classList.add('speaking');
         if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
@@ -795,13 +805,13 @@
       }
  
       function showDialogueNode(nodeKey) {
-        if(nodeKey === 'close') { 
-            closeDialogue(); 
+        if(nodeKey === 'close') { 
+            closeDialogue(); 
             botContainer.classList.add('interaction-done');
             const byeText = currentLang === 'en' ? "Nice chatting with you. Have a good day!" : "很高兴与你交谈。祝你今天愉快！";
-            botSay(byeText, 3600); 
-            return; 
-        }    
+            botSay(byeText, 3600); 
+            return; 
+        }    
         
         const node = dialogData[nodeKey];
         if(!node) return;
@@ -827,7 +837,7 @@
         if(rpgDialogue.classList.contains('active')) return;
         rpgDialogue.classList.add('active');
         botContainer.classList.add('speaking');
-        botContainer.classList.add('hint-removed'); 
+        botContainer.classList.add('hint-removed'); 
         showDialogueNode('start');
       }
  
@@ -845,17 +855,19 @@
               clearInterval(idleInterval);
               idleInterval = null;
           }
-          if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
-          botSpeech.textContent = "";                  
-          botContainer.classList.remove('speaking'); 
+          if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
+          botSpeech.textContent = "";                  
+          botContainer.classList.remove('speaking'); 
           if(rpgDialogue.classList.contains('active')) closeDialogue();
           else openDialogue();
         });
       }
  
-      // 初始加载时显示提示语 (如果弹窗被绕过或其他情况)
-      // 但现在主要靠 closeModal 触发，这里留作备用或移除均可
-      // setTimeout(() => { ... }, 1000); 
+      // 初始加载时显示提示语
+      setTimeout(() => {
+          const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
+          botSay(guideText, 60000); 
+      }, 1000);
  
       const badges = document.querySelectorAll('.nav-badges a');
       badges.forEach(b => {
