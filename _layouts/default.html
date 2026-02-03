@@ -569,7 +569,7 @@
       const rpgClose = document.querySelector('.rpg-close');
       let typeTimer = null;
 
-      // --- 主题切换逻辑 (新增) ---
+      // --- 主题切换逻辑 (优化版：修复浅色模式看不清背景线条的问题) ---
       const themeToggle = document.getElementById('theme-toggle');
       let isLight = false;
       
@@ -578,21 +578,27 @@
         document.body.classList.toggle('light-mode');
         
         if (isLight) {
-          themeToggle.textContent = "🌙"; // 变成月亮图标
-          // 更新 Vanta 为浅色风格 (白底，深蓝线)
+          // [切换到浅色模式]
+          themeToggle.textContent = "🌙"; 
+          
           if (vantaEffect) {
             vantaEffect.setOptions({
-              backgroundColor: 0xffffff,
-              color: 0x2563eb // 深蓝色，对比度更高
+              color: 0x2563eb,          // ★ 改为深蓝色线条，在亮色背景下更清晰
+              backgroundColor: 0xf1f5f9, // ★ 改为极淡的灰白色，避免纯白吃掉特效
+              points: 12.00,            // 稍微减少点数，保持画面清爽
+              maxDistance: 24.00        // 调整连线距离
             });
           }
         } else {
-          themeToggle.textContent = "☀️"; // 变成太阳图标
-          // 恢复 Vanta 为深色风格
+          // [切换回深色模式]
+          themeToggle.textContent = "☀️"; 
+          
           if (vantaEffect) {
             vantaEffect.setOptions({
-              backgroundColor: 0x0a0a0f,
-              color: 0x3b82f6
+              color: 0x3b82f6,          // 恢复原来的亮蓝色
+              backgroundColor: 0x0a0a0f, // 恢复原来的深黑背景
+              points: 18.00,            // 恢复原参数
+              maxDistance: 28.00        // 恢复原参数
             });
           }
         }
