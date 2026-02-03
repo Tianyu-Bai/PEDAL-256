@@ -271,19 +271,11 @@
       margin: auto; 
       max-height: 90vh; overflow-y: auto; 
       transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative; /* 关键：为右上角按钮定位 */
+      position: relative; /* 关键：为右上角开关定位 */
+      padding-bottom: 50px; /* 底部预留空间给开关 */
     }
     .welcome-modal.show .modal-content { transform: scale(1); }
     
-    /* 弹窗内语言切换按钮 */
-    .modal-lang-btn {
-      position: absolute; top: 15px; right: 20px;
-      font-size: 0.8rem; color: #94a3b8; cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 4px 8px; border-radius: 12px; transition: all 0.2s;
-    }
-    .modal-lang-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-
     .modal-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; font-weight: 600; }
     .modal-body { font-size: 1rem; color: #cbd5e1; margin-bottom: 25px; line-height: 1.6; }
     
@@ -299,6 +291,29 @@
     .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
     .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
+
+    /* 🔥 右下角语言切换开关 (Toggle Switch) */
+    .modal-lang-switch-container {
+      position: absolute; bottom: 15px; right: 20px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.8rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace;
+    }
+    /* 开关本体 */
+    .switch {
+      position: relative; display: inline-block; width: 40px; height: 20px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #475569; transition: .4s; border-radius: 20px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px;
+      background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #3b82f6; }
+    input:focus + .slider { box-shadow: 0 0 1px #3b82f6; }
+    input:checked + .slider:before { transform: translateX(20px); }
 
     @media (max-width: 768px) { 
       #bot-speech {
@@ -331,8 +346,7 @@
  <body>
   <div id="welcome-modal" class="welcome-modal">
     <div class="modal-content">
-      <div id="modal-lang-toggle" class="modal-lang-btn" title="Switch to Chinese">🇨🇳 中文</div>
-
+      
       <div class="modal-title">
         <span class="m-en">👋 Welcome!</span>
         <span class="m-zh">👋 欢迎访问！</span>
@@ -363,6 +377,16 @@
           <span class="m-zh">☀️ 切换到浅色</span>
         </button>
       </div>
+
+      <div class="modal-lang-switch-container">
+        <span>EN</span>
+        <label class="switch">
+          <input type="checkbox" id="modal-lang-toggle-checkbox">
+          <span class="slider round"></span>
+        </label>
+        <span>CN</span>
+      </div>
+
     </div>
   </div>
 
@@ -658,63 +682,60 @@
       const welcomeModal = document.getElementById('welcome-modal');
       const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
       const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
-      const modalLangToggle = document.getElementById('modal-lang-toggle');
-      let modalIsZh = false; // 记录弹窗内的语言状态
+      const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
+      let modalIsZh = false; 
 
       // 0.5秒后显示弹窗
       setTimeout(() => {
         welcomeModal.classList.add('show');
       }, 500);
 
-      // 关闭弹窗函数
       function closeModal() {
         welcomeModal.classList.remove('show');
         
-        // 🔥 关键逻辑：如果弹窗内选了中文，关闭时同步到主页
+        // 关键逻辑：如果弹窗内开关切到了中文 (checked=true)，则同步主页
         if (modalIsZh) {
-          // 只有当主页还没切到中文时，才触发切换
           if (currentLang !== 'zh') {
-             langToggle.click(); // 触发主页语言切换
+             langToggle.click(); // 模拟点击主页语言切换按钮
+          }
+        } else {
+          // 如果开关是英文，但主页是中文（不太可能发生，但为了严谨），也切回英文
+          if (currentLang === 'zh') {
+             langToggle.click();
           }
         }
 
-        // 弹窗关闭后，触发机器人引导动画
         setTimeout(() => {
-            botContainer.classList.add('attention-jump'); // 开始跳动
+            botContainer.classList.add('attention-jump');
             const guideText = currentLang === 'en' ? "I'm here to help!" : "有问题问我！";
             botSay(guideText, 5000);
-            // 5秒后停止跳动
             setTimeout(() => {
                 botContainer.classList.remove('attention-jump');
             }, 5000);
         }, 500);
       }
 
-      // 绑定按钮事件
       modalKeepDarkBtn.addEventListener('click', closeModal);
       
       modalSwitchLightBtn.addEventListener('click', () => {
-        themeToggle.click(); // 触发主题切换
-        closeModal();        // 也会触发上面的语言同步逻辑
+        themeToggle.click(); 
+        closeModal();        
       });
 
-      // 弹窗内部语言切换
-      modalLangToggle.addEventListener('click', () => {
+      // 弹窗内的 Toggle Switch 监听
+      modalLangCheckbox.addEventListener('change', () => {
         const enTexts = document.querySelectorAll('.m-en');
         const zhTexts = document.querySelectorAll('.m-zh');
         
-        modalIsZh = !modalIsZh; // 切换状态
+        // checkbox checked = 中文
+        modalIsZh = modalLangCheckbox.checked;
 
         if (modalIsZh) {
-          // 切到中文
           enTexts.forEach(el => el.style.display = 'none');
           zhTexts.forEach(el => el.style.display = 'inline'); 
-          modalLangToggle.textContent = "🇺🇸 English"; 
         } else {
-          // 切回英文
           zhTexts.forEach(el => el.style.display = 'none');
           enTexts.forEach(el => el.style.display = 'inline');
-          modalLangToggle.textContent = "🇨🇳 中文"; 
         }
       });
 
@@ -723,7 +744,6 @@
       const langToggle = document.getElementById('lang-toggle');
       let isLight = false;
        
-      // 主题切换
       themeToggle.addEventListener('click', () => {
         isLight = !isLight;
         document.body.classList.toggle('light-mode');
@@ -741,19 +761,16 @@
         }
       });
 
-      // 语言切换
       langToggle.addEventListener('click', () => {
-        // 获取所有双语内容区块
         const enContent = document.querySelectorAll('.lang-en');
         const zhContent = document.querySelectorAll('.lang-zh');
 
         if (currentLang === 'en') {
             currentLang = 'zh';
-            dialogData = dialogData_ZH; // 切换机器人数据
-            texts = textsZH;            // 切换打字机文本
+            dialogData = dialogData_ZH; 
+            texts = textsZH;            
             langToggle.textContent = "中 / 英";
             
-            // 切换正文内容
             enContent.forEach(el => el.style.display = 'none');
             zhContent.forEach(el => el.style.display = 'block');
 
@@ -763,25 +780,20 @@
             texts = textsEN;
             langToggle.textContent = "EN / CN";
 
-            // 切换正文内容
             enContent.forEach(el => el.style.display = 'block');
             zhContent.forEach(el => el.style.display = 'none');
         }
         
-        // 重置打字机
         textIdx = 0; charIdx = 0; isDeleting = false;
         
-        // 如果对话框开着，强制关闭以防数据错乱
         if(rpgDialogue.classList.contains('active')) closeDialogue();
         
-        // --- 🤖 机器人提示语逻辑修改 ---
         const feedbackText = currentLang === 'zh' ? "系统语言已切换" : "Language Switched";
         botSpeech.textContent = feedbackText;
         botContainer.classList.add('speaking');
 
         if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
 
-        // 1.5秒后显示引导语并保持
         botContainer.speechTimer = setTimeout(() => {
             const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
             botSay(guideText, 60000); 
@@ -836,9 +848,7 @@
       function showDialogueNode(nodeKey) {
         if(nodeKey === 'close') { 
             closeDialogue(); 
-            // 🔥 这里添加：对话结束后，给机器人添加 .interaction-done 类
             botContainer.classList.add('interaction-done');
-            
             const byeText = currentLang === 'en' ? "Nice chatting with you. Have a good day!" : "很高兴与你交谈。祝你今天愉快！";
             botSay(byeText, 3600); 
             return; 
