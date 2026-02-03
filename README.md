@@ -43,7 +43,7 @@
 <span id="en-overview"></span>
 ## 📖 Overview
 
-**E-Link** (Elastomer Interconnection-based connector) is an open-source, high-density connector system. It offers a robust, scalable interface for flexible neural probes, specifically optimized for long-term use in freely moving animals.
+**E-Link** (Elastomer Interconnection-based connector) is an open-source, miniature pedestal connector system based on elastomer interconnection. It provides a robust, scalable interface for flexible neural probes, specifically engineered for chronic applications in freely moving animals.
 <div align="center">
  <br>
  <img src="Images/001.PNG" alt="PEDAL-256 Exploded View" width="750">
@@ -350,7 +350,7 @@ This project is open-source and available under the **MIT License**. Click the b
 <span id="cn-overview"></span>
 ## 📖 概览
 
-**E-Link易连**，一种基于弹性导电体互连的用于高密度神经记录的连接器。它提供了一个紧凑的接口大小，用于将薄膜探针连接到自由活动动物的头部放大器（Headstage）。
+**E-Link易连**，是一款基于弹性体互连技术（Elastomer Interconnection）的开源微型基座连接系统。它为柔性神经探针提供了稳固且可扩展的接口，专为自由活动动物的长期慢性实验而优化设计
 
 <div align="center">
   <br>
@@ -368,7 +368,7 @@ This project is open-source and available under the **MIT License**. Click the b
 ---
 
 <span id="cn-specs"></span>
-### 📊 快速规格参数
+### 📊 规格参数
 
 <div align="center">
   <table style="margin-left: auto; margin-right: auto; width: 80%; text-align: center; border-collapse: collapse; border: 1px solid #e1e4e8;">
