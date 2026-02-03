@@ -272,7 +272,8 @@
       max-height: 90vh; overflow-y: auto; 
       transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: relative; /* 关键：为右下角开关定位 */
-      padding-bottom: 70px; /* 🔥 增加底部 padding，给开关留足空间 */
+      /* 🔥 重点修改：加大底部 Padding，给开关和水印留出垂直空间，避免重叠 */
+      padding-bottom: 120px; 
     }
     .welcome-modal.show .modal-content { transform: scale(1); }
     
@@ -292,17 +293,21 @@
     .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
 
-    /* 🔥 右下角语言切换开关 */
+    /* 🔥 修正：居中的语言切换开关 */
     .modal-lang-switch-container {
-      position: absolute; bottom: 20px; right: 25px;
-      display: flex; flex-direction: column; align-items: flex-end; /* 右对齐 */
+      position: absolute; 
+      bottom: 50px; /* 向上提，给下面的水印留位置 */
+      left: 50%;
+      transform: translateX(-50%); /* 绝对水平居中 */
+      display: flex; flex-direction: column; align-items: center; /* 内部内容也居中 */
       gap: 4px;
+      width: 100%; /* 确保能占满宽度进行居中 */
     }
     .lang-title {
       font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;
     }
     .lang-row {
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 8px; justify-content: center;
       font-size: 0.85rem; color: #cbd5e1; font-family: 'JetBrains Mono', monospace;
     }
     
@@ -323,10 +328,14 @@
     input:focus + .slider { box-shadow: 0 0 1px #3b82f6; }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* 🔥 左下角水印 */
+    /* 🔥 修正：居中的水印，放在最底部 */
     .modal-watermark {
-      position: absolute; bottom: 20px; left: 25px;
-      font-size: 0.7rem; color: #475569; font-family: 'JetBrains Mono', monospace; pointer-events: none;
+      position: absolute; 
+      bottom: 15px; /* 贴近底部 */
+      left: 0; width: 100%; /* 占满宽度 */
+      text-align: center; /* 文字居中 */
+      font-size: 0.65rem; color: #475569; font-family: 'JetBrains Mono', monospace; pointer-events: none;
+      opacity: 0.7;
     }
 
     @media (max-width: 768px) { 
@@ -392,11 +401,6 @@
         </button>
       </div>
 
-      <div class="modal-watermark">
-        <span class="m-en">Designed & Coded by Tianyu Bai © 2026</span>
-        <span class="m-zh">原创设计与开发：Tianyu Bai © 2026</span>
-      </div>
-
       <div class="modal-lang-switch-container">
         <span class="lang-title">Language / 语言</span>
         <div class="lang-row">
@@ -407,6 +411,11 @@
           </label>
           <span>简体中文</span>
         </div>
+      </div>
+
+      <div class="modal-watermark">
+        <span class="m-en">Webpage Designed by Tianyu Bai © 2026</span>
+        <span class="m-zh">本网页由 Tianyu Bai 设计开发 © 2026</span>
       </div>
 
     </div>
@@ -680,7 +689,7 @@
       const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
       document.getElementById('typewriter-text').textContent = display;
       let speed = isDeleting ? 50 : 100;
-      if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
+      if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
       else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
       setTimeout(type, speed);
     }
