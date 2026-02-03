@@ -52,9 +52,16 @@
     #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #60a5fa); width: 0%; z-index: 99999; transition: width 0.1s; }
  
     /* --- 2. 背景 --- */
-    #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; }
+    #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; 
+   animation: bg-breathing 8s infinite ease-in-out;}
+   
+   /* 呼吸动画：通过透明度微调明暗 */
+@keyframes bg-breathing {
+  0%, 100% { opacity: 0.85; }/* 稍微低一点，让暗处更深 */
+  50% { opacity: 1; }/* 亮处维持原样 */
+}
     #vanta-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 15, 0.4) 100%); pointer-events: none; transition: background 0.5s ease; }
- 
+
     /* --- 3. 布局 --- */
     .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
  
@@ -588,6 +595,24 @@
       minHeight: 200.00, minWidth: 200.00, scale: 1.00, scaleMobile: 1.00,
       color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00, spacing: 16.00, showDots: true
     });
+         /* --- 关键呼吸感调节 --- */
+       points: 12.00,        // 降低点数：点越少，明暗对比越强烈
+       maxDistance: 24.00,   // 增大距离：线条连接和断开时的“明灭”感更强
+       spacing: 16.00,       // 增大间距：让画面有更多留白，增加深度感
+       showDots: false,      // 隐藏圆点：只看线条的呼吸
+  
+  /* --- 速度控制 --- */
+  speed: 1.50           // 调至 1.5 左右：这是产生“呼吸感”的黄金频率
+});
+      // 监听主题切换，动态调整背景色以维持呼吸感
+function updateVantaTheme(isLight) {
+  if (vantaEffect) {
+    vantaEffect.setOptions({
+      backgroundColor: isLight ? 0xffffff : 0x0a0a0f,
+      color: isLight ? 0x3b82f6 : 0x3b82f6
+    });
+  }
+}
  
     const textsEN = ["Welcome to this webpage！", "Thanks for visiting us!", "Stay tuned!"];
     const textsZH = ["欢迎访问本网页！", "感谢您的关注！", "有空常来看！"];
