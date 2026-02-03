@@ -15,25 +15,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
    
   <style>
-   /* --- 新增：隐藏 GitHub 专用链接 --- */
-    .github-only {
-      display: none !important;
-    }
-   
     /* --- 0. 全局设置 --- */
+    .github-only { display: none !important; }
+   
     body { 
       margin: 0; padding: 0; color: #e0e7ff; 
       font-family: 'Inter', -apple-system, sans-serif; 
       line-height: 1.6; overflow-x: hidden; 
       cursor: none; 
       scrollbar-width: thin; scrollbar-color: #3b82f6 transparent;
-      transition: color 0.5s ease; /* 文字颜色过渡 */
+      transition: color 0.5s ease;
     }
     @media (pointer: coarse) { body { cursor: auto; } }
  
-    img, video, iframe {
-      max-width: 100% !important; height: auto !important; box-sizing: border-box;
-    }
+    img, video, iframe { max-width: 100% !important; height: auto !important; box-sizing: border-box; }
  
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -82,32 +77,21 @@
  
     /* --- 5. 机器人核心 --- */
     #bot-container { 
-      position: absolute; 
-      top: 70px; 
-      left: 50%; 
-      transform: translateX(-50%); 
-      width: 120px; height: 70px; 
-      z-index: 9999; cursor: pointer; 
-      opacity: 0; 
+      position: absolute; top: 70px; left: 50%; 
+      transform: translateX(-50%); width: 120px; height: 70px; 
+      z-index: 9999; cursor: pointer; opacity: 0; 
       animation: botEnter 0.5s ease-out forwards;
       transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
     }
-
     #bot-container.fixed-mode {
-      position: fixed !important;
-      top: auto !important;
-      left: auto !important;
-      bottom: 30px !important;
-      right: 30px !important;
-      transform: scale(0.9) !important; 
-      opacity: 1 !important;
+      position: fixed !important; top: auto !important; left: auto !important;
+      bottom: 30px !important; right: 30px !important;
+      transform: scale(0.9) !important; opacity: 1 !important;
     }
 
-    /* 紫色光圈 */
     .pulse-ring {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 100px; height: 100px;
-      border-radius: 50%; 
+      width: 100px; height: 100px; border-radius: 50%; 
       border: 2px solid rgba(168, 85, 247, 0.6); 
       opacity: 0; z-index: -1; animation: pulse-ring-anim 3s infinite; pointer-events: none;
     }
@@ -125,23 +109,17 @@
     .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
     
     #bot-container.speaking .bot-eye { 
-      background: transparent; 
-      border: none;
-      box-shadow: none; 
-      width: 22px; height: 12px;
-      border-top: 3px solid #3b82f6; 
-      border-radius: 22px 22px 0 0; 
-      margin-top: 8px;
+      background: transparent; border: none; box-shadow: none; 
+      width: 22px; height: 12px; border-top: 3px solid #3b82f6; 
+      border-radius: 22px 22px 0 0; margin-top: 8px;
     }
-    #bot-container.speaking .bot-pupil, 
-    #bot-container.speaking .bot-lid { opacity: 0; }
+    #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
 
     .bot-mouth {
       position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
       width: 6px; height: 6px; background: #3b82f6; border-radius: 4px;
       opacity: 0; transition: all 0.2s;
     }
-    
     #bot-container.speaking .bot-mouth {
       opacity: 1; width: 14px; background: transparent; border: 2px solid #3b82f6;
       animation: mouth-talk 0.25s infinite alternate; 
@@ -171,8 +149,7 @@
 
     /* --- RPG 互动对话框 --- */
     #rpg-dialogue {
-      position: absolute;
-      top: 65px; left: 50%;
+      position: absolute; top: 65px; left: 50%;
       transform: translateX(-50%) translateY(20px);
       width: 600px; max-width: 90vw;
       background: rgba(15, 23, 42, 0.95);
@@ -186,8 +163,7 @@
     #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
     
     #bot-container.fixed-mode #rpg-dialogue {
-        top: auto; bottom: 80px; 
-        left: auto; right: 0; 
+        top: auto; bottom: 80px; left: auto; right: 0; 
         transform: translateY(20px);
     }
     #bot-container.fixed-mode #rpg-dialogue.active { transform: translateY(0); }
@@ -205,7 +181,7 @@
     .rpg-close { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #475569; cursor: pointer; }
     .rpg-close:hover { color: #fff; }
 
-    /* --- 6. 容器 & 打字机 --- */
+    /* --- 6. 容器 & 徽章 --- */
     .container { 
       position: relative; padding: 60px 80px; 
       background: rgba(255, 255, 255, 0.05); 
@@ -213,8 +189,7 @@
       border-radius: 20px; box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15); 
       border: 1px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #3b82f6; 
       opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; z-index: 1;
-      transform-style: preserve-3d; transition: transform 0.1s ease-out; 
-      overflow: hidden; 
+      transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; 
     }
     .container::before {
       content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -222,162 +197,114 @@
       z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.5s;
     }
     .container:hover::before { opacity: 1; }
+    
     #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
     #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
     #main_content tr:first-child, #main_content thead tr { background: rgba(30, 41, 59, 0.8) !important; }
     #main_content th { color: #60a5fa; font-weight: 600; }
+    
     .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
     .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
  
-    /* --- 7. Badge 样式 --- */
     .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
     .nav-badges a { opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; position: relative; z-index: 2; }
     .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
     .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
     .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
       
-    /* --- 8. 主题切换按钮 --- */
-    #theme-toggle {
+    /* --- 8. 功能按钮组 (右上角) --- */
+    .controls-container {
       position: fixed; top: 20px; right: 20px;
+      display: flex; gap: 15px; z-index: 10000;
+    }
+    .ctrl-btn {
       width: 40px; height: 40px;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       display: flex; justify-content: center; align-items: center;
-      cursor: pointer; z-index: 10000;
+      cursor: pointer;
       backdrop-filter: blur(10px);
       transition: all 0.3s ease;
       font-size: 1.2rem;
+      user-select: none;
     }
-    #theme-toggle:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+    .ctrl-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+    
+    /* 语言按钮专属样式 */
+    #lang-toggle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: bold;
+      width: auto; padding: 0 10px; border-radius: 20px; /* 椭圆形 */
+    }
 
-    /* --- 9. 浅色模式样式 overrides --- */
-    body.light-mode {
-      color: #1e293b; /* 深灰文字 */
-    }
-    body.light-mode #vanta-bg::after {
-      background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.6) 100%);
-    }
-    body.light-mode .container {
-      background: rgba(255, 255, 255, 0.65); /* 浅色半透明背景 */
-      border-color: rgba(0, 0, 0, 0.1);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-    }
-    body.light-mode #rpg-dialogue {
-      background: rgba(255, 255, 255, 0.95);
-      border-color: #cbd5e1;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    }
+    /* --- 9. 浅色模式适配 --- */
+    body.light-mode { color: #1e293b; }
+    body.light-mode #vanta-bg::after { background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.6) 100%); }
+    body.light-mode .container { background: rgba(255, 255, 255, 0.65); border-color: rgba(0, 0, 0, 0.1); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05); }
+    body.light-mode #rpg-dialogue { background: rgba(255, 255, 255, 0.95); border-color: #cbd5e1; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
     body.light-mode #rpg-text { color: #334155; }
-    body.light-mode .rpg-btn {
-      background: rgba(37, 99, 235, 0.1);
-      color: #2563eb;
-      border-color: rgba(37, 99, 235, 0.2);
-    }
-    body.light-mode .rpg-btn:hover {
-      background: rgba(37, 99, 235, 0.2);
-      color: #1d4ed8;
-    }
-    body.light-mode #bot-speech {
-      background: rgba(255, 255, 255, 0.95);
-      color: #1e293b;
-      border-color: #cbd5e1;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
+    body.light-mode .rpg-btn { background: rgba(37, 99, 235, 0.1); color: #2563eb; border-color: rgba(37, 99, 235, 0.2); }
+    body.light-mode .rpg-btn:hover { background: rgba(37, 99, 235, 0.2); color: #1d4ed8; }
+    body.light-mode #bot-speech { background: rgba(255, 255, 255, 0.95); color: #1e293b; border-color: #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     body.light-mode .typewriter-container { color: #2563eb; }
     body.light-mode #main_content th { color: #2563eb; }
     body.light-mode #main_content td { border-color: rgba(0,0,0,0.1); }
     body.light-mode .rpg-close { color: #94a3b8; }
     body.light-mode .rpg-close:hover { color: #ef4444; }
+    body.light-mode .ctrl-btn { background: rgba(0, 0, 0, 0.05); border-color: rgba(0, 0, 0, 0.1); color: #334155; }
+    body.light-mode .ctrl-btn:hover { background: rgba(0, 0, 0, 0.1); }
+    
+    /* 浅色模式下图片标题适配 */
+    .img-caption { color: #3b82f6; } /* 默认蓝色，黑白通吃 */
 
-    /* --- 动画库 --- */
+    /* 动画定义 */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes float-bot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     @keyframes blink { 0%, 48%, 52%, 100% { height: 0%; } 50% { height: 100%; } }
     @keyframes botEnter { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
     @keyframes blink-cursor { from, to { opacity: 1; } 50% { opacity: 0; } }
-    @keyframes pulse-bg { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
-    @keyframes ripple-wave { 0% { transform: scale(1); } 30% { transform: scale(1.15) translateY(-5px); } 100% { transform: scale(1); } }
     @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } }
     @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
-    
-    /* 嘴巴动效 */
     @keyframes mouth-talk { 0% { height: 2px; } 100% { height: 8px; border-radius: 50%; } }
  
-    /* --- [手机端适配 - 左右钉死版] --- */
+    /* --- 移动端适配 --- */
     @media (max-width: 768px) { 
-      /* 新增：让机器人气泡在手机上自动换行 & 完美定位 */
       #bot-speech {
-        white-space: normal !important;  /* 核心：允许文字换行 */
-        max-width: 200px !important;     /* 限制最大宽度，变成窄条 */
-        width: max-content !important;   /* 宽度根据文字自适应 */
-        height: auto !important;         /* 高度自适应 */
-        line-height: 1.5;                /* 增加行高，阅读更舒适 */
-        
-        /* 位置调整：紧贴机器人右侧，防止超出屏幕 */
-        left: auto !important;
-        right: 0 !important;
-        top: -55px !important;           /* 稍微往上提一点点，给多行文字留空间 */
-        
-        /* 气泡小尾巴指向右下角（指向机器人头顶） */
-        border-radius: 12px 12px 0 12px !important; 
-        
-        /* ★重要：重置 PC 端的位移，但保留缩放动画的基础 */
-        transform: translateX(0) scale(0) !important; 
-        transform-origin: bottom right !important; /* 动画从右下角冒出来 */
+        white-space: normal !important; max-width: 200px !important; width: max-content !important; height: auto !important; line-height: 1.5;
+        left: auto !important; right: 0 !important; top: -55px !important; border-radius: 12px 12px 0 12px !important; 
+        transform: translateX(0) scale(0) !important; transform-origin: bottom right !important; 
       }
-
-      /* 手机端说话时的状态：确保它能弹出来 */
-      #bot-container.speaking #bot-speech {
-        transform: translateX(0) scale(1) !important;
-      }
+      #bot-container.speaking #bot-speech { transform: translateX(0) scale(1) !important; }
 
       .cursor-dot, .cursor-outline { display: none; } 
-      
-      /* ★★★ 关键点：保持原有手机端布局位置不变 ★★★ */
       .layout-wrapper { margin-top: 40px !important; }
+      .controls-container { top: 15px; right: 15px; gap: 8px; }
+      .ctrl-btn { width: 35px; height: 35px; font-size: 1rem; }
+      #lang-toggle { font-size: 0.7rem; padding: 0 8px; }
 
       #bot-container { 
-        display: block !important;
-        position: fixed !important;
-        top: auto !important; left: auto !important;
-        right: 20px !important; bottom: 30px !important; 
-        transform: scale(0.85) translateX(0) !important;
-        opacity: 1 !important; 
-        animation: none !important;
+        display: block !important; position: fixed !important; top: auto !important; left: auto !important;
+        right: 20px !important; bottom: 30px !important; transform: scale(0.85) translateX(0) !important;
+        opacity: 1 !important; animation: none !important;
       }
-      
-      /* 修复对话框在手机上的位置 */
       #bot-container #rpg-dialogue {
-        position: fixed !important;
-        top: auto !important; 
-        bottom: 100px !important;
-        left: 10px !important; 
-        right: 10px !important;
-        width: auto !important;
-        max-width: none !important;
-        transform: translateY(10px) !important;
+        position: fixed !important; top: auto !important; bottom: 100px !important; left: 10px !important; right: 10px !important;
+        width: auto !important; max-width: none !important; transform: translateY(10px) !important;
       }
-      
-      #bot-container #rpg-dialogue.active {
-        transform: translateY(0) !important;
-      }
-
+      #bot-container #rpg-dialogue.active { transform: translateY(0) !important; }
       .container { padding: 30px 20px; } 
       #main_content { overflow-x: auto; }
-      
-      /* 手机端按钮微调：稍微变小，防止挡住太多内容 */
-      #theme-toggle {
-        top: 15px; right: 15px;
-        width: 35px; height: 35px;
-        font-size: 1rem;
-      }
     }
   </style>
  </head>
  
  <body>
-  <div id="theme-toggle" title="Switch Theme">☀️</div>
+  <div class="controls-container">
+    <div id="lang-toggle" class="ctrl-btn" title="Switch Language">EN/CN</div>
+    <div id="theme-toggle" class="ctrl-btn" title="Switch Theme">☀️</div>
+  </div>
 
   <div class="cursor-dot"></div>
   <div class="cursor-outline"></div>
@@ -419,16 +346,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
   <script>
-    const dialogData = {
-      // --- 1. Opening Screen (Greeting) ---
+    // --- 🌍 双语数据源 ---
+    const dialogData_EN = {
       "start": {
         text: "Hi! I'm the Connector Guardian. I protect your neural interfaces.",
-        options: [
-          { text: "🚀 Let's start!", next: "root_menu" } // 唯一的入口按钮
-        ]
+        options: [ { text: "🚀 Let's start!", next: "root_menu" } ]
       },
-
-      // --- 2. Main Hub (The 5 Options) ---
       "root_menu": {
         text: "Select a category to inspect:",
         options: [
@@ -439,8 +362,6 @@
           { text: "Just browsing", next: "close" }
         ]
       },
-
-      // --- Branch 1: Innovation & Mechanics ---
       "innovation": {
         text: "I feature a novel elastomeric interposer. This means NO precise alignment is needed and ZERO insertion force.",
         options: [
@@ -457,8 +378,6 @@
         text: "Yes! The fine-pitch elastomer allows scaling to 1024 channels within the same 25mm footprint. I am future-proof.",
         options: [ { text: "Got it, Back.", next: "innovation" } ]
       },
-
-      // --- Branch 2: Physical & Electrical Specs ---
       "specs_menu": {
         text: "Checking Diagnostics... Which parameter concerns you?",
         options: [
@@ -480,8 +399,6 @@
         text: "Crystal clear. My noise floor is 2.68 ± 0.46 µV RMS, matching the theoretical limit of the Intan chips. No signal degradation.",
         options: [ { text: "Great specs.", next: "specs_menu" } ]
       },
-
-      // --- Branch 3: Reliability & Robustness ---
       "reliability_menu": {
         text: "I am built to last. What is your concern?",
         options: [
@@ -503,8 +420,6 @@
         text: "Low and stable. Contact impedance is consistently between 0.3 kΩ and 0.4 kΩ across the array.",
         options: [ { text: "Acknowledged.", next: "reliability_menu" } ]
       },
-
-      // --- Branch 4: Usage & Fabrication ---
       "usage_menu": {
         text: "Designed for researchers. Ask me about usage:",
         options: [
@@ -526,15 +441,117 @@
         text: "Yes. The low profile fits mechanical commutators, allowing natural behavior without cable twisting.",
         options: [ { text: "Show me the files!", next: "show_badges" } ]
       },
-
-      // --- End State ---
       "show_badges": {
         text: "Scroll to the bottom! 👇 Those icons are your gateway to the Code, Fabrication Files, and Demo Videos.",
         options: [ { text: "Thanks, Guardian!", next: "close" } ]
       }
     };
+
+    const dialogData_ZH = {
+      "start": {
+        text: "你好！我是连接器守护者。我会保护你的神经接口。",
+        options: [ { text: "🚀 开始探索！", next: "root_menu" } ]
+      },
+      "root_menu": {
+        text: "系统就绪。请选择你要查看的类别：",
+        options: [
+          { text: "🌟 核心亮点 (创新性)", next: "innovation" },
+          { text: "📊 规格参数 (重量/噪音)", next: "specs_menu" },
+          { text: "🛡️ 可靠性与耐久度", next: "reliability_menu" },
+          { text: "🔧 使用与兼容性", next: "usage_menu" },
+          { text: "随便看看", next: "close" }
+        ]
+      },
+      "innovation": {
+        text: "我采用了新型弹性体互连技术 (Elastomeric Interposer)。这意味着无需精确对准，且实现了“零插入力”。",
+        options: [
+          { text: "“零插入力”有什么好处？", next: "zero_force" },
+          { text: "通道数能扩展吗？", next: "scalability" },
+          { text: "返回主菜单", next: "root_menu" } 
+        ]
+      },
+      "zero_force": {
+        text: "传统插头需要很大的力，容易弄断脆弱的探针。我的螺纹盖将旋转转化为轻柔的垂直压力，完美保护薄膜探针。",
+        options: [ { text: "很棒的设计！返回。", next: "innovation" } ]
+      },
+      "scalability": {
+        text: "当然！高密度弹性体允许在同样的 25mm 封装内扩展至 1024 通道。我是面向未来的设计。",
+        options: [ { text: "印象深刻。返回。", next: "innovation" } ]
+      },
+      "specs_menu": {
+        text: "正在检查诊断数据... 你关心哪个参数？",
+        options: [
+          { text: "重不重？ (重量)", next: "weight" },
+          { text: "发热吗？ (热学)", next: "thermal" },
+          { text: "信号干净吗？ (噪音)", next: "noise" },
+          { text: "返回主菜单", next: "root_menu" }
+        ]
+      },
+      "weight": {
+        text: "我非常轻。拆卸后仅重 2.8g。即使含外壳，我也比竞品轻 57% (6.6g)，大大减轻了动物的负担。",
+        options: [ { text: "很适合小鼠/大鼠。", next: "specs_menu" } ]
+      },
+      "thermal": {
+        text: "我很冷静。稳态温度仅为 30.5°C，远低于 37°C 的生物阈值。无需主动散热。",
+        options: [ { text: "安全确认。", next: "specs_menu" } ]
+      },
+      "noise": {
+        text: "晶莹剔透。我的本底噪声为 2.68 ± 0.46 µV RMS，达到了 Intan 芯片的理论极限。信号无损耗。",
+        options: [ { text: "参数很强。", next: "specs_menu" } ]
+      },
+      "reliability_menu": {
+        text: "我经久耐用。你担心什么？",
+        options: [
+          { text: "寿命 (插拔次数)", next: "cycles" },
+          { text: "如果对不准怎么办？", next: "misalignment" },
+          { text: "接触电阻？", next: "impedance" },
+          { text: "返回主菜单", next: "root_menu" }
+        ]
+      },
+      "cycles": {
+        text: "已验证 100 次以上的插拔循环，连接良率 >97%。弹性体几乎没有磨损。",
+        options: [ { text: "靠谱。", next: "reliability_menu" } ]
+      },
+      "misalignment": {
+        text: "没问题。弹性体具有“结构冗余”（间距小于焊盘尺寸）。即使径向没对准，依然能稳定连接。",
+        options: [ { text: "容错率很高。", next: "reliability_menu" } ]
+      },
+      "impedance": {
+        text: "低且稳定。整个阵列的接触阻抗始终保持在 0.3 kΩ 到 0.4 kΩ 之间。",
+        options: [ { text: "了解。", next: "reliability_menu" } ]
+      },
+      "usage_menu": {
+        text: "专为科研人员设计。问我关于使用的问题：",
+        options: [
+          { text: "组装困难吗？", next: "assembly" },
+          { text: "兼容什么系统？", next: "system" },
+          { text: "动物能自由活动吗？", next: "animal" },
+          { text: "返回主菜单", next: "root_menu" }
+        ]
+      },
+      "assembly": {
+        text: "很简单。无需专业的微焊接技术。使用标准工具即可“即插即用”。",
+        options: [ { text: "用户友好。", next: "usage_menu" } ]
+      },
+      "system": {
+        text: "完美兼容 Intan RHD 记录系统。支持 64、128 和 256 通道配置。",
+        options: [ { text: "完美。", next: "usage_menu" } ]
+      },
+      "animal": {
+        text: "可以。低剖面设计适配机械换向器 (Commutator)，允许动物自然行为，线缆不打结。",
+        options: [ { text: "给我看文件！", next: "show_badges" } ]
+      },
+      "show_badges": {
+        text: "滑到最下面！👇那些图标是你通往代码、制造文件和演示视频的大门。",
+        options: [ { text: "谢谢守护者！", next: "close" } ]
+      }
+    };
     
-    // 初始化 Vanta (默认暗色)
+    // 默认使用英文
+    let currentLang = 'en';
+    let dialogData = dialogData_EN;
+
+    // 初始化 Vanta
     let vantaEffect = VANTA.NET({
       el: "#vanta-bg",
       mouseControls: true, touchControls: true, gyroControls: false,
@@ -542,7 +559,10 @@
       color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00, spacing: 16.00, showDots: true
     });
  
-    const texts = ["Welcome to this webpage", "Thanks for visiting us!"];
+    const textsEN = ["Welcome to this webpage", "Thanks for visiting us!"];
+    const textsZH = ["欢迎访问本网页", "感谢您的关注！"];
+    let texts = textsEN; // 默认文本
+
     let textIdx = 0, charIdx = 0, isDeleting = false;
     function type() {
       const currentText = texts[textIdx];
@@ -569,39 +589,67 @@
       const rpgClose = document.querySelector('.rpg-close');
       let typeTimer = null;
 
-      // --- 主题切换逻辑 (优化版：修复浅色模式看不清背景线条的问题) ---
+      // --- 切换逻辑 ---
       const themeToggle = document.getElementById('theme-toggle');
+      const langToggle = document.getElementById('lang-toggle');
       let isLight = false;
       
+      // 主题切换
       themeToggle.addEventListener('click', () => {
         isLight = !isLight;
         document.body.classList.toggle('light-mode');
         
         if (isLight) {
-          // [切换到浅色模式]
           themeToggle.textContent = "🌙"; 
-          
           if (vantaEffect) {
-            vantaEffect.setOptions({
-              color: 0x2563eb,          // ★ 改为深蓝色线条，在亮色背景下更清晰
-              backgroundColor: 0xf1f5f9, // ★ 改为极淡的灰白色，避免纯白吃掉特效
-              points: 12.00,            // 稍微减少点数，保持画面清爽
-              maxDistance: 24.00        // 调整连线距离
-            });
+            vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
           }
         } else {
-          // [切换回深色模式]
           themeToggle.textContent = "☀️"; 
-          
           if (vantaEffect) {
-            vantaEffect.setOptions({
-              color: 0x3b82f6,          // 恢复原来的亮蓝色
-              backgroundColor: 0x0a0a0f, // 恢复原来的深黑背景
-              points: 18.00,            // 恢复原参数
-              maxDistance: 28.00        // 恢复原参数
-            });
+            vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
           }
         }
+      });
+
+      // 语言切换
+      langToggle.addEventListener('click', () => {
+        // 获取所有双语内容区块
+        const enContent = document.querySelectorAll('.lang-en');
+        const zhContent = document.querySelectorAll('.lang-zh');
+
+        if (currentLang === 'en') {
+            currentLang = 'zh';
+            dialogData = dialogData_ZH; // 切换机器人数据
+            texts = textsZH;            // 切换打字机文本
+            langToggle.textContent = "中 / 英";
+            botSpeech.textContent = "系统语言已切换：中文"; // 给个反馈
+            
+            // 切换正文内容
+            enContent.forEach(el => el.style.display = 'none');
+            zhContent.forEach(el => el.style.display = 'block');
+
+        } else {
+            currentLang = 'en';
+            dialogData = dialogData_EN;
+            texts = textsEN;
+            langToggle.textContent = "EN / CN";
+            botSpeech.textContent = "System Language: English";
+
+            // 切换正文内容
+            enContent.forEach(el => el.style.display = 'block');
+            zhContent.forEach(el => el.style.display = 'none');
+        }
+        
+        // 重置打字机
+        textIdx = 0; charIdx = 0; isDeleting = false;
+        
+        // 如果对话框开着，强制关闭以防数据错乱
+        if(rpgDialogue.classList.contains('active')) closeDialogue();
+        
+        // 让机器人提示一下
+        botContainer.classList.add('speaking');
+        setTimeout(() => botContainer.classList.remove('speaking'), 1500);
       });
 
       let mouseX = window.innerWidth / 2;
@@ -610,10 +658,8 @@
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        
         if(cursorDot) { cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`; }
         if(cursorOutline) { cursorOutline.animate({ left: `${mouseX}px`, top: `${mouseY}px` }, { duration: 500, fill: "forwards" }); }
- 
         if (window.innerWidth > 768 && container) {
           const rx = (window.innerWidth / 2 - mouseX) / 50;
           const ry = (window.innerHeight / 2 - mouseY) / 50;
@@ -622,7 +668,6 @@
           container.style.setProperty("--mouse-x", `${mouseX - rect.left}px`);
           container.style.setProperty("--mouse-y", `${mouseY - rect.top}px`);
         }
-        
         pupils.forEach(p => {
           const rect = p.parentElement.getBoundingClientRect();
           const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
@@ -636,13 +681,9 @@
         const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
         const pb = document.getElementById("progress-bar");
         if(pb) pb.style.width = scrolled + "%";
- 
         if(botContainer && window.innerWidth > 768) {
-          if(window.scrollY > 200) {
-            botContainer.classList.add('fixed-mode');
-          } else {
-            botContainer.classList.remove('fixed-mode');
-          }
+          if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
+          else { botContainer.classList.remove('fixed-mode'); }
         }
       });
  
@@ -657,7 +698,12 @@
       }
  
       function showDialogueNode(nodeKey) {
-        if(nodeKey === 'close') { closeDialogue(); botSay("Nice chatting with you. Have a good day!", 3600); return; }   
+        if(nodeKey === 'close') { 
+            closeDialogue(); 
+            const byeText = currentLang === 'en' ? "Nice chatting with you. Have a good day!" : "很高兴与你交谈。祝你今天愉快！";
+            botSay(byeText, 3600); 
+            return; 
+        }   
         
         const node = dialogData[nodeKey];
         if(!node) return;
@@ -696,11 +742,9 @@
       if(botContainer) {
         botContainer.addEventListener('click', (e) => {
           e.stopPropagation();
- 
           if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
           botSpeech.textContent = "";                 
           botContainer.classList.remove('speaking'); 
- 
           if(rpgDialogue.classList.contains('active')) closeDialogue();
           else openDialogue();
         });
@@ -713,7 +757,8 @@
         b.addEventListener('mouseenter', () => {
           document.body.classList.add('badge-hovering', 'hovering');
           if(vantaEffect) vantaEffect.setOptions({ color: 0x60a5fa });
-          botSay("Accessing...", 1500);
+          const accessText = currentLang === 'en' ? "Accessing..." : "正在访问...";
+          botSay(accessText, 1500);
         });
         b.addEventListener('mouseleave', () => {
           document.body.classList.remove('badge-hovering', 'hovering');
