@@ -25,7 +25,7 @@
       margin: 0; padding: 0; color: #e0e7ff; 
       font-family: 'Inter', -apple-system, sans-serif; 
       line-height: 1.6; overflow-x: hidden; 
-      cursor: none; 
+      cursor: none; /* 默认页面区域隐藏系统鼠标 */
       scrollbar-width: thin; scrollbar-color: #3b82f6 transparent;
       transition: color 0.5s ease;
     }
@@ -43,11 +43,12 @@
     .cursor-dot, .cursor-outline {
       position: fixed; top: 0; left: 0; 
       transform: translate(-50%, -50%); border-radius: 50%; z-index: 99999; pointer-events: none;
+      /* 🔥 关键优化：给光标添加过渡，让它在消失时更自然 */
+      transition: opacity 0.2s ease, width 0.2s, height 0.2s, background-color 0.2s;
     }
     .cursor-dot { width: 8px; height: 8px; background-color: #3b82f6; }
     .cursor-outline { 
       width: 40px; height: 40px; border: 1px solid rgba(59, 130, 246, 0.5); 
-      transition: width 0.2s, height 0.2s, background-color 0.2s;
     }
     body.hovering .cursor-outline { width: 60px; height: 60px; background-color: rgba(59, 130, 246, 0.1); border-color: transparent; }
  
@@ -258,9 +259,22 @@
       display: flex; justify-content: center; align-items: center;
       opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
       padding: 20px; 
+      /* 🔥 关键修改：鼠标悬停在弹窗上时，恢复系统默认鼠标，解决滞后 */
+      cursor: default !important;
     }
+    .welcome-modal * { cursor: default !important; } /* 子元素也恢复默认 */
+    .welcome-modal .btn-primary, .welcome-modal .btn-secondary, .welcome-modal .slider { 
+        cursor: pointer !important; /* 按钮和开关恢复小手图标 */
+    }
+
     .welcome-modal.show { opacity: 1; pointer-events: auto; }
     
+    /* 🔥 当鼠标悬停在弹窗上时，隐藏那个迟钝的 JS 自定义光标 */
+    .welcome-modal:hover ~ .cursor-dot, 
+    .welcome-modal:hover ~ .cursor-outline {
+        opacity: 0 !important;
+    }
+
     .modal-content {
       background: rgba(30, 41, 59, 0.85); 
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -272,8 +286,7 @@
       max-height: 90vh; overflow-y: auto; 
       transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: relative; /* 关键：为右下角开关定位 */
-      /* 🔥 重点修改：加大底部 Padding，给开关和水印留出垂直空间，避免重叠 */
-      padding-bottom: 120px; 
+      padding-bottom: 70px; /* 🔥 增加底部 padding，给开关留足空间 */
     }
     .welcome-modal.show .modal-content { transform: scale(1); }
     
@@ -285,7 +298,7 @@
 
     .modal-btns { display: flex; flex-direction: column; gap: 10px; }
     .btn-primary, .btn-secondary {
-      padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+      padding: 12px 20px; border-radius: 10px; font-weight: 600; transition: all 0.2s;
       border: none; font-family: inherit;
     }
     .btn-primary { background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
@@ -293,7 +306,7 @@
     .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
 
-    /* 🔥 修正：居中的语言切换开关 */
+    /* 🔥 居中的语言切换开关 */
     .modal-lang-switch-container {
       position: absolute; 
       bottom: 50px; /* 向上提，给下面的水印留位置 */
@@ -301,7 +314,7 @@
       transform: translateX(-50%); /* 绝对水平居中 */
       display: flex; flex-direction: column; align-items: center; /* 内部内容也居中 */
       gap: 4px;
-      width: 100%; /* 确保能占满宽度进行居中 */
+      width: 100%; 
     }
     .lang-title {
       font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;
@@ -328,7 +341,7 @@
     input:focus + .slider { box-shadow: 0 0 1px #3b82f6; }
     input:checked + .slider:before { transform: translateX(20px); }
 
-    /* 🔥 修正：居中的水印，放在最底部 */
+    /* 🔥 居中的水印，放在最底部 */
     .modal-watermark {
       position: absolute; 
       bottom: 15px; /* 贴近底部 */
@@ -362,6 +375,11 @@
       #bot-container #rpg-dialogue.active { transform: translateY(0) !important; }
       .container { padding: 30px 20px; } 
       #main_content { overflow-x: auto; }
+      
+      /* 移动端水印和开关位置调整 */
+      .modal-content { padding-bottom: 90px; }
+      .modal-lang-switch-container { bottom: 15px; right: 15px; }
+      .modal-watermark { bottom: 60px; left: 50%; transform: translateX(-50%); width: 100%; text-align: center; }
     }
   </style>
  </head>
@@ -716,10 +734,10 @@
       const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
       let modalIsZh = false; 
 
-      // 0.5秒后显示弹窗
+      // 0.1秒后显示弹窗 (急速加载)
       setTimeout(() => {
         welcomeModal.classList.add('show');
-      }, 500);
+      }, 100);
 
       function closeModal() {
         welcomeModal.classList.remove('show');
