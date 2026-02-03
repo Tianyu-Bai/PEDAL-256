@@ -349,7 +349,7 @@
 
       // --- 2. Main Hub (The 5 Options) ---
       "root_menu": {
-        text: "System Online. Select a category to inspect:",
+        text: "Select a category to inspect:",
         options: [
           { text: "🌟 What's Special?", next: "innovation" },
           { text: "📊 Specifications (Weight/Noise)", next: "specs_menu" },
@@ -374,7 +374,7 @@
       },
       "scalability": {
         text: "Yes! The fine-pitch elastomer allows scaling to 1024 channels within the same 25mm footprint. I am future-proof.",
-        options: [ { text: "Impressive. Back.", next: "innovation" } ]
+        options: [ { text: "Got it, Back.", next: "innovation" } ]
       },
 
       // --- Branch 2: Physical & Electrical Specs ---
@@ -540,7 +540,7 @@
       }
 
       function showDialogueNode(nodeKey) {
-        if(nodeKey === 'close') { closeDialogue(); botSay("Bye!", 1500); return; }
+        if(nodeKey === 'close') { closeDialogue(); botSay("Nice chatting with you. Have a good day!", 3500); return; }   // 修改了文字内容，并将时间延长到了 3500 毫秒 (3.5秒)
         const node = dialogData[nodeKey];
         if(!node) return;
         rpgOptions.innerHTML = ''; rpgText.textContent = '';
