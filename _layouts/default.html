@@ -271,8 +271,8 @@
       margin: auto; 
       max-height: 90vh; overflow-y: auto; 
       transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative; /* 关键：为右上角开关定位 */
-      padding-bottom: 50px; /* 底部预留空间给开关 */
+      position: relative; /* 关键：为右下角开关定位 */
+      padding-bottom: 70px; /* 🔥 增加底部 padding，给开关留足空间 */
     }
     .welcome-modal.show .modal-content { transform: scale(1); }
     
@@ -292,13 +292,21 @@
     .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
 
-    /* 🔥 右下角语言切换开关 (Toggle Switch) */
+    /* 🔥 右下角语言切换开关 */
     .modal-lang-switch-container {
-      position: absolute; bottom: 15px; right: 20px;
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.8rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace;
+      position: absolute; bottom: 20px; right: 25px;
+      display: flex; flex-direction: column; align-items: flex-end; /* 右对齐 */
+      gap: 4px;
     }
-    /* 开关本体 */
+    .lang-title {
+      font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .lang-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.85rem; color: #cbd5e1; font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* 开关本体样式 */
     .switch {
       position: relative; display: inline-block; width: 40px; height: 20px;
     }
@@ -379,12 +387,15 @@
       </div>
 
       <div class="modal-lang-switch-container">
-        <span>EN</span>
-        <label class="switch">
-          <input type="checkbox" id="modal-lang-toggle-checkbox">
-          <span class="slider round"></span>
-        </label>
-        <span>CN</span>
+        <span class="lang-title">Language / 语言</span>
+        <div class="lang-row">
+          <span>English</span>
+          <label class="switch">
+            <input type="checkbox" id="modal-lang-toggle-checkbox">
+            <span class="slider round"></span>
+          </label>
+          <span>简体中文</span>
+        </div>
       </div>
 
     </div>
