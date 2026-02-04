@@ -139,7 +139,7 @@
     .ctrl-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
     #lang-toggle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: bold; width: auto; padding: 0 10px; border-radius: 20px; }
 
-/* --- ☁️ 护眼柔光模式 (Soft Light Mode) --- */
+/* --- ☁️ 护眼柔光模式 (Soft  Mode) --- */
     body.light-mode { color: #334155; background-color: #ffffff; }
 
     /* 1. 背景遮罩：边缘不再是白色，而是淡灰色，与网页背景融合 */
@@ -162,20 +162,15 @@
     body.light-mode .typewriter-container { color: #2563eb; }
 
     /* 3. 表格修正：填充色调整 */
-    body.light-mode #main_content table { background: #f8fafc; /* 极浅的蓝灰色 (Slate 50) */ }
+    body.light-mode #main_content table { background: #f8fafc;   box-shadow: none;  /* 极浅的蓝灰色 (Slate 50), 去掉可能的深色阴影 */ }
     /* 表头：使用比容器稍深的灰色 (#e2e8f0)，否则会看不清表头范围 */
-    body.light-mode #main_content th { color: #f3f4f6; background: #f3f4f6 !important; border-color: #e5e7eb; }
+    body.light-mode #main_content th { color: #1e293b; background: #e2e8f0 !important; border-color: cbd5e1; }
     /* 表格内容：深色文字，边框加深一点 */
-    body.light-mode #main_content td { border-color: #cbd5e1; color: #0f172a; }
-
-
-
-/* 表格内容：边框颜色减淡，文字使用柔和的深灰 */
-body.light-mode #main_content td { 
-    border-color: #e5e7eb;        /* 与表头一致的中性灰 */
-    color: #4b5563;               /* 稍微降低文字对比度，更护眼 */
-}
-    
+    body.light-mode #main_content td { border-color: #e2e8f0; color: #334155; } /* 深色文字，确保在浅色背景上清晰可见 */
+    body.light-mode #main_content tr { background: transparent !important; /* 强制去掉深色背景 */}
+    /* 增加一个浅色模式下的斑马纹或鼠标悬停效果（可选） */
+    body.light-mode #main_content tr:hover { background: rgba(0, 0, 0, 0.03) !important;}
+    }
 
     body.light-mode .rpg-close { color: #94a3b8; }
     body.light-mode .rpg-close:hover { color: #ef4444; }
