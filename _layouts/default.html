@@ -20,7 +20,7 @@
     .lang-zh { display: none; animation: fadeIn 0.5s ease; }
     .lang-en { display: block; animation: fadeIn 0.5s ease; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-   
+    
     body { 
       margin: 0; padding: 0; color: #e0e7ff; 
       font-family: 'Inter', -apple-system, sans-serif; 
@@ -54,6 +54,17 @@
     #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; }
     #vanta-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 15, 0.4) 100%); pointer-events: none; transition: background 0.5s ease; }
  
+    /* 🔥 新增：流星特效 Canvas 层 */
+    #meteor-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -4; /* 位于 Vanta(-5) 之上，内容之下 */
+        pointer-events: none; /* 确保不影响点击 */
+    }
+
     /* --- 3. 布局 --- */
     .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
  
@@ -62,7 +73,6 @@
       position: absolute; top: 70px; left: 50%; 
       transform: translateX(-50%); width: 120px; height: 70px; 
       z-index: 9999; cursor: pointer; 
-      /* 🔥 关键修改：透明度直接为1，删除了 animation: botEnter */
       opacity: 1; 
       transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
     }
@@ -113,7 +123,7 @@
     .container:hover::before { opacity: 1; }
     #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
     #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
-    #main_content tr { background: rgba(30, 41, 59, 0.8) !important; }   /* ✅ 修改后的代码：只针对 thead (表头) 变色 */
+    #main_content tr { background: rgba(30, 41, 59, 0.8) !important; }    /* ✅ 修改后的代码：只针对 thead (表头) 变色 */
     #main_content th { color: #60a5fa; font-weight: 600; }
     .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
     .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
@@ -122,7 +132,7 @@
     .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
     .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
     .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
-       
+        
     /* --- 按钮 & 模式 --- */
     .controls-container { position: fixed; top: 20px; right: 20px; display: flex; gap: 15px; z-index: 10000; }
     .ctrl-btn { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease; font-size: 1.2rem; user-select: none; }
@@ -162,10 +172,10 @@
 
 /* 表格内容：边框颜色减淡，文字使用柔和的深灰 */
 body.light-mode #main_content td { 
-    border-color: #e5e7eb;       /* 与表头一致的中性灰 */
-    color: #4b5563;              /* 稍微降低文字对比度，更护眼 */
+    border-color: #e5e7eb;        /* 与表头一致的中性灰 */
+    color: #4b5563;               /* 稍微降低文字对比度，更护眼 */
 }
-   
+    
 
     body.light-mode .rpg-close { color: #94a3b8; }
     body.light-mode .rpg-close:hover { color: #ef4444; }
@@ -318,15 +328,15 @@ body.light-mode #main_content td {
       <div class="modal-body">
         <span class="m-en">
          We recommend <b>Dark Mode</b> for a more immersive experience<br>
-          <span style="font-size: 0.85rem; color: #94a3b8;">
-            (Feel free to tailor your view at the top-right corner)
-          </span>
+         <span style="font-size: 0.85rem; color: #94a3b8;">
+           (Feel free to tailor your view at the top-right corner)
+         </span>
         </span>
         <span class="m-zh">
-          为呈现最佳<b>视觉体验</b>，建议保留<b>深色设置</b> <br>
-          <span style="font-size: 0.85rem; color: #94a3b8;">
-            (您可随时通过右上角切换语言主题)
-          </span>
+         为呈现最佳<b>视觉体验</b>，建议保留<b>深色设置</b> <br>
+         <span style="font-size: 0.85rem; color: #94a3b8;">
+           (您可随时通过右上角切换语言主题)
+         </span>
         </span>
       </div>
 
@@ -370,6 +380,8 @@ body.light-mode #main_content td {
   <div class="cursor-outline"></div>
   <div id="progress-bar"></div>
   <div id="vanta-bg"></div>
+
+  <canvas id="meteor-canvas"></canvas>
  
   <div id="bot-container" title="Chat with me!">
     <div class="pulse-ring"></div>
@@ -606,7 +618,7 @@ body.light-mode #main_content td {
         options: [ { text: "谢谢守护者！", next: "close" } ]
       }
     };
-     
+      
     // 默认使用英文
     let currentLang = 'en';
     let dialogData = dialogData_EN;
@@ -642,7 +654,7 @@ body.light-mode #main_content td {
       const pupils = document.querySelectorAll('.bot-pupil');
       const botContainer = document.getElementById('bot-container');
       const botSpeech = document.getElementById('bot-speech');
-       
+        
       const rpgDialogue = document.getElementById('rpg-dialogue');
       const rpgText = document.getElementById('rpg-text');
       const rpgOptions = document.getElementById('rpg-options');
@@ -738,7 +750,7 @@ body.light-mode #main_content td {
       const themeToggle = document.getElementById('theme-toggle');
       const langToggle = document.getElementById('lang-toggle');
       let isLight = false;
-       
+        
       themeToggle.addEventListener('click', () => {
         isLight = !isLight;
         document.body.classList.toggle('light-mode');
@@ -926,7 +938,7 @@ body.light-mode #main_content td {
               idleInterval = null;
           }
           if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
-          botSpeech.textContent = "";                  
+          botSpeech.textContent = "";                   
           botContainer.classList.remove('speaking'); 
           if(rpgDialogue.classList.contains('active')) closeDialogue();
           else openDialogue();
@@ -962,6 +974,124 @@ body.light-mode #main_content td {
           setTimeout(() => window.location.href = url, 500);
         });
       });
+
+      // 🔥 --- 神经元流星特效逻辑 --- 🔥
+      const canvas = document.getElementById('meteor-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      
+      // 调整画布尺寸
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      class Meteor {
+        constructor() {
+          this.reset();
+        }
+        
+        reset() {
+          // 随机起点 (在画布任意位置)
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          
+          // 随机长度 (50px ~ 150px)
+          this.len = Math.random() * 100 + 50;
+          
+          // 随机速度 (非常快，模仿神经冲动)
+          this.speed = Math.random() * 10 + 10;
+          
+          // 随机大小 (非常细)
+          this.size = Math.random() * 1 + 0.5;
+          
+          // 随机角度 (0 ~ 360度任意方向)
+          this.angle = Math.random() * Math.PI * 2;
+          
+          // 初始透明度
+          this.opacity = 0;
+          
+          // 生命周期状态
+          this.state = 'fadein'; // fadein, active, fadeout
+          this.life = 0;
+          this.maxLife = Math.random() * 30 + 20; // 存活帧数
+        }
+        
+        update() {
+          // 移动
+          this.x += Math.cos(this.angle) * this.speed;
+          this.y += Math.sin(this.angle) * this.speed;
+          
+          // 状态机
+          if(this.state === 'fadein') {
+             this.opacity += 0.1;
+             if(this.opacity >= 1) this.state = 'active';
+          } else if(this.state === 'active') {
+             this.life++;
+             if(this.life > this.maxLife) this.state = 'fadeout';
+          } else if(this.state === 'fadeout') {
+             this.opacity -= 0.05;
+             if(this.opacity <= 0) this.reset();
+          }
+          
+          // 边界检查 (出了屏幕就重置)
+          if(this.x < -100 || this.x > width + 100 || this.y < -100 || this.y > height + 100) {
+             this.reset();
+          }
+        }
+        
+        draw() {
+          if(this.opacity <= 0) return;
+          
+          // 计算尾巴坐标
+          const tailX = this.x - Math.cos(this.angle) * this.len;
+          const tailY = this.y - Math.sin(this.angle) * this.len;
+          
+          // 创建渐变：头亮尾暗
+          const gradient = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
+          // 颜色匹配你的主题色 #3b82f6 (RGB: 59, 130, 246)
+          gradient.addColorStop(0, `rgba(96, 165, 250, ${this.opacity})`); // 亮蓝头部
+          gradient.addColorStop(1, `rgba(59, 130, 246, 0)`);   // 透明尾部
+          
+          ctx.beginPath();
+          ctx.moveTo(this.x, this.y);
+          ctx.lineTo(tailX, tailY);
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = this.size;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        }
+      }
+      
+      // 创建一批流星
+      const meteors = [];
+      const meteorCount = 12; // 数量适中，既不杂乱又有氛围
+      for(let i=0; i<meteorCount; i++) {
+         const m = new Meteor();
+         // 错开初始状态，避免同时出现
+         m.opacity = 0; 
+         m.life = Math.random() * 50;
+         meteors.push(m);
+      }
+      
+      function animateMeteors() {
+        ctx.clearRect(0, 0, width, height);
+        
+        meteors.forEach(m => {
+          m.update();
+          m.draw();
+        });
+        
+        requestAnimationFrame(animateMeteors);
+      }
+      
+      animateMeteors();
+      // 🔥 --- 流星特效结束 --- 🔥
+
     });
   </script>
  </body>
