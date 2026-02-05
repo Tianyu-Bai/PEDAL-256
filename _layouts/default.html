@@ -128,17 +128,19 @@
     .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
     .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
     
-    /* 🔥🔥🔥 [核心] Badge 顺时针流水灯特效 🔥🔥🔥 */
+    /* 🔥🔥🔥 [修正版] Badge 保持胶囊形状 (Pill Shape) + 流水灯 🔥🔥🔥 */
     .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
     
     .nav-badges a { 
       position: relative;
       display: inline-flex; justify-content: center; align-items: center;
-      width: 44px; height: 44px; /* 固定容器大小 */
-      border-radius: 50%;
-      text-decoration: none; overflow: hidden; /* 必须：隐藏溢出的光效 */
+      /* ⚡️ 修正：不再强制圆形宽高，而是用 padding 自适应内容 */
+      padding: 8px 14px; 
+      /* ⚡️ 修正：恢复 50px 圆角 (胶囊形) */
+      border-radius: 50px;
+      text-decoration: none; overflow: hidden; 
       opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      background: rgba(30, 41, 59, 0.8); /* 容器底色 */
+      background: rgba(30, 41, 59, 0.8); 
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       z-index: 2;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -148,20 +150,31 @@
     .nav-badges a::before {
       content: '';
       position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      /* 蓝色流光 */
-      background: conic-gradient(transparent 50%, #3b82f6 80%, #60a5fa 100%);
-      animation: rotate-border 3s linear infinite; /* 顺时针旋转 */
+      /* 必须足够大以覆盖长胶囊旋转时的对角线 */
+      top: -150%; left: -150%; width: 400%; height: 400%;
+    /* 🎨 修改点1：更柔和的渐变 */
+      background: conic-gradient(transparent 30%, rgba(59, 130, 246, 0.3) 70%, #60a5fa 100%);
+      
+      /* ⏱️ 修改点2：速度变慢 */
+      /* 4s -> 8s，显得更优雅沉稳 */
+      animation: rotate-border 8s linear infinite; 
       z-index: 0;
     }
 
-    /* 2. 内部遮罩 (挖空中心，形成边框感) */
+    /* 同时把鼠标悬停时的加速也改慢一点，避免太突兀 */
+    .nav-badges a:hover::before { 
+        animation-duration: 3s; /* 原来是 1.5s，现在改为 3s */
+        background: conic-gradient(transparent 20%, #60a5fa, #ffffff); 
+    }
+
+   
+    /* 2. 内部遮罩 (挖空中心，露出边框) */
     .nav-badges a::after {
       content: '';
       position: absolute;
       inset: 2px; /* 边框厚度 */
-      border-radius: 50%;
-      background: #0f172a; /* 内部深色背景 */
+      border-radius: 50px; /* ⚡️ 保持胶囊形状 */
+      background: #0f172a; 
       z-index: 0;
     }
 
@@ -169,14 +182,14 @@
     .nav-badges img { 
       position: relative; z-index: 1;
       height: 24px !important; width: auto;
-      border: none !important; box-shadow: none !important; /* 清除原有边框 */
-      pointer-events: none; /* 让点击穿透给 A 标签 */
+      border: none !important; box-shadow: none !important; 
+      pointer-events: none; 
       transition: transform 0.3s ease;
     }
 
     /* 悬停特效 */
     .nav-badges a:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5); }
-    .nav-badges a:hover::before { animation-duration: 1s; background: conic-gradient(transparent 20%, #60a5fa, #ffffff); } /* 加速变亮 */
+    .nav-badges a:hover::before { animation-duration: 1.5s; background: conic-gradient(transparent 30%, #60a5fa, #ffffff); }
     .nav-badges a:hover img { transform: scale(1.1); }
 
     @keyframes rotate-border { 100% { transform: rotate(1turn); } }
@@ -562,106 +575,6 @@
       "show_badges": {
         text: "Scroll to the bottom! 👇 Those icons are your gateway to the Code, Fabrication Files, and Demo Videos.",
         options: [ { text: "Thanks, Guardian!", next: "close" } ]
-      }
-    };
-
-    const dialogData_ZH = {
-      "start": {
-        text: "你好！我是易连的守护者。由我来保护你的脑机探针。",
-        options: [ { text: "🚀 开始探索！", next: "root_menu" } ]
-      },
-      "root_menu": {
-        text: "系统就绪。请选择你要查看的类别：",
-        options: [
-          { text: "🌟 核心亮点 (创新性)", next: "innovation" },
-          { text: "📊 规格参数 (重量/噪音)", next: "specs_menu" },
-          { text: "🛡️ 可靠性与耐久度", next: "reliability_menu" },
-          { text: "🔧 使用与兼容性", next: "usage_menu" },
-          { text: "随便看看", next: "close" }
-        ]
-      },
-      "innovation": {
-        text: "我采用了新型弹性体互连技术 (Elastomeric Interposer)。这意味着无需精确对准，且实现了“零插入力”。",
-        options: [
-          { text: "“零插入力”有什么好处？", next: "zero_force" },
-          { text: "通道数能扩展吗？", next: "scalability" },
-          { text: "返回主菜单", next: "root_menu" } 
-        ]
-      },
-      "zero_force": {
-        text: "传统插头需要很大的力，容易弄断脆弱的探针。我的螺纹盖将旋转转化为轻柔的垂直压力，完美保护薄膜探针。",
-        options: [ { text: "很棒的设计！返回。", next: "innovation" } ]
-      },
-      "scalability": {
-        text: "当然！高密度弹性体允许在同样的 25mm 封装内扩展至 1024 通道。我是面向未来的设计。",
-        options: [ { text: "印象深刻。返回。", next: "innovation" } ]
-      },
-      "specs_menu": {
-        text: "正在检查诊断数据... 你关心哪个参数？",
-        options: [
-          { text: "重不重？ (重量)", next: "weight" },
-          { text: "发热吗？ (热学)", next: "thermal" },
-          { text: "信号干净吗？ (噪音)", next: "noise" },
-          { text: "返回主菜单", next: "root_menu" }
-        ]
-      },
-      "weight": {
-        text: "我非常轻。拆卸后仅重 2.8g。即使含外壳，我也比竞品轻 57% (6.6g)，大大减轻了动物的负担。",
-        options: [ { text: "很适合小鼠/大鼠。", next: "specs_menu" } ]
-      },
-      "thermal": {
-        text: "我运转冷静。稳态温度仅为 30.5°C，远低于 37°C 的生物阈值。无需主动散热。",
-        options: [ { text: "安全确认。", next: "specs_menu" } ]
-      },
-      "noise": {
-        text: "晶莹剔透。我的本底噪声为 2.68 ± 0.46 µV RMS，接近了 Intan 芯片的理论极限。信号无损耗。",
-        options: [ { text: "参数很强。", next: "specs_menu" } ]
-      },
-      "reliability_menu": {
-        text: "我经久耐用。猜你有可能担心这些？",
-        options: [
-          { text: "寿命 (贴合次数)", next: "cycles" },
-          { text: "如果对不准怎么办？", next: "misalignment" },
-          { text: "接触电阻多大？", next: "impedance" },
-          { text: "返回主菜单", next: "root_menu" }
-        ]
-      },
-      "cycles": {
-        text: "已验证 100 次以上的插拔循环，连接良率 >97%。弹性导电体几乎没有磨损。",
-        options: [ { text: "靠谱。", next: "reliability_menu" } ]
-      },
-      "misalignment": {
-        text: "没问题。弹性体具有“结构冗余”（间距小于焊盘尺寸）。即使径向没对准，依然能稳定连接。",
-        options: [ { text: "容错率很高。", next: "reliability_menu" } ]
-      },
-      "impedance": {
-        text: "低且稳定。整个阵列的接触阻抗始终保持在 0.3 kΩ 到 0.4 kΩ 之间。",
-        options: [ { text: "了解。", next: "reliability_menu" } ]
-      },
-      "usage_menu": {
-        text: "专为科研人员设计。问我关于使用的问题：",
-        options: [
-          { text: "组装困难吗？", next: "assembly" },
-          { text: "兼容什么系统？", next: "system" },
-          { text: "动物能自由活动吗？", next: "animal" },
-          { text: "返回主菜单", next: "root_menu" }
-        ]
-      },
-      "assembly": {
-        text: "很简单。无需专业的微焊接技术。使用标准工具即可“即插即用”。",
-        options: [ { text: "用户友好。", next: "usage_menu" } ]
-      },
-      "system": {
-        text: "完美兼容 Intan RHD 记录系统。支持 64、128 和 256 channel configurations.",
-        options: [ { text: "完美。", next: "usage_menu" } ]
-      },
-      "animal": {
-        text: "可以。低剖面设计适配机械换向器 (Commutator)，允许动物自然行为，线缆不打结。",
-        options: [ { text: "我想看文件！", next: "show_badges" } ]
-      },
-      "show_badges": {
-        text: "滑到最下面！👇那些图标是你通往代码、制造文件和演示视频的大门。",
-        options: [ { text: "谢谢守护者！", next: "close" } ]
       }
     };
       
