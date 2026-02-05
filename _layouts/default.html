@@ -65,6 +65,62 @@
         pointer-events: none; /* 确保不影响点击 */
     }
 
+    /* --- 💡 流水灯按钮特效 --- */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: #1e293b; /* 按钮主体色 */
+  z-index: 1;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 旋转的光线层 */
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
+  background-color: #1e293b;
+  background-repeat: no-repeat;
+  background-size: 50% 50%, 50% 50%;
+  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  /* 这里定义流水灯颜色：亮蓝色到透明的渐变 */
+  background-image: conic-gradient(transparent, #3b82f6, #60a5fa, transparent 30%);
+  animation: rotate-light 4s linear infinite;
+}
+
+/* 按钮内部遮罩（确保只显示边缘） */
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 2px;
+  top: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: #1e293b;
+  border-radius: 9px; /* 比外层圆角稍微小一点点 */
+}
+
+@keyframes rotate-light {
+  100% { transform: rotate(1turn); }
+}
+
+/* 悬停增强：加快旋转速度并增加发光 */
+.btn-primary:hover::before {
+  animation-duration: 1.5s;
+  background-image: conic-gradient(transparent, #60a5fa, #ffffff, transparent 40%);
+}
+.btn-primary:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+   
     /* --- 3. 布局 --- */
     .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
  
