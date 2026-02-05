@@ -128,68 +128,75 @@
     .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
     .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
     
-    /* 🔥🔥🔥 [修正版] Badge 保持胶囊形状 (Pill Shape) + 流水灯 🔥🔥🔥 */
-    .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    /* 🔥🔥🔥 [最终完美版] 纯净边缘流水灯 (中间透明，无色块) 🔥🔥🔥 */
+    .nav-badges { 
+      margin: 2rem 0; 
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: center; 
+      gap: 15px; 
+    }
     
     .nav-badges a { 
       position: relative;
-      display: inline-flex; justify-content: center; align-items: center;
-      /* ⚡️ 修正：不再强制圆形宽高，而是用 padding 自适应内容 */
-      padding: 8px 14px; 
-      /* ⚡️ 修正：恢复 50px 圆角 (胶囊形) */
-      border-radius: 50px;
-      text-decoration: none; overflow: hidden; 
-      opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-      background: rgba(30, 41, 59, 0.8); 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      z-index: 2;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: inline-flex; 
+      justify-content: center; 
+      align-items: center;
+      padding: 8px 16px; /* 舒适的内边距 */
+      
+      /* ⚡️ 核心：使用超大数值确认为完美的胶囊形 (Pill Shape) */
+      border-radius: 9999px; 
+      
+      text-decoration: none; 
+      /* 移除所有可能导致长方形背景的属性 */
+      background: transparent; 
+      box-shadow: none; 
+      
+      /* 进场动画保持不变 */
+      opacity: 0; 
+      animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      z-index: 1;
     }
 
-    /* 1. 旋转的锥形渐变 (光源) */
+    /* 🌊 只有边缘流动的光带 (使用 Mask 技术挖空中间) */
     .nav-badges a::before {
       content: '';
       position: absolute;
-      /* 必须足够大以覆盖长胶囊旋转时的对角线 */
-      top: -150%; left: -150%; width: 400%; height: 400%;
-    /* 🎨 修改点1：更柔和的渐变 */
-      background: conic-gradient(transparent 30%, rgba(59, 130, 246, 0.3) 70%, #60a5fa 100%);
+      inset: 0; /* 撑满整个按钮 */
+      border-radius: 9999px; /* 保持胶囊形状 */
+      padding: 1.5px; /* 🔥 这里控制【边框粗细】，1.5px 很精致 */
       
-      /* ⏱️ 修改点2：速度变慢 */
-      /* 4s -> 8s，显得更优雅沉稳 */
-      animation: rotate-border 8s linear infinite; 
-      z-index: 0;
+      /* 流水灯渐变：顺时针，速度慢，更柔和 */
+      background: conic-gradient(transparent 40%, rgba(59, 130, 246, 0.4) 80%, #60a5fa 100%);
+      
+      /* 这里的 Mask 魔法：让中间变透明，只保留 padding 出来的边框区域 */
+      -webkit-mask: 
+         linear-gradient(#fff 0 0) content-box, 
+         linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      
+      /* 动画设置 */
+      animation: rotate-border 8s linear infinite;
+      z-index: -1; /* 放在文字下面 */
     }
 
-    /* 同时把鼠标悬停时的加速也改慢一点，避免太突兀 */
-    .nav-badges a:hover::before { 
-        animation-duration: 3s; /* 原来是 1.5s，现在改为 3s */
-        background: conic-gradient(transparent 20%, #60a5fa, #ffffff); 
-    }
+    /* 删除了 ::after，不再有那个深色背景块了 */
 
-   
-    /* 2. 内部遮罩 (挖空中心，露出边框) */
-    .nav-badges a::after {
-      content: '';
-      position: absolute;
-      inset: 2px; /* 边框厚度 */
-      border-radius: 50px; /* ⚡️ 保持胶囊形状 */
-      background: #0f172a; 
-      z-index: 0;
-    }
-
-    /* 3. 图标本身 (位于最上层) */
+    /* 图标/文字样式 */
     .nav-badges img { 
-      position: relative; z-index: 1;
-      height: 24px !important; width: auto;
-      border: none !important; box-shadow: none !important; 
-      pointer-events: none; 
+      height: 24px !important; 
+      width: auto; 
+      display: block;
       transition: transform 0.3s ease;
     }
 
-    /* 悬停特效 */
-    .nav-badges a:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5); }
-    .nav-badges a:hover::before { animation-duration: 1.5s; background: conic-gradient(transparent 30%, #60a5fa, #ffffff); }
+    /* 悬停特效：仅光圈加速 + 轻微上浮 */
+    .nav-badges a:hover { transform: translateY(-3px); }
+    .nav-badges a:hover::before { 
+        animation-duration: 3s; 
+        background: conic-gradient(transparent 20%, #60a5fa, #ffffff); 
+    }
     .nav-badges a:hover img { transform: scale(1.1); }
 
     @keyframes rotate-border { 100% { transform: rotate(1turn); } }
