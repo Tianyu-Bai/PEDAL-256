@@ -380,6 +380,7 @@ This project is open-source and available under the **MIT License**. Click the b
 > [!NOTE]
 > **核心创新：** 该系统将两个高密度 PCB、一个各向异性弹性体接触界面和一个轻量级基座外壳集成到一个完全一体化的、即插即用的头部采集方案中。</p>
  **技术革新：** 采用弹性中间层导电基体技术，实现“零力插拔”，告别因按压操作导致的多脚连接器存在的针脚损坏问题。
+
 ---
 
 <span id="cn-specs"></span>
@@ -485,7 +486,7 @@ This project is open-source and available under the **MIT License**. Click the b
 ### 🛠 放大器物料清单 (BOM)
 
 <div align="center">
-  <img src="Images/256HD.png.jpg" 
+  <img src="Images/256HD.png" 
        alt="256通道放大器组装实物图" 
        width="500" 
        style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px;">
