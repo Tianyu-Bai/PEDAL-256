@@ -512,7 +512,7 @@ This project is open-source and available under the **MIT License**. Click the b
        width="600" 
        style="border-radius: 8px; margin-top: 10px;">
   <p style="margin-top: 5px; font-size: 0.9em; color: #64748b;">
-    <b> 4-Layer Routing Structure (Top to Bottom)</b>
+    <b> 顶部4层电路板的设计爆炸动图 </b>
   </p>
 </div>
     
