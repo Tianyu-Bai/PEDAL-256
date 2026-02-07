@@ -47,22 +47,32 @@ title: E-Link Home
 </div>
 </div>
 
-## 🔬 RHD Connector – Interactive 3D Model
+<span id="rhd-3d"></span>
+
+## 🔬 RHD Connector – Interactive 3D View
 
 <p align="center">
-  <a href="https://tianyu-bai.github.io/ELink/#rhd-3d" target="_blank">
-    <img src="Images/preview/rhd_3d_preview.png" width="600" alt="RHD Connector 3D Preview">
-  </a>
+  <model-viewer
+    src="{{ '/Videos/RHD_example.glb' | relative_url }}"
+    alt="RHD Connector 3D Model"
+    camera-controls
+    auto-rotate
+    interaction-prompt="auto"
+    shadow-intensity="1"
+    exposure="1.1"
+    style="
+      width: 100%;
+      max-width: 760px;
+      height: 460px;
+      background: rgba(15,23,42,0.6);
+      border-radius: 16px;
+      border: 1px solid rgba(59,130,246,0.3);
+    ">
+  </model-viewer>
 </p>
 
 <p align="center">
-  <a href="glb_path: "https://github.com/Tianyu-Bai/E-Link/blob/main/Videos/RHD_example.glb" target="_blank">
-    <img src="https://img.shields.io/badge/View-Interactive%203D%20Model-3b82f6?style=for-the-badge">
-  </a>
-</p>
-
-<p align="center">
-  <sub>Rotate · Zoom · Inspect geometry in browser</sub>
+  <sub>Drag to rotate · Scroll to zoom</sub>
 </p>
 
 <span id="en-overview"></span>
