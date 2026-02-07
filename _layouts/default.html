@@ -715,9 +715,18 @@
 
   // 🔥 第二阶段：所有资源加载完毕（Page Load），开始静默下载动图
   window.addEventListener('load', function() {
-      // 找到所有GIF图片和视频
-      const heavyMedia = document.querySelectorAll('img[src$=".gif"], video');
-      
+      // 找到所有GIF图片和视频和3D模型
+ const heavyMedia = document.querySelectorAll('img[src$=".gif"], video, model-viewer');
+
+      heavyMedia.forEach(media => {
+    // ... 原有逻辑 ...
+    
+    // 如果是 3D 模型，设置 eager 加载
+    if (media.tagName === 'MODEL-VIEWER') {
+        media.setAttribute('loading', 'eager');
+    }
+});
+   
       heavyMedia.forEach(media => {
           // 强制改为 Eager，利用空闲带宽下载
           // 这样用户滑下去时，动图已经准备好了
