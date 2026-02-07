@@ -1,7 +1,3 @@
----
-layout: default
-title: E-Link Home
----
 
 <div class="lang-en" markdown="1">
 
@@ -176,6 +172,17 @@ title: E-Link Home
     <b>Assembled 256-Channel Headstage (Top View)</b>
   </p>
 </div>
+
+<div align="center">
+  <img src="Videos/Top PCB Layout.gif" 
+       alt="4-Layer PCB Stackup Explosion" 
+       width="600" 
+       style="border-radius: 8px; margin-top: 10px;">
+  <p style="margin-top: 5px; font-size: 0.9em; color: #64748b;">
+    <b> 4-Layer Routing Structure (Top to Bottom)</b>
+  </p>
+</div>
+
 <div align="center">
  <table style="margin-left: auto; margin-right: auto; width: 90%; text-align: center; border-collapse: collapse; border: 1px solid #e1e4e8;">
    <thead>
@@ -427,9 +434,9 @@ This project is open-source and available under the **MIT License**. Click the b
 * **⚡ 256 通道高密度接口**
   紧凑的基座占地面积，支持高密度采集，且不增加手术负担。
 * **🔌 免焊弹性体互连**
-  使用各向异性导电弹性体，实现可重复、允许一定对准误差的电气接触。
+  使用各向异性导电弹性体，实现可重复、允许对准误差的一站式电气接触。
 * **🐭 专为体内研究优化**
-  最小化植入占地面积。核心组件重量仅为 2.8g（移除外壳后），减少了头重脚轻的现象，并在长期记录过程中改善动物福利。
+  最小化植入所需面积。核心组件重量仅为 2.8g（移除上盖后可保证小鼠完全的自由活动），为动物最大限度减轻负担，在长期记录过程中保证动物福利。
 * **🛠️ 模块化与可扩展**
   外壳、PCB 和保护盖均可分离，便于快速迭代和故障排查。
 * **🧪 手术级设计**
@@ -462,11 +469,11 @@ This project is open-source and available under the **MIT License**. Click the b
       </tr>
       <tr>
         <td><b>定制化 256Ch 头部放大器</b></td>
-        <td>针对高密度 128/256 通道信号采集优化的形状因数记录接口</td>
+        <td>针对高密度 128/256 通道信号采集优化的记录接口</td>
       </tr>
       <tr>
         <td><b>泡沫垫圈</b></td>
-        <td>提供柔性压缩，确保弹性导电基体上方的电气接触均匀</td>
+        <td>提供柔性压缩层，确保弹性导电基体上方的电气接触均匀</td>
       </tr>
       <tr>
         <td><b>转接PCB</b></td>
@@ -492,6 +499,16 @@ This project is open-source and available under the **MIT License**. Click the b
        style="border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px;">
   <p style="margin-top: 5px; font-size: 0.9em; color: #64748b;">
     <b>已组装的 256 通道前置放大器 (顶视图)</b>
+  </p>
+</div>
+
+<div align="center">
+  <img src="Videos/Top PCB Layout.gif" 
+       alt="顶部4层电路板的设计爆炸动图" 
+       width="600" 
+       style="border-radius: 8px; margin-top: 10px;">
+  <p style="margin-top: 5px; font-size: 0.9em; color: #64748b;">
+    <b> 4-Layer Routing Structure (Top to Bottom)</b>
   </p>
 </div>
     
@@ -523,14 +540,14 @@ This project is open-source and available under the **MIT License**. Click the b
       </tr>
       <tr>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;"><b>电阻</b></td>
-        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">标准 SMD</td>
+        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">标准贴片</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">7</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">0402</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">LVDS 配置</td>
       </tr>
       <tr>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;"><b>电容</b></td>
-        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">标准 SMD</td>
+        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">标准贴片</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">8</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">0603</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">LVDS 配置</td>
@@ -540,14 +557,14 @@ This project is open-source and available under the **MIT License**. Click the b
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">绿色 LED</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">1</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">0402</td>
-        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">电源指示灯</td>
+        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">自检状态灯</td>
       </tr>
       <tr>
-        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;"><b>锡球 (Solder Balls)</b></td>
+        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;"><b> 标注锡球 </b></td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">0.4 mm 无铅</td>
-        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">~300</td>
+        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">约300</td>
         <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">-</td>
-        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">用于 BGA 返修/组装</td>
+        <td style="padding: 8px; border: 1px solid #e1e4e8; text-align: center;">用于 BGA 组装</td>
       </tr>
     </tbody>
   </table>
@@ -557,9 +574,9 @@ This project is open-source and available under the **MIT License**. Click the b
 
 ## 👥 开发者与实验室
 
-本项目由达特茅斯学院的 **MINE Lab** 主导开发。<a href="https://sites.dartmouth.edu/fang-group/"><img src="https://img.shields.io/badge/访问网站_%E2%86%97-MINE_Lab-00693E?style=flat-square" alt="MINE Lab"></a>
+本项目由达特茅斯学院的 **MINE Lab** 开发。<a href="https://sites.dartmouth.edu/fang-group/"><img src="https://img.shields.io/badge/访问网站_%E2%86%97-MINE_Lab-00693E?style=flat-square" alt="MINE Lab"></a>
 
-* **白天宇** (主导设计及开发) <a href="https://tianyu-bai.github.io/"><img src="https://img.shields.io/badge/个人主页-Tianyu%20Bai-0077B5?style=flat-square&logo=github&logoColor=white" alt="Website"></a>
+* **白天宇** (主导研发及设计) <a href="https://tianyu-bai.github.io/"><img src="https://img.shields.io/badge/个人主页-Tianyu%20Bai-0077B5?style=flat-square&logo=github&logoColor=white" alt="Website"></a>
 * **李根博士**
 * **方辉教授** <a href="https://engineering.dartmouth.edu/community/faculty/hui-fang"><img src="https://img.shields.io/badge/首席研究员_(PI)-444444?style=flat-square&logoColor=white" />
 
@@ -594,10 +611,10 @@ This project is open-source and available under the **MIT License**. Click the b
 <span id="cn-downloads"></span>
 ## 🔗 仓库与下载
 
-本项目完全开源。相关论文录用后，包含 **PCB 制造文件 (Gerber/NC Drill)**、**BOM** 和 **机械 CAD** 的完整数据集将通过以下链接提供访问。
+本项目完全开源。相关论文录用后，包含 **PCB 制造文件 (Gerber/NC Drill)** 和 **3D打印文件** 的完整数据集将通过以下链接提供访问。
 
 <div align="center">
-  <p><b>👇 收藏本仓库以便未来下载：</b></p>
+  <p><b>👇 欢迎收藏本仓库以便未来下载：</b></p>
 
 <div align="center">
   <a href="https://github.com/Tianyu-Bai/ELINK"><img src="https://img.shields.io/badge/GitHub-查看源仓库-181717?style=for-the-badge&logo=github&logoColor=white" alt="View on GitHub"></a>
@@ -609,7 +626,7 @@ This project is open-source and available under the **MIT License**. Click the b
 
 ## 🤝 致谢
 
-开发者衷心感谢 **NIH (R01MH139342)** 和 **达特茅斯博士生创新奖学金 (Dartmouth PhD Innovation Fellowship)** 的支持。
+开发者衷心感谢 **美国国立卫生研究院 NIH R01MH139342** 和 **达特茅斯博士生创新奖学金 (Dartmouth PhD Innovation Fellowship)** 的支持。
 
 特别感谢 **达特茅斯Thayer工学院** 的相关成员在易链系统开发过程中提供的技术支持和反馈。
 
@@ -626,7 +643,7 @@ This project is open-source and available under the **MIT License**. Click the b
 
 <div align="center">
   <a href="https://github.com/tianyu-bai/E-Link/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/协议-MIT-A31F34?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License">
+    <img src="https://img.shields.io/badge/开源协议-MIT-A31F34?style=flat-square&logo=opensourceinitiative&logoColor=white" alt="License">
   </a>
 </div>
 
