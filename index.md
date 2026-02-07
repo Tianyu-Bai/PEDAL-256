@@ -47,36 +47,109 @@ title: E-Link Home
 </div>
 </div>
 
-<style>
-  @keyframes swipe-hand {
-    0% { opacity: 0; transform: translate(-50%, -50%) translateX(-20px) rotate(-10deg); }
-    30% { opacity: 1; transform: translate(-50%, -50%) translateX(0px) rotate(0deg); }
-    70% { opacity: 1; transform: translate(-50%, -50%) translateX(20px) rotate(10deg); }
-    100% { opacity: 0; transform: translate(-50%, -50%) translateX(30px) rotate(20deg); }
+<style>/*开始做出演示动作*/
+  /* --- 1. 时间轴控制 (总时长 27秒) --- */
+  /* Drag 容器的显隐时间轴：在第1段和第3段出现 */
+  @keyframes timeline-drag-container {
+    0%, 11%  { opacity: 1; z-index: 10; } /* 0-3秒: 显示 */
+    11.1%, 22% { opacity: 0; z-index: -1; } /* 3-6秒: 隐藏 */
+    22.1%, 33% { opacity: 1; z-index: 10; } /* 6-9秒: 显示 */
+    33.1%, 100% { opacity: 0; z-index: -1; } /* 9-27秒: 隐藏 (含休息) */
   }
-  
-  .interaction-overlay {
+
+  /* Zoom 容器的显隐时间轴：在第2段和第4段出现 */
+  @keyframes timeline-zoom-container {
+    0%, 11% { opacity: 0; z-index: -1; }
+    11.1%, 22% { opacity: 1; z-index: 10; } /* 3-6秒: 显示 */
+    22.1%, 33% { opacity: 0; z-index: -1; }
+    33.1%, 44% { opacity: 1; z-index: 10; } /* 9-12秒: 显示 */
+    44.1%, 100% { opacity: 0; z-index: -1; } /* 12-27秒: 隐藏 (含休息) */
+  }
+
+  /* --- 2. 动作动画 (具体的移动效果) --- */
+  /* 单手拖拽动作 */
+  @keyframes move-drag-hand {
+    0% { transform: translateX(-40px) rotate(-15deg); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateX(40px) rotate(5deg); opacity: 0; }
+  }
+
+  /* 双手缩放动作 - 左手 */
+  @keyframes move-zoom-left {
+    0% { transform: translate(10px, 10px); opacity: 0; } /* 从中心开始 */
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate(-50px, 40px); opacity: 0; } /* 向左下拉开 */
+  }
+  /* 双手缩放动作 - 右手 */
+  @keyframes move-zoom-right {
+    0% { transform: translate(-10px, 10px); opacity: 0; } /* 从中心开始 */
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate(50px, -40px); opacity: 0; } /* 向右上拉开 */
+  }
+
+  /* --- 3. 基础样式 --- */
+  .gesture-overlay {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: none; /* 关键：允许鼠标穿透点击模型 */
-    z-index: 10;
+    pointer-events: none;
     text-align: center;
+    width: 200px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
-  .hand-icon {
-    font-size: 48px;
-    animation: swipe-hand 2.5s infinite ease-in-out;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); /* 增加阴影更清晰 */
+  /* 容器动画绑定 */
+  .mode-drag { animation: timeline-drag-container 27s infinite; }
+  .mode-zoom { animation: timeline-zoom-container 27s infinite; }
+
+  /* 图标样式 */
+  .icon-box {
+    position: relative;
+    height: 80px;
+    width: 100%;
+    margin-bottom: 5px;
   }
   
-  .hand-text {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-    margin-top: -10px;
+  .hand-icon {
+    font-size: 50px;
+    position: absolute;
+    top: 20px;
+    left: 50%; /* 基础定位在中间 */
+    filter: drop-shadow(2px 4px 0px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(0,0,0,0.5));
+  }
+
+  /* 绑定具体的动作 */
+  .mode-drag .hand-icon {
+    margin-left: -25px; /* 修正居中 */
+    animation: move-drag-hand 1.5s infinite ease-in-out;
+  }
+  
+  .mode-zoom .hand-left {
+    margin-left: -25px;
+    animation: move-zoom-left 1.5s infinite ease-in-out;
+  }
+  .mode-zoom .hand-right {
+    margin-left: -25px;
+    animation: move-zoom-right 1.5s infinite ease-in-out;
+  }
+
+  .gesture-text {
+    color: white;
     font-family: sans-serif;
-    opacity: 0.8;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0 2px 4px black;
+    background: rgba(0,0,0,0.4);
+    padding: 4px 12px;
+    border-radius: 12px;
   }
 </style>
 
@@ -101,14 +174,24 @@ title: E-Link Home
       outline: none;
     ">
     
-    <div class="interaction-overlay">
-      <div class="hand-icon">👆</div>
-      <div class="hand-text">Drag to Rotate</div>
+    <div class="gesture-overlay mode-drag">
+      <div class="icon-box">
+        <div class="hand-icon">👆</div>
+      </div>
+      <div class="gesture-text">Drag to Rotate</div>
+    </div>
+
+    <div class="gesture-overlay mode-zoom">
+      <div class="icon-box">
+        <div class="hand-icon hand-left" style="transform-origin: center;">👇</div>
+        <div class="hand-icon hand-right" style="transform-origin: center;">☝️</div>
+      </div>
+      <div class="gesture-text">Pinch to Zoom</div>
     </div>
 
   </model-viewer>
+  
 </div>
-
 <span id="en-overview"></span>
 
 ## 📖 Overview
