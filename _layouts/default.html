@@ -23,13 +23,14 @@
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
    
   body { 
-   margin: 0; padding: 0; color: #e0e7ff; 
-   font-family: 'Inter', -apple-system, sans-serif; 
-   line-height: 1.6; overflow-x: hidden; 
-   cursor: none; 
-   scrollbar-width: thin; scrollbar-color: #3b82f6 transparent;
-   transition: color 0.5s ease, background-color 0.5s ease;
-   background-color: #0a0a0f; 
+    margin: 0; padding: 0; color: #e0e7ff; 
+    font-family: 'Inter', -apple-system, sans-serif; 
+    line-height: 1.6; overflow-x: hidden; 
+   .video-modal, .video-modal 
+    cursor: auto !important;
+    scrollbar-width: thin; scrollbar-color: #3b82f6 transparent;
+    transition: color 0.5s ease;
+    background-color: #0a0a0f; 
   }
   @media (pointer: coarse) { body { cursor: auto; } }
  
@@ -41,7 +42,6 @@
       content-visibility: auto; /* 浏览器渲染优化 */
       /* 默认让图片先稍微透明，加载好后 JS 控制显示，体验更丝滑 */
       transition: opacity 0.5s ease;
-      transform: translateZ(0); /* 开启硬件加速 */
   }
  
   ::-webkit-scrollbar { width: 6px; }
@@ -50,33 +50,19 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
   ::selection { background: #3b82f6; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
  
-  /* --- 1. 光标 & 进度条 (已优化：使用 translate3d) --- */
+  /* --- 1. 光标 & 进度条 --- */
   .cursor-dot, .cursor-outline {
-   position: fixed; top: 0; left: 0; 
-   /* ⚡️ 优化点：使用 translate3d 替代 top/left，防止重排卡顿 */
-   transform: translate3d(-50%, -50%, 0); 
-   border-radius: 50%; z-index: 99999; pointer-events: none;
-   /* ⚡️ 优化点：告诉浏览器这个会动 */
-   will-change: transform; 
+    position: fixed; top: 0; left: 0; 
+    transform: translate(-50%, -50%); border-radius: 50%; z-index: 99999; pointer-events: none;
+    transition: opacity 0.2s ease, width 0.2s, height 0.2s, background-color 0.2s;
   }
-  .cursor-dot { width: 8px; height: 8px; background-color: #3b82f6; transition: width 0.2s, height 0.2s; }
-  .cursor-outline { 
-    width: 40px; height: 40px; 
-    border: 1px solid rgba(59, 130, 246, 0.5); 
-    transition: width 0.2s, height 0.2s, background-color 0.2s; 
-  }
+  .cursor-dot { width: 8px; height: 8px; background-color: #3b82f6; }
+  .cursor-outline { width: 40px; height: 40px; border: 1px solid rgba(59, 130, 246, 0.5); }
   body.hovering .cursor-outline { width: 60px; height: 60px; background-color: rgba(59, 130, 246, 0.1); border-color: transparent; }
-  
-  #progress-bar { 
-    position: fixed; top: 0; left: 0; height: 3px; 
-    background: linear-gradient(90deg, #3b82f6, #60a5fa); 
-    width: 0%; z-index: 99999; 
-    transition: width 0.1s linear; 
-    will-change: width;
-  }
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #60a5fa); width: 0%; z-index: 99999; transition: width 0.1s; }
  
   /* --- 2. 背景 --- */
-  #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; pointer-events: none; }
+  #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; }
   #vanta-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 15, 0.4) 100%); pointer-events: none; transition: background 0.5s ease; }
  
   #meteor-canvas {
@@ -87,56 +73,56 @@
   /* --- 3. 布局 --- */
   .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
  
-  /* --- 4. 机器人核心 (⚠️ 保持原版不动，确保布局正确) --- */
+  /* --- 4. 机器人核心 --- */
   #bot-container { 
-   position: absolute; top: 70px; left: 50%; 
-   transform: translateX(-50%); /* 保持这个原版属性，不要改 translate3d */
-   width: 120px; height: 70px; 
-   z-index: 9999; cursor: pointer; 
-   opacity: 1; 
-   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+    position: absolute; top: 70px; left: 50%; 
+    transform: translateX(-50%); width: 120px; height: 70px; 
+    z-index: 9999; cursor: pointer; 
+    opacity: 1; 
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
   }
   #bot-container.fixed-mode { position: fixed !important; top: auto !important; left: auto !important; bottom: 30px !important; right: 30px !important; transform: scale(0.9) !important; opacity: 1 !important; }
   
   /* --- 🔥 机器人引导模式 (指引播放) --- */
+  /* 1. 箭头样式：默认隐藏 */
   .guide-arrow {
-   position: absolute;
-   left: -50px; /* 在机器人左边 */
-   top: 50%;
-   transform: translateY(-50%);
-   font-size: 40px;
-   color: #ef4444; /* 醒目的红色 */
-   opacity: 0;
-   pointer-events: none;
-   text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
-   transition: opacity 0.3s;
-   z-index: 100;
-   font-weight: bold;
+    position: absolute;
+    left: -50px; /* 在机器人左边 */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 40px;
+    color: #ef4444; /* 醒目的红色 */
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    transition: opacity 0.3s;
+    z-index: 100;
+    font-weight: bold;
   }
- 
+
   /* 2. 当机器人进入 guide-mode 时，移动它的位置到视频旁边 */
   #bot-container.guide-mode {
-   position: fixed !important;
-   top: 50% !important;
-   right: 15% !important; /* 停在屏幕右侧 */
-   left: auto !important;
-   bottom: auto !important;
-   transform: translate(0, -50%) scale(1.2) !important;
-   z-index: 100006 !important; /* 比视频弹窗还要高 */
+    position: fixed !important;
+    top: 50% !important;
+    right: 15% !important; /* 停在屏幕右侧 */
+    left: auto !important;
+    bottom: auto !important;
+    transform: translate(0, -50%) scale(1.2) !important;
+    z-index: 100006 !important; /* 比视频弹窗还要高 */
   }
- 
+
   /* 3. 引导模式下显示箭头，并让箭头跳动 */
   #bot-container.guide-mode .guide-arrow {
-   opacity: 1;
-   animation: point-left 0.8s ease-in-out infinite alternate;
+    opacity: 1;
+    animation: point-left 0.8s ease-in-out infinite alternate;
   }
- 
+
   /* 4. 箭头动画：向左指 */
   @keyframes point-left {
-   from { transform: translateY(-50%) translateX(0); }
-   to { transform: translateY(-50%) translateX(-15px); }
+    from { transform: translateY(-50%) translateX(0); }
+    to { transform: translateY(-50%) translateX(-15px); }
   }
- 
+
   /* 跳动动画 */
   #bot-container.attention-jump { animation: attention-bounce 0.6s ease infinite alternate; }
   @keyframes attention-bounce { 0% { transform: translateX(-50%) translateY(0) scale(1); } 100% { transform: translateX(-50%) translateY(-15px) scale(1.1); } }
@@ -167,7 +153,6 @@
   #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
   #bot-container.fixed-mode #rpg-dialogue { top: auto; bottom: 80px; left: auto; right: 0; transform: translateY(20px); }
   #bot-container.fixed-mode #rpg-dialogue.active { transform: translateY(0); }
-  
   #rpg-text { color: #bfdbfe; font-size: 0.9rem; min-height: 40px; line-height: 1.5; }
   #rpg-cursor { display: inline-block; width: 8px; height: 14px; background: #3b82f6; vertical-align: middle; animation: blink 1s infinite; }
   #rpg-options { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
@@ -177,13 +162,13 @@
   .rpg-close { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #475569; cursor: pointer; }
   .rpg-close:hover { color: #fff; }
  
-  /* --- 内容容器 (性能优化：will-change) --- */
-  .container { position: relative; padding: 60px 80px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-radius: 20px; box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #3b82f6; opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; z-index: 1; transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; will-change: transform; }
+  /* --- 内容容器 --- */
+  .container { position: relative; padding: 60px 80px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-radius: 20px; box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #3b82f6; opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; z-index: 1; transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; }
   .container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.07), transparent 40%); z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
   .container:hover::before { opacity: 1; }
   #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
   #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
-  #main_content tr { background: rgba(30, 41, 59, 0.8) !important; }     
+  #main_content tr { background: rgba(30, 41, 59, 0.8) !important; }    
   #main_content th { color: #60a5fa; font-weight: 600; }
   .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
   .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
@@ -192,7 +177,7 @@
   .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
   .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
   .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
-       
+        
   /* --- 按钮 & 模式 --- */
   .controls-container { position: fixed; top: 20px; right: 20px; display: flex; gap: 15px; z-index: 10000; }
   .ctrl-btn { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease; font-size: 1.2rem; user-select: none; }
@@ -229,33 +214,32 @@
   @keyframes mouth-talk { 0% { height: 2px; } 100% { height: 8px; border-radius: 50%; } }
    
   .welcome-modal {
-   position: fixed; inset: 0; 
-   background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
-   z-index: 100001; 
-   display: flex; justify-content: center; align-items: center;
-   opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
-   padding: 20px;
-   cursor: default !important;
+    position: fixed; inset: 0; 
+    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+    z-index: 100001; 
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+    padding: 20px;
+    cursor: default !important;
   }
   .welcome-modal * { cursor: default !important; }
-  .welcome-modal .btn-primary, .welcome-modal .btn-secondary,
-  .welcome-modal .slider { cursor: pointer !important; }
+  .welcome-modal .btn-primary, .welcome-modal .btn-secondary, .welcome-modal .slider { cursor: pointer !important; }
   .welcome-modal.show { opacity: 1; pointer-events: auto; }
    
   .welcome-modal:hover ~ .cursor-dot, .welcome-modal:hover ~ .cursor-outline { opacity: 0 !important; }
    
   .modal-content {
-   background: rgba(30, 41, 59, 0.85); 
-   border: 1px solid rgba(255, 255, 255, 0.1);
-   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-   backdrop-filter: blur(20px);
-   padding: 30px; border-radius: 20px; 
-   width: 90%; max-width: 400px; text-align: center;
-   margin: auto; 
-   max-height: 90vh; overflow-y: auto; 
-   transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-   position: relative; 
-   padding-bottom: 140px; 
+    background: rgba(30, 41, 59, 0.85); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    padding: 30px; border-radius: 20px; 
+    width: 90%; max-width: 400px; text-align: center;
+    margin: auto; 
+    max-height: 90vh; overflow-y: auto; 
+    transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; 
+    padding-bottom: 140px; 
   }
   .welcome-modal.show .modal-content { transform: scale(1); }
    
@@ -265,8 +249,8 @@
  
   .modal-btns { display: flex; flex-direction: column; gap: 10px; }
   .btn-primary, .btn-secondary {
-   padding: 12px 20px; border-radius: 10px; font-weight: 600; transition: all 0.2s;
-   border: none; font-family: inherit;
+    padding: 12px 20px; border-radius: 10px; font-weight: 600; transition: all 0.2s;
+    border: none; font-family: inherit;
   }
   .btn-primary { background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
   .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
@@ -274,8 +258,8 @@
   .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
  
   .modal-lang-switch-container {
-   position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
-   display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; 
+    position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
+    display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; 
   }
   .lang-title { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
   .lang-row { display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 0.85rem; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; }
@@ -288,183 +272,172 @@
   input:checked + .slider:before { transform: translateX(20px); }
  
   .modal-watermark {
-   position: absolute; bottom: 20px; left: 0; width: 100%; 
-   text-align: center; font-size: 0.65rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace; pointer-events: none; opacity: 0.6; 
+    position: absolute; bottom: 20px; left: 0; width: 100%; 
+    text-align: center; font-size: 0.65rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace; pointer-events: none; opacity: 0.6; 
   }
- 
+
   /* --- 🎬 视频弹窗样式 --- */
   .video-modal {
-   position: fixed; inset: 0;
-   background: rgba(0, 0, 0, 0.9); /* 深色背景 */
-   z-index: 100005; /* 只有它能盖住机器人 */
-   display: flex; justify-content: center; align-items: center;
-   opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-   backdrop-filter: blur(10px);
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.9); /* 深色背景 */
+    z-index: 100005; /* 只有它能盖住机器人 */
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    backdrop-filter: blur(10px);
   }
   .video-modal.show { opacity: 1; pointer-events: auto; }
- 
+
   .video-content {
-   width: 90%; max-width: 800px;
-   background: rgba(15, 23, 42, 1);
-   border: 1px solid #3b82f6;
-   border-radius: 12px;
-   box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
-   overflow: hidden;
-   transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 90%; max-width: 800px;
+    background: rgba(15, 23, 42, 1);
+    border: 1px solid #3b82f6;
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
+    overflow: hidden;
+    transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .video-modal.show .video-content { transform: scale(1); }
- 
+
   .video-header {
-   display: flex; justify-content: space-between; align-items: center;
-   padding: 10px 20px;
-   background: rgba(59, 130, 246, 0.1);
-   border-bottom: 1px solid rgba(59, 130, 246, 0.3);
-   color: #93c5fd; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px;
+    background: rgba(59, 130, 246, 0.1);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+    color: #93c5fd; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
   }
   .video-close {
-   cursor: pointer; font-size: 1.5rem; line-height: 1; color: #64748b; transition: color 0.2s;
+    cursor: pointer; font-size: 1.5rem; line-height: 1; color: #64748b; transition: color 0.2s;
   }
   .video-close:hover { color: #ef4444; }
- 
+
   video#guardian-video {
-   width: 100%; display: block; outline: none;
+    width: 100%; display: block; outline: none;
   }
  
   @media (max-width: 768px) { 
-   #bot-speech {
-     white-space: normal !important; max-width: 200px !important; width: max-content !important; height: auto !important; line-height: 1.5;
-     left: auto !important; right: 0 !important; top: -55px !important; border-radius: 12px 12px 0 12px !important; 
-     transform: translateX(0) scale(0) !important; transform-origin: bottom right !important; 
+    #bot-speech {
+      white-space: normal !important; max-width: 200px !important; width: max-content !important; height: auto !important; line-height: 1.5;
+      left: auto !important; right: 0 !important; top: -55px !important; border-radius: 12px 12px 0 12px !important; 
+      transform: translateX(0) scale(0) !important; transform-origin: bottom right !important; 
     }
-   #bot-container.speaking #bot-speech { transform: translateX(0) scale(1) !important; }
-   .cursor-dot, .cursor-outline { display: none; } 
-   .layout-wrapper { margin-top: 40px !important; }
-   .controls-container { top: 15px; right: 15px; gap: 8px; }
-   .ctrl-btn { width: 35px; height: 35px; font-size: 1rem; }
-   #lang-toggle { font-size: 0.7rem; padding: 0 8px; }
-   #bot-container { 
-     display: block !important; position: fixed !important; top: auto !important; left: auto !important;
-     right: 20px !important; bottom: 30px !important; transform: scale(0.85) translateX(0) !important;
-     opacity: 1 !important; animation: none !important;
+    #bot-container.speaking #bot-speech { transform: translateX(0) scale(1) !important; }
+    .cursor-dot, .cursor-outline { display: none; } 
+    .layout-wrapper { margin-top: 40px !important; }
+    .controls-container { top: 15px; right: 15px; gap: 8px; }
+    .ctrl-btn { width: 35px; height: 35px; font-size: 1rem; }
+    #lang-toggle { font-size: 0.7rem; padding: 0 8px; }
+    #bot-container { 
+      display: block !important; position: fixed !important; top: auto !important; left: auto !important;
+      right: 20px !important; bottom: 30px !important; transform: scale(0.85) translateX(0) !important;
+      opacity: 1 !important; animation: none !important;
     }
-   #bot-container #rpg-dialogue {
-     position: fixed !important; top: auto !important; bottom: 100px !important; left: 10px !important; right: 10px !important;
-     width: auto !important; max-width: none !important; transform: translateY(10px) !important;
+    #bot-container #rpg-dialogue {
+      position: fixed !important; top: auto !important; bottom: 100px !important; left: 10px !important; right: 10px !important;
+      width: auto !important; max-width: none !important; transform: translateY(10px) !important;
     }
-   #bot-container #rpg-dialogue.active { transform: translateY(0) !important; }
-   .container { padding: 30px 20px; } 
-   #main_content { overflow-x: auto; }
-   .modal-content { padding-bottom: 140px; } 
- 
-   /* 手机屏幕窄，机器人不能在右边，得跑到下面指上面 */
-   #bot-container.guide-mode {
-     top: auto !important;
-     bottom: 20% !important; /* 在视频下方 */
-     left: 50% !important;
-     right: auto !important;
-     transform: translateX(-50%) scale(1) !important;
-    }
-    
-   /* 箭头改为向上指 */
-   .guide-arrow {
-     left: 50%; top: -40px;
-     transform: translateX(-50%) rotate(90deg); /* 旋转90度向上 */
+    #bot-container #rpg-dialogue.active { transform: translateY(0) !important; }
+    .container { padding: 30px 20px; } 
+    #main_content { overflow-x: auto; }
+    .modal-content { padding-bottom: 140px; } 
+
+    /* 手机屏幕窄，机器人不能在右边，得跑到下面指上面 */
+    #bot-container.guide-mode {
+      top: auto !important;
+      bottom: 20% !important; /* 在视频下方 */
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) scale(1) !important;
     }
     
-   /* 手机端箭头动画：向上跳 */
-   #bot-container.guide-mode .guide-arrow {
-     animation: point-up 0.8s ease-in-out infinite alternate;
+    /* 箭头改为向上指 */
+    .guide-arrow {
+      left: 50%; top: -40px;
+      transform: translateX(-50%) rotate(90deg); /* 旋转90度向上 */
     }
     
-   @keyframes point-up {
-     from { transform: translateX(-50%) rotate(-90deg) translateY(0); }
-     to { transform: translateX(-50%) rotate(-90deg) translateY(-15px); }
+    /* 手机端箭头动画：向上跳 */
+    #bot-container.guide-mode .guide-arrow {
+      animation: point-up 0.8s ease-in-out infinite alternate;
+    }
+    
+    @keyframes point-up {
+      from { transform: translateX(-50%) rotate(-90deg) translateY(0); }
+      to { transform: translateX(-50%) rotate(-90deg) translateY(-15px); }
     }
   }
 </style>
- 
+
  <script type="module"
- src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
 </script>
  
 </head>
  
 <body>
-<div id="video-modal"
-class="video-modal">
- <div class="video-content">
-   <div class="video-header">
-     <span>📽️ DEMO REVIEW PROTOCOL</span>
-     <span class="video-close"
-onclick="closeVideoModal()">×</span>
-   </div>
-   <video id="guardian-video" controls playsinline>
-     <source
-src="https://github.com/user-attachments/assets/3d1f7740-a5a1-44a2-a549-0b52da2e9e2e"
-type="video/mp4">
-     Your browser does not support the video tag.
-   </video>
- </div>
+<div id="video-modal" class="video-modal">
+  <div class="video-content">
+    <div class="video-header">
+      <span>📽️ DEMO REVIEW PROTOCOL</span>
+      <span class="video-close" onclick="closeVideoModal()">×</span>
+    </div>
+    <video id="guardian-video" controls playsinline>
+      <source src="https://github.com/user-attachments/assets/3d1f7740-a5a1-44a2-a549-0b52da2e9e2e" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<div id="welcome-modal" class="welcome-modal">
+  <div class="modal-content">
+    <div class="modal-title">
+      <span class="m-en">✨ Hi, Welcome to E-Link!</span>
+      <span class="m-zh">✨ 嗨！欢迎访问E-Link！</span>
+    </div>
+    <div class="modal-body">
+      <span class="m-en">
+       We recommend <b>Dark Mode</b> for a more immersive experience<br>
+       <span style="font-size: 0.85rem; color: #94a3b8;">
+         (Feel free to tailor your view at the top-right corner)
+       </span>
+      </span>
+      <span class="m-zh">
+       为呈现最佳<b>视觉体验</b>，建议保留<b>深色设置</b> <br>
+       <span style="font-size: 0.85rem; color: #94a3b8;">
+         (您可随时通过右上角切换语言或主题)
+       </span>
+      </span>
+    </div>
+    <div class="modal-btns">
+      <button id="modal-keep-dark-btn" class="btn-primary">
+        <span class="m-en">🌙 Keep Dark Mode</span>
+        <span class="m-zh">🌙 保持深色 (推荐)</span>
+      </button>
+      <button id="modal-switch-light-btn" class="btn-secondary">
+        <span class="m-en">🔆 Switch to Light Mode</span>
+        <span class="m-zh">🔆 切换到浅色</span>
+      </button>
+    </div>
+    <div class="modal-lang-switch-container">
+      <span class="lang-title">Language / 语言</span>
+      <div class="lang-row">
+        <span>English</span>
+        <label class="switch">
+          <input type="checkbox" id="modal-lang-toggle-checkbox">
+          <span class="slider round"></span>
+        </label>
+        <span>简体中文</span>
+      </div>
+    </div>
+    <div class="modal-watermark">
+      <span class="m-en">Webpage Designed by Tianyu Bai © 2026</span>
+      <span class="m-zh">本网页由 Tianyu Bai 设计制作 © 2026</span>
+    </div>
+  </div>
 </div>
  
-<div id="welcome-modal"
-class="welcome-modal">
- <div class="modal-content">
-   <div class="modal-title">
-     <span class="m-en">✨ Hi, Welcome to E-Link!</span>
-     <span class="m-zh">✨ 嗨！欢迎访问E-Link！</span>
-   </div>
-   <div class="modal-body">
-     <span class="m-en">
-      We recommend <b>Dark Mode</b> for a more immersive experience<br>
-      <span style="font-size: 0.85rem; color: #94a3b8;">
-        (Feel free to tailor your view at the top-right corner)
-      </span>
-     </span>
-     <span class="m-zh">
-      为呈现最佳<b>视觉体验</b>，建议保留<b>深色设置</b> <br>
-      <span style="font-size: 0.85rem; color: #94a3b8;">
-        (您可随时通过右上角切换语言或主题)
-      </span>
-     </span>
-   </div>
-   <div class="modal-btns">
-     <button id="modal-keep-dark-btn"
-class="btn-primary">
-       <span class="m-en">🌙 Keep Dark Mode</span>
-       <span class="m-zh">🌙 保持深色 (推荐)</span>
-     </button>
-     <button id="modal-switch-light-btn"
-class="btn-secondary">
-       <span class="m-en">🔆 Switch to Light Mode</span>
-       <span class="m-zh">🔆 切换到浅色</span>
-     </button>
-   </div>
-   <div class="modal-lang-switch-container">
-     <span class="lang-title">Language / 语言</span>
-     <div class="lang-row">
-       <span>English</span>
-       <label class="switch">
-         <input type="checkbox"
-id="modal-lang-toggle-checkbox">
-         <span class="slider round"></span>
-       </label>
-       <span>简体中文</span>
-     </div>
-   </div>
-   <div class="modal-watermark">
-     <span class="m-en">Webpage Designed by Tianyu Bai © 2026</span>
-     <span class="m-zh">本网页由 Tianyu Bai 设计制作 © 2026</span>
-   </div>
- </div>
-</div>
- 
-<div
-class="controls-container">
- <div id="lang-toggle" class="ctrl-btn"
-title="Switch Language">EN/CN</div>
- <div id="theme-toggle" class="ctrl-btn"
-title="Switch Theme">☀️</div>
+<div class="controls-container">
+  <div id="lang-toggle" class="ctrl-btn" title="Switch Language">EN/CN</div>
+  <div id="theme-toggle" class="ctrl-btn" title="Switch Theme">☀️</div>
 </div>
  
 <div class="cursor-dot"></div>
@@ -474,58 +447,50 @@ title="Switch Theme">☀️</div>
  
 <canvas id="meteor-canvas"></canvas>
  
-<div id="bot-container"
-title="Chat with me!">
- <div class="guide-arrow">➤</div>
- <div class="pulse-ring"></div>
- <div id="bot-speech">System Online.</div>
- <div id="rpg-dialogue">
-   <div class="rpg-close">×</div>
-   <div><span
-id="rpg-text">Initializing...</span><span
-id="rpg-cursor"></span></div>
-   <div id="rpg-options"></div>
- </div>
- <div class="bot-antenna"></div>
- <div class="bot-head">
-   <div class="bot-eye"><div
-class="bot-pupil"></div><div
-class="bot-lid"></div></div>
-   <div class="bot-eye"><div
-class="bot-pupil"></div><div
-class="bot-lid"></div></div>
-   <div class="bot-mouth"></div>
- </div>
+<div id="bot-container" title="Chat with me!">
+  <div class="guide-arrow">➤</div>
+  <div class="pulse-ring"></div>
+  <div id="bot-speech">System Online.</div>
+  <div id="rpg-dialogue">
+    <div class="rpg-close">×</div>
+    <div><span id="rpg-text">Initializing...</span><span id="rpg-cursor"></span></div>
+    <div id="rpg-options"></div>
+  </div>
+  <div class="bot-antenna"></div>
+  <div class="bot-head">
+    <div class="bot-eye"><div class="bot-pupil"></div><div class="bot-lid"></div></div>
+    <div class="bot-eye"><div class="bot-pupil"></div><div class="bot-lid"></div></div>
+    <div class="bot-mouth"></div>
+  </div>
 </div>
  
 <div class="layout-wrapper">
- <div class="container">
-   <section id="main_content">
-     {{ content }}
-   </section>
+  <div class="container">
+    <section id="main_content">
+      {{ content }}
+    </section>
  
-   <div class="typewriter-container">
-     <span id="typewriter-text"></span><span
-class="typewriter-cursor"></span>
-   </div>
+    <div class="typewriter-container">
+      <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
+    </div>
  
-   <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: #94a3b8; font-size: 0.85rem;">
-     <p> E-Link • COPYRIGHT © 2026 Tianyu Bai</p>
-   </footer>
- </div>
+    <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: #94a3b8; font-size: 0.85rem;">
+      <p> E-Link • COPYRIGHT © 2026 Tianyu Bai</p>
+    </footer>
+  </div>
 </div>
  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
 <script>
-  // --- 🌍 双语数据源 ---
+ 
+   // --- 🌍 双语数据源 ---
  const dialogData_EN = {
    "start": {
      text: "Hi! I'm the Connector Guardian. I protect your neural interfaces.",
      options: [ 
         { text: "🚀 Click Here to Explore with Me!", next: "root_menu" } 
         { text: "🎬 Watch Intro Video", next: "play_video" }, // 🔥 新增
-
      ]
    },
    // 🔥 新增：视频处理节点
@@ -627,8 +592,8 @@ class="typewriter-cursor"></span>
      options: [ { text: "Thanks, Guardian!", next: "close" } ]
    }
  };
- 
- const dialogData_ZH = {
+
+  const dialogData_ZH = {
    "start": {
      text: "你好！我是易链的守护者。由我来保护你的脑机探针。",
      options: [ 
@@ -736,507 +701,470 @@ class="typewriter-cursor"></span>
      options: [ { text: "谢谢易链守护者！", next: "关闭对话窗" } ]
    }
  };
-    
+
+     
   // 默认使用英文
   let currentLang = 'en';
   let dialogData = dialogData_EN;
- 
+
   let vantaEffect;
   
   // 🔥 第一阶段：DOM 加载完成，立刻处理首屏
- document.addEventListener("DOMContentLoaded", function() {
-     // 1. 立即启动 Vanta 背景
-     if (window.VANTA) {
-       vantaEffect = VANTA.NET({
-         el: "#vanta-bg",
-         mouseControls: true, touchControls: true, gyroControls: false,
-         minHeight: 200.00, minWidth: 200.00, scale: 1.00, scaleMobile: 1.00,
-         color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00, spacing: 16.00, showDots: true
-       });
-     }
- 
-     // 2. 启动流星特效
-     initMeteors();
- 
-     // 3. 智能加载策略 - 阶段一
-     // 先把所有图片设为 lazy，防止阻塞首屏，除非它是前两张
-     const images = document.querySelectorAll('#main_content img');
-     images.forEach((img, index) => {
-         if (index < 2) {
-             // 首屏图片：立即加载
-             img.setAttribute('loading', 'eager'); 
-             img.setAttribute('fetchpriority', 'high'); 
-         } else {
-             // 其他图片：先暂缓
-             if(!img.getAttribute('loading')) {
-                img.setAttribute('loading', 'lazy');
-             }
-         }
-     });
+  document.addEventListener("DOMContentLoaded", function() {
+      // 1. 立即启动 Vanta 背景
+      if (window.VANTA) {
+        vantaEffect = VANTA.NET({
+          el: "#vanta-bg",
+          mouseControls: true, touchControls: true, gyroControls: false,
+          minHeight: 200.00, minWidth: 200.00, scale: 1.00, scaleMobile: 1.00,
+          color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00, spacing: 16.00, showDots: true
+        });
+      }
+
+      // 2. 启动流星特效
+      initMeteors();
+
+      // 3. 智能加载策略 - 阶段一
+      // 先把所有图片设为 lazy，防止阻塞首屏，除非它是前两张
+      const images = document.querySelectorAll('#main_content img');
+      images.forEach((img, index) => {
+          if (index < 2) {
+              // 首屏图片：立即加载
+              img.setAttribute('loading', 'eager'); 
+              img.setAttribute('fetchpriority', 'high'); 
+          } else {
+              // 其他图片：先暂缓
+              if(!img.getAttribute('loading')) {
+                 img.setAttribute('loading', 'lazy');
+              }
+          }
+      });
   });
- 
+
   // 🔥 第二阶段：所有资源加载完毕（Page Load），开始静默下载动图
- window.addEventListener('load', function() {
-     // 找到所有GIF图片和视频
-     const heavyMedia = document.querySelectorAll('img[src$=".gif"], video');
-     
-     heavyMedia.forEach(media => {
-         // 强制改为 Eager，利用空闲带宽下载
-         // 这样用户滑下去时，动图已经准备好了
-         media.setAttribute('loading', 'eager');
-         
-         // 如果是视频，设置预加载
-         if(media.tagName === 'VIDEO') {
-             media.setAttribute('preload', 'auto');
-         }
-     });
+  window.addEventListener('load', function() {
+      // 找到所有GIF图片和视频
+      const heavyMedia = document.querySelectorAll('img[src$=".gif"], video');
+      
+      heavyMedia.forEach(media => {
+          // 强制改为 Eager，利用空闲带宽下载
+          // 这样用户滑下去时，动图已经准备好了
+          media.setAttribute('loading', 'eager');
+          
+          // 如果是视频，设置预加载
+          if(media.tagName === 'VIDEO') {
+              media.setAttribute('preload', 'auto');
+          }
+      });
   });
- 
- const textsEN = ["Welcome to this webpage！", "Thanks for visiting us!", "Stay tuned!"];
- const textsZH = ["欢迎访问本网页！", "感谢您的关注！", "欢迎常来访问！"];
+
+  const textsEN = ["Welcome to this webpage！", "Thanks for visiting us!", "Stay tuned!"];
+  const textsZH = ["欢迎访问本网页！", "感谢您的关注！", "欢迎常来访问！"];
   let texts = textsEN; // 默认文本
  
   let textIdx = 0, charIdx = 0, isDeleting = false;
- function type() {
-   const currentText = texts[textIdx];
-   const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
-   document.getElementById('typewriter-text').textContent = display;
-   let speed = isDeleting ? 50 : 100;
-   if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
-   else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
-   setTimeout(type, speed);
+  function type() {
+    const currentText = texts[textIdx];
+    const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
+    document.getElementById('typewriter-text').textContent = display;
+    let speed = isDeleting ? 50 : 100;
+    if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
+    else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
+    setTimeout(type, speed);
   }
- 
+
   // --- 🔥 神经元流星特效逻辑 --- 
- function initMeteors() {
-   const canvas = document.getElementById('meteor-canvas');
-   if(!canvas) return;
-   const ctx = canvas.getContext('2d');
-   let width, height;
-   function resizeCanvas() {
-     width = window.innerWidth;
-     height = window.innerHeight;
-     canvas.width = width;
-     canvas.height = height;
+  function initMeteors() {
+    const canvas = document.getElementById('meteor-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
     }
-   window.addEventListener('resize', resizeCanvas);
-   resizeCanvas();
- 
-   class Meteor {
-     constructor() { this.reset(); }
-     reset() {
-       this.x = Math.random() * width;
-       this.y = Math.random() * height;
-       this.len = Math.random() * 100 + 50;
-       this.speed = Math.random() * 1 + 1;
-       this.size = Math.random() * 1 + 0.5;
-       this.angle = (Math.PI * 0.75) + (Math.random() - 0.5) * 0.5;
-       this.opacity = 0;
-       this.state = 'fadein'; // fadein, active, fadeout
-       this.life = 0;
-       this.maxLife = Math.random() * 30 + 20; // 存活帧数
-     }
-     update() {
-       this.x += Math.cos(this.angle) * this.speed;
-       this.y += Math.sin(this.angle) * this.speed;
-       if(this.state === 'fadein') {
-          this.opacity += 0.1;
-          if(this.opacity >= 1) this.state = 'active';
-       } else if(this.state === 'active') {
-          this.life++;
-          if(this.life > this.maxLife) this.state = 'fadeout';
-       } else if(this.state === 'fadeout') {
-          this.opacity -= 0.05;
-          if(this.opacity <= 0) this.reset();
-       }
-       if(this.x < -100 || this.x > width + 100 || this.y < -100 || this.y > height + 100) {
-          this.reset();
-       }
-     }
-     draw() {
-       if(this.opacity <= 0) return;
-       const tailX = this.x - Math.cos(this.angle) * this.len;
-       const tailY = this.y - Math.sin(this.angle) * this.len;
-       const gradient = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
-       gradient.addColorStop(0, `rgba(96, 165, 250, ${this.opacity})`); 
-       gradient.addColorStop(1, `rgba(59, 130, 246, 0)`);  
-       ctx.beginPath();
-       ctx.moveTo(this.x, this.y);
-       ctx.lineTo(tailX, tailY);
-       ctx.strokeStyle = gradient;
-       ctx.lineWidth = this.size;
-       ctx.lineCap = 'round';
-       ctx.stroke();
-     }
-    }
-    
-   const meteors = [];
-   const meteorCount = 6; 
-   for(let i=0; i<meteorCount; i++) {
-      const m = new Meteor();
-      m.opacity = 0; 
-      m.life = Math.random() * 50;
-      meteors.push(m);
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Meteor {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.len = Math.random() * 100 + 50;
+        this.speed = Math.random() * 1 + 1;
+        this.size = Math.random() * 1 + 0.5;
+        this.angle = (Math.PI * 0.75) + (Math.random() - 0.5) * 0.5;
+        this.opacity = 0;
+        this.state = 'fadein'; // fadein, active, fadeout
+        this.life = 0;
+        this.maxLife = Math.random() * 30 + 20; // 存活帧数
+      }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        if(this.state === 'fadein') {
+           this.opacity += 0.1;
+           if(this.opacity >= 1) this.state = 'active';
+        } else if(this.state === 'active') {
+           this.life++;
+           if(this.life > this.maxLife) this.state = 'fadeout';
+        } else if(this.state === 'fadeout') {
+           this.opacity -= 0.05;
+           if(this.opacity <= 0) this.reset();
+        }
+        if(this.x < -100 || this.x > width + 100 || this.y < -100 || this.y > height + 100) {
+           this.reset();
+        }
+      }
+      draw() {
+        if(this.opacity <= 0) return;
+        const tailX = this.x - Math.cos(this.angle) * this.len;
+        const tailY = this.y - Math.sin(this.angle) * this.len;
+        const gradient = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
+        gradient.addColorStop(0, `rgba(96, 165, 250, ${this.opacity})`); 
+        gradient.addColorStop(1, `rgba(59, 130, 246, 0)`);  
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = this.size;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
     }
     
-   function animateMeteors() {
-     ctx.clearRect(0, 0, width, height);
-     meteors.forEach(m => { m.update(); m.draw(); });
-     requestAnimationFrame(animateMeteors);
+    const meteors = [];
+    const meteorCount = 6; 
+    for(let i=0; i<meteorCount; i++) {
+       const m = new Meteor();
+       m.opacity = 0; 
+       m.life = Math.random() * 50;
+       meteors.push(m);
     }
-   animateMeteors();
+    
+    function animateMeteors() {
+      ctx.clearRect(0, 0, width, height);
+      meteors.forEach(m => { m.update(); m.draw(); });
+      requestAnimationFrame(animateMeteors);
+    }
+    animateMeteors();
   }
  
- document.addEventListener("DOMContentLoaded", function() {
-   type();
-   const cursorDot = document.querySelector('.cursor-dot');
-   const cursorOutline = document.querySelector('.cursor-outline');
-   const container = document.querySelector('.container');
-   const pupils = document.querySelectorAll('.bot-pupil');
-   const botContainer = document.getElementById('bot-container');
-   const botSpeech = document.getElementById('bot-speech');
-      
-   const rpgDialogue = document.getElementById('rpg-dialogue');
-   const rpgText = document.getElementById('rpg-text');
-   const rpgOptions = document.getElementById('rpg-options');
-   const rpgClose = document.querySelector('.rpg-close');
-   let typeTimer = null;
+  document.addEventListener("DOMContentLoaded", function() {
+    type();
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    const container = document.querySelector('.container');
+    const pupils = document.querySelectorAll('.bot-pupil');
+    const botContainer = document.getElementById('bot-container');
+    const botSpeech = document.getElementById('bot-speech');
+       
+    const rpgDialogue = document.getElementById('rpg-dialogue');
+    const rpgText = document.getElementById('rpg-text');
+    const rpgOptions = document.getElementById('rpg-options');
+    const rpgClose = document.querySelector('.rpg-close');
+    let typeTimer = null;
  
-   // --- 🔥 弹窗逻辑 ---
-   const welcomeModal = document.getElementById('welcome-modal');
-   const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
-   const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
-   const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
-   let modalIsZh = false; 
+    // --- 🔥 弹窗逻辑 ---
+    const welcomeModal = document.getElementById('welcome-modal');
+    const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
+    const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
+    const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
+    let modalIsZh = false; 
  
-   setTimeout(() => {
-     welcomeModal.classList.add('show');
-   }, 100);
+    setTimeout(() => {
+      welcomeModal.classList.add('show');
+    }, 100);
  
-   // --- 🤖 提示语轮播 ---
-   let idleInterval;
-   let tipIndex = 0;
+    // --- 🤖 提示语轮播 ---
+    let idleInterval;
+    let tipIndex = 0;
  
-   function startIdleTips() {
-     if(idleInterval) clearInterval(idleInterval);
-     const enTips = ["Click me for guide!", "I'm here to help!"];
-     const zhTips = ["我是E-Link专属管家", "欢迎随时“敲”我哈！"];
-     const runCycle = () => {
-        const tips = currentLang === 'en' ? enTips : zhTips;
-        botSay(tips[tipIndex], 3000); 
-        tipIndex = (tipIndex + 1) % 2;
-     };
-     runCycle(); 
-     idleInterval = setInterval(runCycle, 3500);
+    function startIdleTips() {
+      if(idleInterval) clearInterval(idleInterval);
+      const enTips = ["Click me for guide!", "I'm here to help!"];
+      const zhTips = ["我是E-Link专属管家", "欢迎随时“敲”我哈！"];
+      const runCycle = () => {
+         const tips = currentLang === 'en' ? enTips : zhTips;
+         botSay(tips[tipIndex], 3000); 
+         tipIndex = (tipIndex + 1) % 2;
+      };
+      runCycle(); 
+      idleInterval = setInterval(runCycle, 3500);
     }
  
-   function closeModal() {
-     welcomeModal.classList.remove('show');
-     if (modalIsZh) {
-       if (currentLang !== 'zh') langToggle.click(); 
-     } else {
-       if (currentLang === 'zh') langToggle.click();
-     }
-     setTimeout(() => {
-         botContainer.classList.add('attention-jump'); 
-         startIdleTips();
-         setTimeout(() => {
-             botContainer.classList.remove('attention-jump');
-         }, 3200);
-     }, 100);
-    }
- 
-   modalKeepDarkBtn.addEventListener('click', closeModal);
-   modalSwitchLightBtn.addEventListener('click', () => {
-     themeToggle.click(); 
-     closeModal();        
-   });
- 
-   modalLangCheckbox.addEventListener('change', () => {
-     const enTexts = document.querySelectorAll('.m-en');
-     const zhTexts = document.querySelectorAll('.m-zh');
-     modalIsZh = modalLangCheckbox.checked;
-     if (modalIsZh) {
-       enTexts.forEach(el => el.style.display = 'none');
-       zhTexts.forEach(el => el.style.display = 'inline'); 
-     } else {
-       zhTexts.forEach(el => el.style.display = 'none');
-       enTexts.forEach(el => el.style.display = 'inline');
-     }
-   });
- 
-   // --- 切换逻辑 ---
-   const themeToggle = document.getElementById('theme-toggle');
-   const langToggle = document.getElementById('lang-toggle');
-   let isLight = false;
-      
-   themeToggle.addEventListener('click', () => {
-     isLight = !isLight;
-     document.body.classList.toggle('light-mode');
-     if (isLight) {
-       themeToggle.textContent = "🌙"; 
-       if (vantaEffect) vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
-     } else {
-       themeToggle.textContent = "☀️"; 
-       if (vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
-     }
-   });
- 
-   langToggle.addEventListener('click', () => {
-     const enContent = document.querySelectorAll('.lang-en');
-     const zhContent = document.querySelectorAll('.lang-zh');
-     if (currentLang === 'en') {
-          currentLang = 'zh';
-          dialogData = dialogData_ZH; 
-          texts = textsZH;            
-          langToggle.textContent = "中 / 英";
-          enContent.forEach(el => el.style.display = 'none');
-          zhContent.forEach(el => el.style.display = 'block');
-     } else {
-          currentLang = 'en';
-          dialogData = dialogData_EN;
-          texts = textsEN;
-          langToggle.textContent = "EN / CN";
-          enContent.forEach(el => el.style.display = 'block');
-          zhContent.forEach(el => el.style.display = 'none');
-     }
-     textIdx = 0; charIdx = 0; isDeleting = false;
-     if(rpgDialogue.classList.contains('active')) closeDialogue();
-     if (!rpgDialogue.classList.contains('active') && idleInterval) {
+    function closeModal() {
+      welcomeModal.classList.remove('show');
+      if (modalIsZh) {
+        if (currentLang !== 'zh') langToggle.click(); 
+      } else {
+        if (currentLang === 'zh') langToggle.click();
+      }
+      setTimeout(() => {
+          botContainer.classList.add('attention-jump'); 
           startIdleTips();
-     }
-   });
- 
-   // 🔥 [核心优化] 鼠标移动逻辑 (高性能防抖 + 硬件加速 + 紧致跟手)
-   let mouseX = window.innerWidth / 2;
-   let mouseY = 100;
-   let isMouseTicking = false;
-
-   window.addEventListener('mousemove', (e) => {
-     mouseX = e.clientX;
-     mouseY = e.clientY;
-
-     if (!isMouseTicking) {
-       window.requestAnimationFrame(() => {
-         // 1. 中心实心点：完全无延迟，绝对跟手
-         if(cursorDot) { 
-           // ⚡️ 优化：使用 translate3d 替代 top/left
-           cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`; 
-         }
-         
-         // 2. 外层光圈：保留极小的惯性 (从 500ms 改为 80ms)
-         if(cursorOutline) { 
-           // ⚡️ 优化：使用 WAAPI 实现高性能动画
-           cursorOutline.animate({
-              transform: `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`
-           }, { 
-             duration: 80, // 👈 关键修改：80ms 紧致跟手
-             fill: "forwards" 
-           }); 
-         }
-
-         // 3. 容器 3D 旋转 (桌面端启用)
-         if (window.innerWidth > 768 && container) {
-           const rx = (window.innerWidth / 2 - mouseX) / 50;
-           const ry = (window.innerHeight / 2 - mouseY) / 50;
-           container.style.transform = `rotateY(${rx * -1}deg) rotateX(${ry}deg)`;
-           const rect = container.getBoundingClientRect();
-           container.style.setProperty("--mouse-x", `${mouseX - rect.left}px`);
-           container.style.setProperty("--mouse-y", `${mouseY - rect.top}px`);
-         }
-
-         // 4. 眼睛跟随
-         pupils.forEach(p => {
-           const rect = p.parentElement.getBoundingClientRect();
-           const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-           const angle = Math.atan2(mouseY - cy, mouseX - cx);
-           const dist = Math.min(6, Math.hypot(mouseX - cx, mouseY - cy) / 10);
-           p.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px))`;
-         });
-
-         isMouseTicking = false;
-       });
-       isMouseTicking = true;
-     }
-   });
- 
-   // 🔥 [核心优化] 滚动监听防抖动 (Passive 模式)
-   let isScrollTicking = false;
-   window.addEventListener('scroll', () => {
-     if (!isScrollTicking) {
-       window.requestAnimationFrame(() => {
-         const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-         const pb = document.getElementById("progress-bar");
-         if(pb) pb.style.width = scrolled + "%";
-         
-         // ⚠️ 机器人 Fixed Mode 切换逻辑保持不变
-         if(botContainer && window.innerWidth > 768) {
-           if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
-           else { botContainer.classList.remove('fixed-mode'); }
-         }
-         isScrollTicking = false;
-       });
-       isScrollTicking = true;
-     }
-   }, { passive: true }); // ⚡️ 优化：开启 passive 模式，提升滚动流畅度
- 
-   function botSay(text, duration = 2000) {
-     if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
-     botSpeech.textContent = text;
-     botContainer.classList.add('speaking');
-     if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
-     botContainer.speechTimer = setTimeout(() => {
-       botContainer.classList.remove('speaking');
-     }, duration);
+          setTimeout(() => {
+              botContainer.classList.remove('attention-jump');
+          }, 3200);
+      }, 100);
     }
  
-   // --- 🎬 视频控制逻辑 ---
-   const videoModal = document.getElementById('video-modal');
-   const guardianVideo = document.getElementById('guardian-video');
+    modalKeepDarkBtn.addEventListener('click', closeModal);
+    modalSwitchLightBtn.addEventListener('click', () => {
+      themeToggle.click(); 
+      closeModal();        
+    });
  
-   window.openVideoModal = function() {
-     videoModal.classList.add('show');
-     // 🔥 机器人进入引导模式
-     botContainer.classList.add('guide-mode');
-     const clickText = currentLang === 'en' ? "Click the Play button here! 👉" : "请点击中间的播放按钮！👉";
-     botSay(clickText, 4000); 
-     closeDialogue(); 
+    modalLangCheckbox.addEventListener('change', () => {
+      const enTexts = document.querySelectorAll('.m-en');
+      const zhTexts = document.querySelectorAll('.m-zh');
+      modalIsZh = modalLangCheckbox.checked;
+      if (modalIsZh) {
+        enTexts.forEach(el => el.style.display = 'none');
+        zhTexts.forEach(el => el.style.display = 'inline'); 
+      } else {
+        zhTexts.forEach(el => el.style.display = 'none');
+        enTexts.forEach(el => el.style.display = 'inline');
+      }
+    });
+ 
+    // --- 切换逻辑 ---
+    const themeToggle = document.getElementById('theme-toggle');
+    const langToggle = document.getElementById('lang-toggle');
+    let isLight = false;
+       
+    themeToggle.addEventListener('click', () => {
+      isLight = !isLight;
+      document.body.classList.toggle('light-mode');
+      if (isLight) {
+        themeToggle.textContent = "🌙"; 
+        if (vantaEffect) vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
+      } else {
+        themeToggle.textContent = "☀️"; 
+        if (vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
+      }
+    });
+ 
+    langToggle.addEventListener('click', () => {
+      const enContent = document.querySelectorAll('.lang-en');
+      const zhContent = document.querySelectorAll('.lang-zh');
+      if (currentLang === 'en') {
+           currentLang = 'zh';
+           dialogData = dialogData_ZH; 
+           texts = textsZH;            
+           langToggle.textContent = "中 / 英";
+           enContent.forEach(el => el.style.display = 'none');
+           zhContent.forEach(el => el.style.display = 'block');
+      } else {
+           currentLang = 'en';
+           dialogData = dialogData_EN;
+           texts = textsEN;
+           langToggle.textContent = "EN / CN";
+           enContent.forEach(el => el.style.display = 'block');
+           zhContent.forEach(el => el.style.display = 'none');
+      }
+      textIdx = 0; charIdx = 0; isDeleting = false;
+      if(rpgDialogue.classList.contains('active')) closeDialogue();
+      if (!rpgDialogue.classList.contains('active') && idleInterval) {
+           startIdleTips();
+      }
+    });
+ 
+    let mouseX = window.innerWidth / 2;
+    let mouseY = 100;
+ 
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if(cursorDot) { cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`; }
+      if(cursorOutline) { cursorOutline.animate({ left: `${mouseX}px`, top: `${mouseY}px` }, { duration: 500, fill: "forwards" }); }
+      if (window.innerWidth > 768 && container) {
+        const rx = (window.innerWidth / 2 - mouseX) / 50;
+        const ry = (window.innerHeight / 2 - mouseY) / 50;
+        container.style.transform = `rotateY(${rx * -1}deg) rotateX(${ry}deg)`;
+        const rect = container.getBoundingClientRect();
+        container.style.setProperty("--mouse-x", `${mouseX - rect.left}px`);
+        container.style.setProperty("--mouse-y", `${mouseY - rect.top}px`);
+      }
+      pupils.forEach(p => {
+        const rect = p.parentElement.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        const angle = Math.atan2(mouseY - cy, mouseX - cx);
+        const dist = Math.min(6, Math.hypot(mouseX - cx, mouseY - cy) / 10);
+        p.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px))`;
+      });
+    });
+ 
+    window.addEventListener('scroll', () => {
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      const pb = document.getElementById("progress-bar");
+      if(pb) pb.style.width = scrolled + "%";
+      if(botContainer && window.innerWidth > 768) {
+        if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
+        else { botContainer.classList.remove('fixed-mode'); }
+      }
+    });
+ 
+    function botSay(text, duration = 2000) {
+      if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
+      botSpeech.textContent = text;
+      botContainer.classList.add('speaking');
+      if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
+      botContainer.speechTimer = setTimeout(() => {
+        botContainer.classList.remove('speaking');
+      }, duration);
     }
- 
-   window.closeVideoModal = function() {
-     videoModal.classList.remove('show');
-     guardianVideo.pause(); 
-     // 🔥 机器人归位
-     botContainer.classList.remove('guide-mode');
-     const backText = currentLang === 'en' ? "Did you see that mechanism?" : "看到那个机械结构了吗？";
-     setTimeout(() => botSay(backText, 3000), 500);
+
+    // --- 🎬 视频控制逻辑 ---
+    const videoModal = document.getElementById('video-modal');
+    const guardianVideo = document.getElementById('guardian-video');
+
+    window.openVideoModal = function() {
+      videoModal.classList.add('show');
+      // 🔥 机器人进入引导模式
+      botContainer.classList.add('guide-mode');
+      const clickText = currentLang === 'en' ? "Click the Play button here! 👉" : "请点击中间的播放按钮！👉";
+      botSay(clickText, 4000); 
+      closeDialogue(); 
+    }
+
+    window.closeVideoModal = function() {
+      videoModal.classList.remove('show');
+      guardianVideo.pause(); 
+      // 🔥 机器人归位
+      botContainer.classList.remove('guide-mode');
+      const backText = currentLang === 'en' ? "Did you see that mechanism?" : "看到那个机械结构了吗？";
+      setTimeout(() => botSay(backText, 3000), 500);
     }
     
-   videoModal.addEventListener('click', (e) => {
-     if(e.target === videoModal) closeVideoModal();
-   });
- 
-   function showDialogueNode(nodeKey, isFastMode = false) {
-     // 🔥 拦截播放指令
-     if (nodeKey === 'play_video') {
-        const loadingText = currentLang === 'en' ? "Accessing Video Feed..." : "正在接入视频信号...";
-        botSay(loadingText, 2000);
-        setTimeout(() => {
-            openVideoModal();
-        }, 1000);
-        return; 
-     }
- 
-     if(nodeKey === 'close') { 
-          closeDialogue(); 
-          botContainer.classList.add('interaction-done');
-          const byeText = currentLang === 'en' ? "Nice chatting with you!" : "很高兴与你交谈！";
-          botSay(byeText, 3000); 
-          return; 
-     }   
+    videoModal.addEventListener('click', (e) => {
+      if(e.target === videoModal) closeVideoModal();
+    });
+
+    function showDialogueNode(nodeKey, isFastMode = false) {
+      // 🔥 拦截播放指令
+      if (nodeKey === 'play_video') {
+         const loadingText = currentLang === 'en' ? "Accessing Video Feed..." : "正在接入视频信号...";
+         botSay(loadingText, 2000);
+         setTimeout(() => {
+             openVideoModal();
+         }, 1000);
+         return; 
+      }
+
+      if(nodeKey === 'close') { 
+           closeDialogue(); 
+           botContainer.classList.add('interaction-done');
+           const byeText = currentLang === 'en' ? "Nice chatting with you!" : "很高兴与你交谈！";
+           botSay(byeText, 3000); 
+           return; 
+      }   
       
-     const node = dialogData[nodeKey];
-     if(!node) return;
-     rpgOptions.innerHTML = ''; 
-     if(typeTimer) clearInterval(typeTimer);
+      const node = dialogData[nodeKey];
+      if(!node) return;
+      rpgOptions.innerHTML = ''; 
+      if(typeTimer) clearInterval(typeTimer);
  
-     const showButtons = () => {
-          node.options.forEach((opt, idx) => {
-            const btn = document.createElement('div');
-            btn.className = 'rpg-btn'; 
-            btn.textContent = '> ' + opt.text;
-            
-            const isBackAction = opt.text.includes("Back") || opt.text.includes("返回");
+      const showButtons = () => {
+           node.options.forEach((opt, idx) => {
+             const btn = document.createElement('div');
+             btn.className = 'rpg-btn'; 
+             btn.textContent = '> ' + opt.text;
+             
+             const isBackAction = opt.text.includes("Back") || opt.text.includes("返回");
  
-            if(isFastMode) {
-                btn.style.opacity = 1;
-                btn.style.transform = 'translateX(0)';
-                btn.style.animation = 'none'; 
-            } else {
-                btn.style.animationDelay = `${idx * 0.1}s`;
-            }
+             if(isFastMode) {
+                 btn.style.opacity = 1;
+                 btn.style.transform = 'translateX(0)';
+                 btn.style.animation = 'none'; 
+             } else {
+                 btn.style.animationDelay = `${idx * 0.1}s`;
+             }
  
-            btn.onclick = (e) => { 
-                e.stopPropagation(); 
-                showDialogueNode(opt.next, isBackAction); 
-            };
-            rpgOptions.appendChild(btn);
-          });
-     };
+             btn.onclick = (e) => { 
+                 e.stopPropagation(); 
+                 showDialogueNode(opt.next, isBackAction); 
+             };
+             rpgOptions.appendChild(btn);
+           });
+      };
  
-     if (isFastMode) {
-          rpgText.textContent = node.text; 
-          showButtons();
-     } else {
-          rpgText.textContent = '';
-          let i = 0;
-          typeTimer = setInterval(() => {
-            rpgText.textContent += node.text.charAt(i); i++;
-            if(i >= node.text.length) {
-              clearInterval(typeTimer);
-              showButtons();
-            }
-          }, 30);
-     }
+      if (isFastMode) {
+           rpgText.textContent = node.text; 
+           showButtons();
+      } else {
+           rpgText.textContent = '';
+           let i = 0;
+           typeTimer = setInterval(() => {
+             rpgText.textContent += node.text.charAt(i); i++;
+             if(i >= node.text.length) {
+               clearInterval(typeTimer);
+               showButtons();
+             }
+           }, 30);
+      }
     }
  
-   function openDialogue() {
-     if(rpgDialogue.classList.contains('active')) return;
-     rpgDialogue.classList.add('active');
-     botContainer.classList.add('speaking');
-     botContainer.classList.add('hint-removed'); 
-     showDialogueNode('start');
+    function openDialogue() {
+      if(rpgDialogue.classList.contains('active')) return;
+      rpgDialogue.classList.add('active');
+      botContainer.classList.add('speaking');
+      botContainer.classList.add('hint-removed'); 
+      showDialogueNode('start');
     }
  
-   function closeDialogue() {
-     rpgDialogue.classList.remove('active');
-     botContainer.classList.remove('speaking');
-     setTimeout(() => { rpgText.textContent = ''; rpgOptions.innerHTML = ''; }, 300);
+    function closeDialogue() {
+      rpgDialogue.classList.remove('active');
+      botContainer.classList.remove('speaking');
+      setTimeout(() => { rpgText.textContent = ''; rpgOptions.innerHTML = ''; }, 300);
     }
  
-   if(botContainer) {
-     botContainer.addEventListener('click', (e) => {
-       e.stopPropagation();
-       if (idleInterval) {
-           clearInterval(idleInterval);
-           idleInterval = null;
-       }
-       if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
-       botSpeech.textContent = "";                   
-       botContainer.classList.remove('speaking'); 
-       if(rpgDialogue.classList.contains('active')) closeDialogue();
-       else openDialogue();
-     });
+    if(botContainer) {
+      botContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (idleInterval) {
+            clearInterval(idleInterval);
+            idleInterval = null;
+        }
+        if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
+        botSpeech.textContent = "";                    
+        botContainer.classList.remove('speaking'); 
+        if(rpgDialogue.classList.contains('active')) closeDialogue();
+        else openDialogue();
+      });
     }
  
-   setTimeout(() => {
-        const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
-        botSay(guideText, 60000); 
-   }, 1000);
+    setTimeout(() => {
+         const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
+         botSay(guideText, 60000); 
+    }, 1000);
  
-   const badges = document.querySelectorAll('.nav-badges a');
-   badges.forEach(b => {
-     b.addEventListener('mouseenter', () => {
-       document.body.classList.add('badge-hovering', 'hovering');
-       if(vantaEffect) vantaEffect.setOptions({ color: 0x60a5fa });
-       const accessText = currentLang === 'en' ? "Accessing..." : "正在访问...";
-       botSay(accessText, 1500);
-     });
-     b.addEventListener('mouseleave', () => {
-       document.body.classList.remove('badge-hovering', 'hovering');
-       if(vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6 });
-     });
-     b.addEventListener('click', function(e) {
-       e.preventDefault();
-       const url = this.href;
-       badges.forEach((sib, idx) => {
-           const img = sib.querySelector('img');
-           img.style.animationDelay = `${Math.abs(idx - [...badges].indexOf(this)) * 0.06}s`;
-           img.classList.add('rippling');
-       });
-       setTimeout(() => window.location.href = url, 500);
-     });
-   });
+    const badges = document.querySelectorAll('.nav-badges a');
+    badges.forEach(b => {
+      b.addEventListener('mouseenter', () => {
+        document.body.classList.add('badge-hovering', 'hovering');
+        if(vantaEffect) vantaEffect.setOptions({ color: 0x60a5fa });
+        const accessText = currentLang === 'en' ? "Accessing..." : "正在访问...";
+        botSay(accessText, 1500);
+      });
+      b.addEventListener('mouseleave', () => {
+        document.body.classList.remove('badge-hovering', 'hovering');
+        if(vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6 });
+      });
+      b.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        badges.forEach((sib, idx) => {
+            const img = sib.querySelector('img');
+            img.style.animationDelay = `${Math.abs(idx - [...badges].indexOf(this)) * 0.06}s`;
+            img.classList.add('rippling');
+        });
+        setTimeout(() => window.location.href = url, 500);
+      });
+    });
  
   });
 </script>
