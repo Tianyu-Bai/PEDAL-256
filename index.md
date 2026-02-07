@@ -47,62 +47,66 @@ title: E-Link Home
 </div>
 </div>
 
-<span id="rhd-3d"></span>
+<style>
+  @keyframes swipe-hand {
+    0% { opacity: 0; transform: translate(-50%, -50%) translateX(-20px) rotate(-10deg); }
+    30% { opacity: 1; transform: translate(-50%, -50%) translateX(0px) rotate(0deg); }
+    70% { opacity: 1; transform: translate(-50%, -50%) translateX(20px) rotate(10deg); }
+    100% { opacity: 0; transform: translate(-50%, -50%) translateX(30px) rotate(20deg); }
+  }
+  
+  .interaction-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* 关键：允许鼠标穿透点击模型 */
+    z-index: 10;
+    text-align: center;
+  }
+
+  .hand-icon {
+    font-size: 48px;
+    animation: swipe-hand 2.5s infinite ease-in-out;
+    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); /* 增加阴影更清晰 */
+  }
+  
+  .hand-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin-top: -10px;
+    font-family: sans-serif;
+    opacity: 0.8;
+  }
+</style>
 
 ## 🔬 RHD Connector – Interactive 3D View
-<div align="center">
+
+<div align="center" style="position: relative; max-width: 760px; margin: 0 auto;">
+  
   <model-viewer
     src="{{ '/Videos/RHD_example.glb' | relative_url }}"
     alt="RHD Connector 3D Model"
     camera-controls
     auto-rotate
-    interaction-prompt="auto"
+    interaction-prompt="none" 
     shadow-intensity="1"
     exposure="1.1"
     style="
       width: 100%;
-      max-width: 760px;
       height: 460px;
       background: rgba(15,23,42,0.6);
       border-radius: 16px;
       border: 1px solid rgba(59,130,246,0.3);
-      display: block;
+      outline: none;
     ">
+    
+    <div class="interaction-overlay">
+      <div class="hand-icon">👆</div>
+      <div class="hand-text">Drag to Rotate</div>
+    </div>
+
   </model-viewer>
-
-  <div style="
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 15px;
-    font-family: sans-serif;
-    font-size: 0.9em;
-    color: #cbd5e1;
-  ">
-    <span style="
-      background: rgba(59,130,246,0.1);
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(59,130,246,0.25);
-      display: inline-flex;
-      align-items: center;
-    ">
-      🖱️ &nbsp;<b>Drag</b> to Rotate
-    </span>
-
-    <span style="
-      background: rgba(59,130,246,0.1);
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(59,130,246,0.25);
-      display: inline-flex;
-      align-items: center;
-    ">
-      🔍 &nbsp;<b>Scroll</b> to Zoom
-    </span>
-  </div>
-
 </div>
 
 <span id="en-overview"></span>
