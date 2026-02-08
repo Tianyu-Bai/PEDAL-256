@@ -3,1121 +3,1195 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
- 
+ 
 <title>{{ page.title }}</title>
 <link rel="shortcut icon" type="image/x-icon" href="{{ '/Images/icon/favicon.ico' | relative_url }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ '/Images/icon/favicon-32x32.png' | relative_url }}">
 <link rel="icon" type="image/png" sizes="16x16" href="{{ '/Images/icon/favicon-16x16.png' | relative_url }}">
 <link rel="apple-touch-icon" sizes="180x180" href="{{ '/Images/icon/apple-touch-icon.png' | relative_url }}">
 <link rel="manifest" href="{{ '/Images/icon/site.webmanifest' | relative_url }}">
- 
+ 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
- 
+
+<script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+ 
 <style>
-  /* --- 0. 全局设置 --- */
-  html { scroll-behavior: smooth; } /* 增加平滑滚动基础属性 */
-  .github-only { display: none !important; }
-  .lang-zh { display: none; animation: fadeIn 0.5s ease; }
-  .lang-en { display: block; animation: fadeIn 0.5s ease; }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-   
-  body { 
-    margin: 0; padding: 0; color: #e0e7ff; 
-    font-family: 'Inter', -apple-system, sans-serif; 
-    line-height: 1.6; overflow-x: hidden; 
-    cursor: none; 
-    scrollbar-width: thin; scrollbar-color: #3b82f6 transparent;
-    transition: color 0.5s ease;
-    background-color: #0a0a0f; 
-  }
-  @media (pointer: coarse) { body { cursor: auto; } }
- 
-  /* ⚡️ CSS 性能优化：防止图片加载时布局抖动 */
-  img, video, iframe { 
-      max-width: 100% !important; 
-      height: auto !important; 
-      box-sizing: border-box; 
-      content-visibility: auto; /* 浏览器渲染优化 */
-      /* 默认让图片先稍微透明，加载好后 JS 控制显示，体验更丝滑 */
-      transition: opacity 0.5s ease;
-  }
- 
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
-  ::selection { background: #3b82f6; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
- 
-  /* --- 1. 光标 & 进度条 --- */
-  .cursor-dot, .cursor-outline {
-    position: fixed; top: 0; left: 0; 
-    transform: translate(-50%, -50%); border-radius: 50%; z-index: 99999; pointer-events: none;
-    transition: opacity 0.2s ease, width 0.2s, height 0.2s, background-color 0.2s;
-    will-change: left, top, transform; /* 性能优化：GPU加速 */
-  }
-  .cursor-dot { width: 8px; height: 8px; background-color: #3b82f6; }
-  .cursor-outline { width: 40px; height: 40px; border: 1px solid rgba(59, 130, 246, 0.5); }
-  body.hovering .cursor-outline { width: 60px; height: 60px; background-color: rgba(59, 130, 246, 0.1); border-color: transparent; }
-  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #60a5fa); width: 0%; z-index: 99999; transition: width 0.1s; will-change: width; }
- 
-  /* --- 2. 背景 --- */
-  #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; }
-  #vanta-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 15, 0.4) 100%); pointer-events: none; transition: background 0.5s ease; }
- 
-  #meteor-canvas {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: -4; pointer-events: none; 
-  }
-   
-  /* --- 3. 布局 --- */
-  .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
- 
-  /* --- 4. 机器人核心 --- */
-  #bot-container { 
-    position: absolute; top: 70px; left: 50%; 
-    transform: translateX(-50%); width: 120px; height: 70px; 
-    z-index: 9999; cursor: pointer; 
-    opacity: 1; 
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
-    will-change: transform, top, left, bottom, right; /* 性能优化 */
-  }
-  #bot-container.fixed-mode { position: fixed !important; top: auto !important; left: auto !important; bottom: 30px !important; right: 30px !important; transform: scale(0.9) !important; opacity: 1 !important; }
-  
-  /* --- 🔥 机器人引导模式 (指引播放) --- */
-  .guide-arrow {
-    position: absolute;
-    left: -50px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 40px;
-    color: #ef4444; opacity: 0; pointer-events: none;
-    text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
-    transition: opacity 0.3s;
-    z-index: 100; font-weight: bold;
-  }
-  #bot-container.guide-mode {
-    position: fixed !important; top: 50% !important; right: 15% !important; left: auto !important; bottom: auto !important;
-    transform: translate(0, -50%) scale(1.2) !important; z-index: 100006 !important;
-  }
-  #bot-container.guide-mode .guide-arrow { opacity: 1; animation: point-left 0.8s ease-in-out infinite alternate; }
-  @keyframes point-left { from { transform: translateY(-50%) translateX(0); } to { transform: translateY(-50%) translateX(-15px); } }
-  #bot-container.attention-jump { animation: attention-bounce 0.6s ease infinite alternate; }
-  @keyframes attention-bounce { 0% { transform: translateX(-50%) translateY(0) scale(1); } 100% { transform: translateX(-50%) translateY(-15px) scale(1.1); } }
-  #bot-container.fixed-mode.attention-jump { animation: attention-bounce-fixed 0.6s ease infinite alternate; }
-  @keyframes attention-bounce-fixed { 0% { transform: scale(0.9) translateY(0); } 100% { transform: scale(0.9) translateY(-15px); } }
- 
-  .pulse-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(168, 85, 247, 0.5); opacity: 0; z-index: -1; pointer-events: none; animation: pulse-ring-anim 6s infinite cubic-bezier(0.4, 0, 0.6, 1); transition: opacity 0.5s; }
-  #bot-container.speaking .pulse-ring { animation-duration: 1.5s; border-color: rgba(59, 130, 246, 0.8); }
-  #bot-container.interaction-done .pulse-ring { opacity: 0 !important; animation: none !important; }
-  @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 30% { opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } }
- 
-  .bot-head { width: 100px; height: 50px; background: #ffffff; border: 2px solid #e0e7ff; border-bottom: none; border-radius: 50px 50px 20px 20px; margin: 0 auto; position: relative; box-shadow: 0 -5px 15px rgba(59, 130, 246, 0.15); display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 5px; animation: float-bot 3s ease-in-out infinite; }
-  .bot-eye { width: 28px; height: 28px; background: #bfdbfe; border-radius: 50%; border: 1px solid #93c5fd; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.2s; }
-  .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
-  #bot-container.speaking .bot-eye { background: transparent; border: none; box-shadow: none; width: 22px; height: 12px; border-top: 3px solid #3b82f6; border-radius: 22px 22px 0 0; margin-top: 8px; }
-  #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
-  .bot-mouth { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: #3b82f6; border-radius: 4px; opacity: 0; transition: all 0.2s; }
-  #bot-container.speaking .bot-mouth { opacity: 1; width: 14px; background: transparent; border: 2px solid #3b82f6; animation: mouth-talk 0.25s infinite alternate; }
-  .bot-antenna { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; }
-  .bot-antenna::after { content: ''; position: absolute; top: -6px; left: -3px; width: 8px; height: 8px; border-radius: 50%; animation: pulse-antenna-breath 2s infinite ease-in-out; }
-  #bot-speech { position: absolute; top: -45px; left: 50%; transform: translateX(-50%) scale(0); transform-origin: bottom center; background: rgba(30, 41, 59, 0.95); color: #fff; padding: 6px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; white-space: nowrap; pointer-events: none; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; z-index: 10000; opacity: 0; }
-  #bot-speech::after { content: ''; position: absolute; bottom: -5px; left: 50%; width: 8px; height: 8px; background: inherit; transform: translateX(-50%) rotate(45deg); border-right: 1px solid rgba(59, 130, 246, 0.4); border-bottom: 1px solid rgba(59, 130, 246, 0.4); }
-  #bot-container.speaking #bot-speech { transform: translateX(-50%) scale(1); opacity: 1; }
- 
-  #rpg-dialogue { position: absolute; top: 65px; left: 50%; transform: translateX(-50%) translateY(20px); width: 600px; max-width: 90vw; background: rgba(15, 23, 42, 0.95); border: 1px solid #3b82f6; border-radius: 12px; padding: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 15px rgba(59, 130, 246, 0.2); z-index: 20000; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 10px; font-family: 'JetBrains Mono', monospace; }
-  #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-  #bot-container.fixed-mode #rpg-dialogue { top: auto; bottom: 80px; left: auto; right: 0; transform: translateY(20px); }
-  #bot-container.fixed-mode #rpg-dialogue.active { transform: translateY(0); }
-  #rpg-text { color: #bfdbfe; font-size: 0.9rem; min-height: 40px; line-height: 1.5; }
-  #rpg-cursor { display: inline-block; width: 8px; height: 14px; background: #3b82f6; vertical-align: middle; animation: blink 1s infinite; }
-  #rpg-options { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
-  .rpg-btn { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; text-align: left; transition: all 0.2s; opacity: 0; transform: translateX(-10px); animation: slideIn 0.3s forwards; }
-  .rpg-btn:hover { background: rgba(59, 130, 246, 0.25); border-color: #60a5fa; color: #fff; transform: translateX(2px); }
-  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-  .rpg-close { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #475569; cursor: pointer; }
-  .rpg-close:hover { color: #fff; }
- 
-  /* --- 内容容器 --- */
-  .container { position: relative; padding: 60px 80px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-radius: 20px; box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #3b82f6; opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; z-index: 1; transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; will-change: transform; /* 性能优化 */ }
-  .container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.07), transparent 40%); z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
-  .container:hover::before { opacity: 1; }
-  #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
-  #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
-  #main_content tr { background: rgba(30, 41, 59, 0.8) !important; }    
-  #main_content th { color: #60a5fa; font-weight: 600; }
-  .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
-  .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
-  .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-  .nav-badges a { opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; position: relative; z-index: 2; }
-  .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
-  .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
-  .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
-        
-  /* --- 按钮 & 模式 --- */
-  .controls-container { position: fixed; top: 20px; right: 20px; display: flex; gap: 15px; z-index: 10000; }
-  .ctrl-btn { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease; font-size: 1.2rem; user-select: none; }
-  .ctrl-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
-  #lang-toggle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: bold; width: auto; padding: 0 10px; border-radius: 20px; }
- 
-  /* --- ☁️ 护眼柔光模式 --- */
-  body.light-mode { color: #334155; background-color: #ffffff; }
-  body.light-mode #vanta-bg::after { background: radial-gradient(circle at center, rgba(241, 245, 249, 0.7) 0%, #f1f5f9 100%); }
-  body.light-mode .container { background: rgba(241, 245, 249, 0.9); border-color: rgba(203, 213, 225, 0.6); box-shadow: 0 20px 50px rgba(148, 163, 184, 0.15); backdrop-filter: blur(25px); }
-  body.light-mode #rpg-dialogue { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 10px 30px rgba(148, 163, 184, 0.1); }
-  body.light-mode #rpg-text { color: #334155; }
-  body.light-mode .rpg-btn { background: rgba(226, 232, 240, 0.6); color: #475569; border-color: rgba(203, 213, 225, 0.8); }
-  body.light-mode .rpg-btn:hover { background: #cbd5e1; color: #1e40af; border-color: #94a3b8; }
-  body.light-mode #bot-speech { background: #ffffff; color: #334155; border-color: #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-  body.light-mode .typewriter-container { color: #2563eb; }
-  body.light-mode #main_content table { background: #f8fafc;   box-shadow: none; }
-  body.light-mode #main_content th { color: #1e293b; background: #e2e8f0 !important; border-color: cbd5e1; }
-  body.light-mode #main_content td { border-color: #e2e8f0; color: #334155; } 
-  body.light-mode #main_content tr { background: transparent !important; }
-  body.light-mode #main_content tr:hover { background: rgba(0, 0, 0, 0.03) !important;}
-  body.light-mode .rpg-close { color: #94a3b8; }
-  body.light-mode .rpg-close:hover { color: #ef4444; }
-  body.light-mode .ctrl-btn { background: rgba(255, 255, 255, 0.5); border-color: #cbd5e1; color: #64748b; }
-  body.light-mode .ctrl-btn:hover { background: #ffffff; color: #0f172a; transform: scale(1.05); }
-  body.light-mode .img-caption { color: #2563eb; }
- 
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes float-bot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-  @keyframes blink { 0%, 48%, 52%, 100% { height: 0%; } 50% { height: 100%; } }
-  @keyframes botEnter { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-  @keyframes blink-cursor { from, to { opacity: 1; } 50% { opacity: 0; } }
-  @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
-  @keyframes mouth-talk { 0% { height: 2px; } 100% { height: 8px; border-radius: 50%; } }
-   
-  .welcome-modal {
-    position: fixed; inset: 0; 
-    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
-    z-index: 100001; 
-    display: flex; justify-content: center; align-items: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
-    padding: 20px;
-    cursor: default !important;
-  }
-  .welcome-modal * { cursor: default !important; }
-  .welcome-modal .btn-primary, .welcome-modal .btn-secondary, .welcome-modal .slider { cursor: pointer !important; }
-  .welcome-modal.show { opacity: 1; pointer-events: auto; }
-   
-  .welcome-modal:hover ~ .cursor-dot, .welcome-modal:hover ~ .cursor-outline { opacity: 0 !important; }
-   
-  .modal-content {
-    background: rgba(30, 41, 59, 0.85); 
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(20px);
-    padding: 30px; border-radius: 20px; 
-    width: 90%; max-width: 400px; text-align: center;
-    margin: auto; 
-    max-height: 90vh; overflow-y: auto; 
-    transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative; 
-    padding-bottom: 140px; 
-  }
-  .welcome-modal.show .modal-content { transform: scale(1); }
-   
-  .modal-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; font-weight: 600; }
-  .modal-body { font-size: 1rem; color: #cbd5e1; margin-bottom: 25px; line-height: 1.6; }
-  .m-zh { display: none; }
- 
-  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
-  .btn-primary, .btn-secondary {
-    padding: 12px 20px; border-radius: 10px; font-weight: 600; transition: all 0.2s;
-    border: none; font-family: inherit;
-  }
-  .btn-primary { background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
-  .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
-  .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
-  .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
- 
-  .modal-lang-switch-container {
-    position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
-    display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; 
-  }
-  .lang-title { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-  .lang-row { display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 0.85rem; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; }
-  .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-  .switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 20px; }
-  .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
-  input:checked + .slider { background-color: #3b82f6; }
-  input:focus + .slider { box-shadow: 0 0 1px #3b82f6; }
-  input:checked + .slider:before { transform: translateX(20px); }
- 
-  .modal-watermark {
-    position: absolute; bottom: 20px; left: 0; width: 100%; 
-    text-align: center; font-size: 0.65rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace; pointer-events: none; opacity: 0.6; 
-  }
+  /* --- 0. 全局设置 --- */
+  .github-only { display: none !important; }
+  .lang-zh { display: none; animation: fadeIn 0.5s ease; }
+  .lang-en { display: block; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  
+  /* 🔥 Lenis 平滑滚动推荐样式 (不影响原有设计) */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped { overflow: hidden; }
+  .lenis.lenis-scrolling iframe { pointer-events: none; }
 
-  /* --- 🎬 视频弹窗样式 --- */
-  .video-modal {
-    position: fixed; inset: 0;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 100005;
-    display: flex; justify-content: center; align-items: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-    backdrop-filter: blur(10px);
-  }
-  .video-modal.show { opacity: 1; pointer-events: auto; }
+  body { 
+    margin: 0; padding: 0; color: #e0e7ff; 
+    font-family: 'Inter', -apple-system, sans-serif; 
+    line-height: 1.6; overflow-x: hidden; 
+    cursor: none; 
+    scrollbar-width: thin; scrollbar-color: #3b82f6 transparent;
+    transition: color 0.5s ease;
+    background-color: #0a0a0f; 
+  }
+  @media (pointer: coarse) { body { cursor: auto; } }
+ 
+  /* ⚡️ CSS 性能优化：防止图片加载时布局抖动 */
+  img, video, iframe { 
+      max-width: 100% !important; 
+      height: auto !important; 
+      box-sizing: border-box; 
+      content-visibility: auto; /* 浏览器渲染优化 */
+      /* 默认让图片先稍微透明，加载好后 JS 控制显示，体验更丝滑 */
+      transition: opacity 0.5s ease;
+  }
+ 
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
+  ::selection { background: #3b82f6; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
+ 
+  /* --- 1. 光标 & 进度条 --- */
+  .cursor-dot, .cursor-outline {
+    position: fixed; top: 0; left: 0; 
+    transform: translate(-50%, -50%); border-radius: 50%; z-index: 99999; pointer-events: none;
+    transition: opacity 0.2s ease, width 0.2s, height 0.2s, background-color 0.2s;
+  }
+  .cursor-dot { width: 8px; height: 8px; background-color: #3b82f6; }
+  .cursor-outline { width: 40px; height: 40px; border: 1px solid rgba(59, 130, 246, 0.5); }
+  body.hovering .cursor-outline { width: 60px; height: 60px; background-color: rgba(59, 130, 246, 0.1); border-color: transparent; }
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #60a5fa); width: 0%; z-index: 99999; transition: width 0.1s; }
+ 
+  /* --- 2. 背景 --- */
+  #vanta-bg { position: fixed; z-index: -5; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; }
+  #vanta-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 15, 0.4) 100%); pointer-events: none; transition: background 0.5s ease; }
+  
+  #meteor-canvas {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -4; pointer-events: none; 
+  }
+    
+  /* --- 3. 布局 --- */
+  .layout-wrapper { position: relative; max-width: 860px; margin: 100px auto 60px; z-index: 10; perspective: 1000px; }
+ 
+  /* --- 4. 机器人核心 --- */
+  #bot-container { 
+    position: absolute; top: 70px; left: 50%; 
+    transform: translateX(-50%); width: 120px; height: 70px; 
+    z-index: 9999; cursor: pointer; 
+    opacity: 1; 
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
+  }
+  #bot-container.fixed-mode { position: fixed !important; top: auto !important; left: auto !important; bottom: 30px !important; right: 30px !important; transform: scale(0.9) !important; opacity: 1 !important; }
+   
+  /* --- 🔥 机器人引导模式 (指引播放) --- */
+  /* 1. 箭头样式：默认隐藏 */
+  .guide-arrow {
+    position: absolute;
+    left: -50px; /* 在机器人左边 */
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 40px;
+    color: #ef4444; /* 醒目的红色 */
+    opacity: 0;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    transition: opacity 0.3s;
+    z-index: 100;
+    font-weight: bold;
+  }
 
-  .video-content {
-    width: 90%; max-width: 800px;
-    background: rgba(15, 23, 42, 1);
-    border: 1px solid #3b82f6;
-    border-radius: 12px;
-    box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
-    overflow: hidden;
-    transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .video-modal.show .video-content { transform: scale(1); }
+  /* 2. 当机器人进入 guide-mode 时，移动它的位置到视频旁边 */
+  #bot-container.guide-mode {
+    position: fixed !important;
+    top: 50% !important;
+    right: 15% !important; /* 停在屏幕右侧 */
+    left: auto !important;
+    bottom: auto !important;
+    transform: translate(0, -50%) scale(1.2) !important;
+    z-index: 100006 !important; /* 比视频弹窗还要高 */
+  }
 
-  .video-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 20px;
-    background: rgba(59, 130, 246, 0.1);
-    border-bottom: 1px solid rgba(59, 130, 246, 0.3);
-    color: #93c5fd; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
-  }
-  .video-close {
-    cursor: pointer; font-size: 1.5rem; line-height: 1; color: #64748b; transition: color 0.2s;
-  }
-  .video-close:hover { color: #ef4444; }
+  /* 3. 引导模式下显示箭头，并让箭头跳动 */
+  #bot-container.guide-mode .guide-arrow {
+    opacity: 1;
+    animation: point-left 0.8s ease-in-out infinite alternate;
+  }
 
-  video#guardian-video {
-    width: 100%; display: block; outline: none;
-  }
- 
-  @media (max-width: 768px) { 
-    #bot-speech {
-      white-space: normal !important; max-width: 200px !important; width: max-content !important; height: auto !important; line-height: 1.5;
-      left: auto !important; right: 0 !important; top: -55px !important; border-radius: 12px 12px 0 12px !important; 
-      transform: translateX(0) scale(0) !important; transform-origin: bottom right !important; 
-    }
-    #bot-container.speaking #bot-speech { transform: translateX(0) scale(1) !important; }
-    .cursor-dot, .cursor-outline { display: none; } 
-    .layout-wrapper { margin-top: 40px !important; }
-    .controls-container { top: 15px; right: 15px; gap: 8px; }
-    .ctrl-btn { width: 35px; height: 35px; font-size: 1rem; }
-    #lang-toggle { font-size: 0.7rem; padding: 0 8px; }
-    #bot-container { 
-      display: block !important; position: fixed !important; top: auto !important; left: auto !important;
-      right: 20px !important; bottom: 30px !important; transform: scale(0.85) translateX(0) !important;
-      opacity: 1 !important; animation: none !important;
-    }
-    #bot-container #rpg-dialogue {
-      position: fixed !important; top: auto !important; bottom: 100px !important; left: 10px !important; right: 10px !important;
-      width: auto !important; max-width: none !important; transform: translateY(10px) !important;
-    }
-    #bot-container #rpg-dialogue.active { transform: translateY(0) !important; }
-    .container { padding: 30px 20px; } 
-    #main_content { overflow-x: auto; }
-    .modal-content { padding-bottom: 140px; } 
+  /* 4. 箭头动画：向左指 */
+  @keyframes point-left {
+    from { transform: translateY(-50%) translateX(0); }
+    to { transform: translateY(-50%) translateX(-15px); }
+  }
 
-    #bot-container.guide-mode {
-      top: auto !important; bottom: 20% !important; left: 50% !important; right: auto !important;
-      transform: translateX(-50%) scale(1) !important;
-    }
-    .guide-arrow { left: 50%; top: -40px; transform: translateX(-50%) rotate(90deg); }
-    #bot-container.guide-mode .guide-arrow { animation: point-up 0.8s ease-in-out infinite alternate; }
-    @keyframes point-up {
-      from { transform: translateX(-50%) rotate(-90deg) translateY(0); }
-      to { transform: translateX(-50%) rotate(-90deg) translateY(-15px); }
-    }
-  }
+  /* 跳动动画 */
+  #bot-container.attention-jump { animation: attention-bounce 0.6s ease infinite alternate; }
+  @keyframes attention-bounce { 0% { transform: translateX(-50%) translateY(0) scale(1); } 100% { transform: translateX(-50%) translateY(-15px) scale(1.1); } }
+  #bot-container.fixed-mode.attention-jump { animation: attention-bounce-fixed 0.6s ease infinite alternate; }
+  @keyframes attention-bounce-fixed { 0% { transform: scale(0.9) translateY(0); } 100% { transform: scale(0.9) translateY(-15px); } }
+ 
+  /* 涟漪光圈 */
+  .pulse-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(168, 85, 247, 0.5); opacity: 0; z-index: -1; pointer-events: none; animation: pulse-ring-anim 6s infinite cubic-bezier(0.4, 0, 0.6, 1); transition: opacity 0.5s; }
+  #bot-container.speaking .pulse-ring { animation-duration: 1.5s; border-color: rgba(59, 130, 246, 0.8); }
+  #bot-container.interaction-done .pulse-ring { opacity: 0 !important; animation: none !important; }
+  @keyframes pulse-ring-anim { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; } 30% { opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } }
+ 
+  .bot-head { width: 100px; height: 50px; background: #ffffff; border: 2px solid #e0e7ff; border-bottom: none; border-radius: 50px 50px 20px 20px; margin: 0 auto; position: relative; box-shadow: 0 -5px 15px rgba(59, 130, 246, 0.15); display: flex; justify-content: center; align-items: center; gap: 10px; padding-top: 5px; animation: float-bot 3s ease-in-out infinite; }
+  .bot-eye { width: 28px; height: 28px; background: #bfdbfe; border-radius: 50%; border: 1px solid #93c5fd; position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .bot-pupil { width: 14px; height: 14px; background: #1e3a8a; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transition: opacity 0.2s; }
+  .bot-lid { position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: #ffffff; z-index: 10; animation: blink 4s infinite; }
+  #bot-container.speaking .bot-eye { background: transparent; border: none; box-shadow: none; width: 22px; height: 12px; border-top: 3px solid #3b82f6; border-radius: 22px 22px 0 0; margin-top: 8px; }
+  #bot-container.speaking .bot-pupil, #bot-container.speaking .bot-lid { opacity: 0; }
+  .bot-mouth { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: #3b82f6; border-radius: 4px; opacity: 0; transition: all 0.2s; }
+  #bot-container.speaking .bot-mouth { opacity: 1; width: 14px; background: transparent; border: 2px solid #3b82f6; animation: mouth-talk 0.25s infinite alternate; }
+  .bot-antenna { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 2px; height: 25px; background: #e0e7ff; }
+  .bot-antenna::after { content: ''; position: absolute; top: -6px; left: -3px; width: 8px; height: 8px; border-radius: 50%; animation: pulse-antenna-breath 2s infinite ease-in-out; }
+  #bot-speech { position: absolute; top: -45px; left: 50%; transform: translateX(-50%) scale(0); transform-origin: bottom center; background: rgba(30, 41, 59, 0.95); color: #fff; padding: 6px 14px; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; white-space: nowrap; pointer-events: none; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; z-index: 10000; opacity: 0; }
+  #bot-speech::after { content: ''; position: absolute; bottom: -5px; left: 50%; width: 8px; height: 8px; background: inherit; transform: translateX(-50%) rotate(45deg); border-right: 1px solid rgba(59, 130, 246, 0.4); border-bottom: 1px solid rgba(59, 130, 246, 0.4); }
+  #bot-container.speaking #bot-speech { transform: translateX(-50%) scale(1); opacity: 1; }
+ 
+  #rpg-dialogue { position: absolute; top: 65px; left: 50%; transform: translateX(-50%) translateY(20px); width: 600px; max-width: 90vw; background: rgba(15, 23, 42, 0.95); border: 1px solid #3b82f6; border-radius: 12px; padding: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 15px rgba(59, 130, 246, 0.2); z-index: 20000; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 10px; font-family: 'JetBrains Mono', monospace; }
+  #rpg-dialogue.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  #bot-container.fixed-mode #rpg-dialogue { top: auto; bottom: 80px; left: auto; right: 0; transform: translateY(20px); }
+  #bot-container.fixed-mode #rpg-dialogue.active { transform: translateY(0); }
+  #rpg-text { color: #bfdbfe; font-size: 0.9rem; min-height: 40px; line-height: 1.5; }
+  #rpg-cursor { display: inline-block; width: 8px; height: 14px; background: #3b82f6; vertical-align: middle; animation: blink 1s infinite; }
+  #rpg-options { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+  .rpg-btn { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; text-align: left; transition: all 0.2s; opacity: 0; transform: translateX(-10px); animation: slideIn 0.3s forwards; }
+  .rpg-btn:hover { background: rgba(59, 130, 246, 0.25); border-color: #60a5fa; color: #fff; transform: translateX(2px); }
+  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+  .rpg-close { position: absolute; top: 5px; right: 8px; font-size: 18px; color: #475569; cursor: pointer; }
+  .rpg-close:hover { color: #fff; }
+ 
+  /* --- 内容容器 --- */
+  .container { position: relative; padding: 60px 80px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-radius: 20px; box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #3b82f6; opacity: 0; animation: fadeUp 0.8s ease-out 0.3s forwards; z-index: 1; transform-style: preserve-3d; transition: transform 0.1s ease-out; overflow: hidden; }
+  .container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.07), transparent 40%); z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
+  .container:hover::before { opacity: 1; }
+  #main_content table { width: 100% !important; border-collapse: collapse; margin: 20px 0; background: rgba(10, 10, 15, 0.3); border-radius: 8px; overflow: hidden; }
+  #main_content th, #main_content td { padding: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
+  #main_content tr { background: rgba(30, 41, 59, 0.8) !important; }    
+  #main_content th { color: #60a5fa; font-weight: 600; }
+  .typewriter-container { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: #93c5fd; min-height: 1.6em; margin-bottom: 2rem; }
+  .typewriter-cursor { animation: blink-cursor 0.8s infinite; border-left: 3px solid #3b82f6; margin-left: 2px; }
+  .nav-badges { margin: 2rem 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .nav-badges a { opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; position: relative; z-index: 2; }
+  .nav-badges img { height: 28px !important; width: auto; border-radius: 50px; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15); border: 1.5px solid white; transition: all 0.3s; mix-blend-mode: normal !important; }
+  .nav-badges a:hover img { animation: float-hover 2s ease-in-out infinite; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); transform: scale(1.1); }
+  .nav-badges img.rippling { animation: ripple-wave 0.5s forwards; }
+        
+  /* --- 按钮 & 模式 --- */
+  .controls-container { position: fixed; top: 20px; right: 20px; display: flex; gap: 15px; z-index: 10000; }
+  .ctrl-btn { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease; font-size: 1.2rem; user-select: none; }
+  .ctrl-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
+  #lang-toggle { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: bold; width: auto; padding: 0 10px; border-radius: 20px; }
+ 
+  /* --- ☁️ 护眼柔光模式 --- */
+  body.light-mode { color: #334155; background-color: #ffffff; }
+  body.light-mode #vanta-bg::after { background: radial-gradient(circle at center, rgba(241, 245, 249, 0.7) 0%, #f1f5f9 100%); }
+  body.light-mode .container { background: rgba(241, 245, 249, 0.9); border-color: rgba(203, 213, 225, 0.6); box-shadow: 0 20px 50px rgba(148, 163, 184, 0.15); backdrop-filter: blur(25px); }
+  body.light-mode #rpg-dialogue { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 10px 30px rgba(148, 163, 184, 0.1); }
+  body.light-mode #rpg-text { color: #334155; }
+  body.light-mode .rpg-btn { background: rgba(226, 232, 240, 0.6); color: #475569; border-color: rgba(203, 213, 225, 0.8); }
+  body.light-mode .rpg-btn:hover { background: #cbd5e1; color: #1e40af; border-color: #94a3b8; }
+  body.light-mode #bot-speech { background: #ffffff; color: #334155; border-color: #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+  body.light-mode .typewriter-container { color: #2563eb; }
+  body.light-mode #main_content table { background: #f8fafc;   box-shadow: none; }
+  body.light-mode #main_content th { color: #1e293b; background: #e2e8f0 !important; border-color: cbd5e1; }
+  body.light-mode #main_content td { border-color: #e2e8f0; color: #334155; } 
+  body.light-mode #main_content tr { background: transparent !important; }
+  body.light-mode #main_content tr:hover { background: rgba(0, 0, 0, 0.03) !important;}
+  body.light-mode .rpg-close { color: #94a3b8; }
+  body.light-mode .rpg-close:hover { color: #ef4444; }
+  body.light-mode .ctrl-btn { background: rgba(255, 255, 255, 0.5); border-color: #cbd5e1; color: #64748b; }
+  body.light-mode .ctrl-btn:hover { background: #ffffff; color: #0f172a; transform: scale(1.05); }
+  body.light-mode .img-caption { color: #2563eb; }
+ 
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes float-bot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  @keyframes blink { 0%, 48%, 52%, 100% { height: 0%; } 50% { height: 100%; } }
+  @keyframes botEnter { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes blink-cursor { from, to { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes pulse-antenna-breath { 0%, 100% { background: #3b82f6; box-shadow: 0 0 5px #3b82f6; } 50% { background: #93c5fd; box-shadow: 0 0 15px #60a5fa, 0 0 8px #ffffff; } }
+  @keyframes mouth-talk { 0% { height: 2px; } 100% { height: 8px; border-radius: 50%; } }
+   
+  .welcome-modal {
+    position: fixed; inset: 0; 
+    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+    z-index: 100001; 
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+    padding: 20px;
+    cursor: default !important;
+  }
+  .welcome-modal * { cursor: default !important; }
+  .welcome-modal .btn-primary, .welcome-modal .btn-secondary, .welcome-modal .slider { cursor: pointer !important; }
+  .welcome-modal.show { opacity: 1; pointer-events: auto; }
+   
+  .welcome-modal:hover ~ .cursor-dot, .welcome-modal:hover ~ .cursor-outline { opacity: 0 !important; }
+   
+  .modal-content {
+    background: rgba(30, 41, 59, 0.85); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(20px);
+    padding: 30px; border-radius: 20px; 
+    width: 90%; max-width: 400px; text-align: center;
+    margin: auto; 
+    max-height: 90vh; overflow-y: auto; 
+    transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; 
+    padding-bottom: 140px; 
+  }
+  .welcome-modal.show .modal-content { transform: scale(1); }
+   
+  .modal-title { font-size: 1.5rem; margin-bottom: 15px; color: #fff; font-weight: 600; }
+  .modal-body { font-size: 1rem; color: #cbd5e1; margin-bottom: 25px; line-height: 1.6; }
+  .m-zh { display: none; }
+ 
+  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
+  .btn-primary, .btn-secondary {
+    padding: 12px 20px; border-radius: 10px; font-weight: 600; transition: all 0.2s;
+    border: none; font-family: inherit;
+  }
+  .btn-primary { background: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+  .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+  .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
+  .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
+ 
+  .modal-lang-switch-container {
+    position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); 
+    display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; 
+  }
+  .lang-title { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+  .lang-row { display: flex; align-items: center; gap: 8px; justify-content: center; font-size: 0.85rem; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; }
+  .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 20px; }
+  .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+  input:checked + .slider { background-color: #3b82f6; }
+  input:focus + .slider { box-shadow: 0 0 1px #3b82f6; }
+  input:checked + .slider:before { transform: translateX(20px); }
+ 
+  .modal-watermark {
+    position: absolute; bottom: 20px; left: 0; width: 100%; 
+    text-align: center; font-size: 0.65rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace; pointer-events: none; opacity: 0.6; 
+  }
+
+  /* --- 🎬 视频弹窗样式 --- */
+  .video-modal {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.9); /* 深色背景 */
+    z-index: 100005; /* 只有它能盖住机器人 */
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  .video-modal.show { opacity: 1; pointer-events: auto; }
+
+  .video-content {
+    width: 90%; max-width: 800px;
+    background: rgba(15, 23, 42, 1);
+    border: 1px solid #3b82f6;
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
+    overflow: hidden;
+    transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .video-modal.show .video-content { transform: scale(1); }
+
+  .video-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 20px;
+    background: rgba(59, 130, 246, 0.1);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+    color: #93c5fd; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+  }
+  .video-close {
+    cursor: pointer; font-size: 1.5rem; line-height: 1; color: #64748b; transition: color 0.2s;
+  }
+  .video-close:hover { color: #ef4444; }
+
+  video#guardian-video {
+    width: 100%; display: block; outline: none;
+  }
+ 
+  @media (max-width: 768px) { 
+    #bot-speech {
+      white-space: normal !important; max-width: 200px !important; width: max-content !important; height: auto !important; line-height: 1.5;
+      left: auto !important; right: 0 !important; top: -55px !important; border-radius: 12px 12px 0 12px !important; 
+      transform: translateX(0) scale(0) !important; transform-origin: bottom right !important; 
+    }
+    #bot-container.speaking #bot-speech { transform: translateX(0) scale(1) !important; }
+    .cursor-dot, .cursor-outline { display: none; } 
+    .layout-wrapper { margin-top: 40px !important; }
+    .controls-container { top: 15px; right: 15px; gap: 8px; }
+    .ctrl-btn { width: 35px; height: 35px; font-size: 1rem; }
+    #lang-toggle { font-size: 0.7rem; padding: 0 8px; }
+    #bot-container { 
+      display: block !important; position: fixed !important; top: auto !important; left: auto !important;
+      right: 20px !important; bottom: 30px !important; transform: scale(0.85) translateX(0) !important;
+      opacity: 1 !important; animation: none !important;
+    }
+    #bot-container #rpg-dialogue {
+      position: fixed !important; top: auto !important; bottom: 100px !important; left: 10px !important; right: 10px !important;
+      width: auto !important; max-width: none !important; transform: translateY(10px) !important;
+    }
+    #bot-container #rpg-dialogue.active { transform: translateY(0) !important; }
+    .container { padding: 30px 20px; } 
+    #main_content { overflow-x: auto; }
+    .modal-content { padding-bottom: 140px; } 
+
+    /* 手机屏幕窄，机器人不能在右边，得跑到下面指上面 */
+    #bot-container.guide-mode {
+      top: auto !important;
+      bottom: 20% !important; /* 在视频下方 */
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) scale(1) !important;
+    }
+     
+    /* 箭头改为向上指 */
+    .guide-arrow {
+      left: 50%; top: -40px;
+      transform: translateX(-50%) rotate(90deg); /* 旋转90度向上 */
+    }
+     
+    /* 手机端箭头动画：向上跳 */
+    #bot-container.guide-mode .guide-arrow {
+      animation: point-up 0.8s ease-in-out infinite alternate;
+    }
+     
+    @keyframes point-up {
+      from { transform: translateX(-50%) rotate(-90deg) translateY(0); }
+      to { transform: translateX(-50%) rotate(-90deg) translateY(-15px); }
+    }
+  }
 </style>
 
- <script type="module"
-  src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+ <script type="module"
+  src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
 </script>
- 
+ 
 </head>
- 
+ 
 <body>
 <div id="video-modal" class="video-modal">
-  <div class="video-content">
-    <div class="video-header">
-      <span>📽️ DEMO REVIEW PROTOCOL</span>
-      <span class="video-close" onclick="closeVideoModal()">×</span>
-    </div>
-    <video id="guardian-video" controls playsinline>
-      <source src="https://github.com/user-attachments/assets/3d1f7740-a5a1-44a2-a549-0b52da2e9e2e" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
+  <div class="video-content">
+    <div class="video-header">
+      <span>📽️ DEMO REVIEW PROTOCOL</span>
+      <span class="video-close" onclick="closeVideoModal()">×</span>
+    </div>
+    <video id="guardian-video" controls playsinline>
+      <source src="https://github.com/user-attachments/assets/3d1f7740-a5a1-44a2-a549-0b52da2e9e2e" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
 </div>
 
 <div id="welcome-modal" class="welcome-modal">
-  <div class="modal-content">
-    <div class="modal-title">
-      <span class="m-en">✨ Hi, Welcome to E-Link!</span>
-      <span class="m-zh">✨ 嗨！欢迎访问E-Link！</span>
-    </div>
-    <div class="modal-body">
-      <span class="m-en">
-       We recommend <b>Dark Mode</b> for a more immersive experience<br>
-       <span style="font-size: 0.85rem; color: #94a3b8;">
-         (Feel free to tailor your view at the top-right corner)
-       </span>
-      </span>
-      <span class="m-zh">
-       为呈现最佳<b>视觉体验</b>，建议保留<b>深色设置</b> <br>
-       <span style="font-size: 0.85rem; color: #94a3b8;">
-         (您可随时通过右上角切换语言或主题)
-       </span>
-      </span>
-    </div>
-    <div class="modal-btns">
-      <button id="modal-keep-dark-btn" class="btn-primary">
-        <span class="m-en">🌙 Keep Dark Mode</span>
-        <span class="m-zh">🌙 保持深色 (推荐)</span>
-      </button>
-      <button id="modal-switch-light-btn" class="btn-secondary">
-        <span class="m-en">🔆 Switch to Light Mode</span>
-        <span class="m-zh">🔆 切换到浅色</span>
-      </button>
-    </div>
-    <div class="modal-lang-switch-container">
-      <span class="lang-title">Language / 语言</span>
-      <div class="lang-row">
-        <span>English</span>
-        <label class="switch">
-          <input type="checkbox" id="modal-lang-toggle-checkbox">
-          <span class="slider round"></span>
-        </label>
-        <span>简体中文</span>
-      </div>
-    </div>
-    <div class="modal-watermark">
-      <span class="m-en">Webpage Designed by Tianyu Bai © 2026</span>
-      <span class="m-zh">本网页由 Tianyu Bai 设计制作 © 2026</span>
-    </div>
-  </div>
+  <div class="modal-content">
+    <div class="modal-title">
+      <span class="m-en">✨ Hi, Welcome to E-Link!</span>
+      <span class="m-zh">✨ 嗨！欢迎访问E-Link！</span>
+    </div>
+    <div class="modal-body">
+      <span class="m-en">
+       We recommend <b>Dark Mode</b> for a more immersive experience<br>
+       <span style="font-size: 0.85rem; color: #94a3b8;">
+         (Feel free to tailor your view at the top-right corner)
+       </span>
+      </span>
+      <span class="m-zh">
+       为呈现最佳<b>视觉体验</b>，建议保留<b>深色设置</b> <br>
+       <span style="font-size: 0.85rem; color: #94a3b8;">
+         (您可随时通过右上角切换语言或主题)
+       </span>
+      </span>
+    </div>
+    <div class="modal-btns">
+      <button id="modal-keep-dark-btn" class="btn-primary">
+        <span class="m-en">🌙 Keep Dark Mode</span>
+        <span class="m-zh">🌙 保持深色 (推荐)</span>
+      </button>
+      <button id="modal-switch-light-btn" class="btn-secondary">
+        <span class="m-en">🔆 Switch to Light Mode</span>
+        <span class="m-zh">🔆 切换到浅色</span>
+      </button>
+    </div>
+    <div class="modal-lang-switch-container">
+      <span class="lang-title">Language / 语言</span>
+      <div class="lang-row">
+        <span>English</span>
+        <label class="switch">
+          <input type="checkbox" id="modal-lang-toggle-checkbox">
+          <span class="slider round"></span>
+        </label>
+        <span>简体中文</span>
+      </div>
+    </div>
+    <div class="modal-watermark">
+      <span class="m-en">Webpage Designed by Tianyu Bai © 2026</span>
+      <span class="m-zh">本网页由 Tianyu Bai 设计制作 © 2026</span>
+    </div>
+  </div>
 </div>
- 
+ 
 <div class="controls-container">
-  <div id="lang-toggle" class="ctrl-btn" title="Switch Language">EN/CN</div>
-  <div id="theme-toggle" class="ctrl-btn" title="Switch Theme">☀️</div>
+  <div id="lang-toggle" class="ctrl-btn" title="Switch Language">EN/CN</div>
+  <div id="theme-toggle" class="ctrl-btn" title="Switch Theme">☀️</div>
 </div>
- 
+ 
 <div class="cursor-dot"></div>
 <div class="cursor-outline"></div>
 <div id="progress-bar"></div>
 <div id="vanta-bg"></div>
- 
+ 
 <canvas id="meteor-canvas"></canvas>
- 
+ 
 <div id="bot-container" title="Chat with me!">
-  <div class="guide-arrow">➤</div>
-  <div class="pulse-ring"></div>
-  <div id="bot-speech">System Online.</div>
-  <div id="rpg-dialogue">
-    <div class="rpg-close">×</div>
-    <div><span id="rpg-text">Initializing...</span><span id="rpg-cursor"></span></div>
-    <div id="rpg-options"></div>
-  </div>
-  <div class="bot-antenna"></div>
-  <div class="bot-head">
-    <div class="bot-eye"><div class="bot-pupil"></div><div class="bot-lid"></div></div>
-    <div class="bot-eye"><div class="bot-pupil"></div><div class="bot-lid"></div></div>
-    <div class="bot-mouth"></div>
-  </div>
+  <div class="guide-arrow">➤</div>
+  <div class="pulse-ring"></div>
+  <div id="bot-speech">System Online.</div>
+  <div id="rpg-dialogue">
+    <div class="rpg-close">×</div>
+    <div><span id="rpg-text">Initializing...</span><span id="rpg-cursor"></span></div>
+    <div id="rpg-options"></div>
+  </div>
+  <div class="bot-antenna"></div>
+  <div class="bot-head">
+    <div class="bot-eye"><div class="bot-pupil"></div><div class="bot-lid"></div></div>
+    <div class="bot-eye"><div class="bot-pupil"></div><div class="bot-lid"></div></div>
+    <div class="bot-mouth"></div>
+  </div>
 </div>
- 
+ 
 <div class="layout-wrapper">
-  <div class="container">
-    <section id="main_content">
-      {{ content }}
-    </section>
- 
-    <div class="typewriter-container">
-      <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
-    </div>
- 
-    <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: #94a3b8; font-size: 0.85rem;">
-      <p> E-Link • COPYRIGHT © 2026 Tianyu Bai</p>
-    </footer>
-  </div>
+  <div class="container">
+    <section id="main_content">
+      {{ content }}
+    </section>
+ 
+    <div class="typewriter-container">
+      <span id="typewriter-text"></span><span class="typewriter-cursor"></span>
+    </div>
+ 
+    <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: #94a3b8; font-size: 0.85rem;">
+      <p> E-Link • COPYRIGHT © 2026 Tianyu Bai</p>
+    </footer>
+  </div>
 </div>
- 
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
 <script>
-  // --- 🌍 双语数据源 ---
-  const dialogData_EN = {
-    "start": {
-      text: "Hi! I'm the Connector Guardian. I protect your neural interfaces.",
-      options: [ 
-         { text: "🎬 Watch Demo Video", next: "play_video" },
-         { text: "🚀 Let's start!", next: "root_menu" } 
-      ]
-    },
-    "play_video": {
-       text: "Initiating Cinema Mode... Loading visual data.",
-       options: [ { text: "Close Video", next: "start" } ]
-    },
-    "root_menu": {
-      text: "Select a category to inspect:",
-      options: [
-        { text: "🌟 What's Special?", next: "innovation" },
-        { text: "📊 Specifications (Weight/Noise)", next: "specs_menu" },
-        { text: "🛡️ Reliability & Durability", next: "reliability_menu" },
-        { text: "🔧 Usage & Compatibility", next: "usage_menu" },
-        { text: "Just browsing", next: "close" }
-      ]
-    },
-    "innovation": {
-      text: "I feature a novel elastomeric interposer. This means NO precise alignment is needed and ZERO insertion force.",
-      options: [
-        { text: "Why is 'Zero Force' better?", next: "zero_force" },
-        { text: "Can it scale up?", next: "scalability" },
-        { text: "Back to Menu", next: "root_menu" } 
-      ]
-    },
-    "zero_force": {
-      text: "Traditional plugs require high force, risking probe fracture. My threaded cap converts rotation into gentle vertical pressure, protecting delicate films.",
-      options: [ { text: "Cool! Back.", next: "innovation" } ]
-    },
-    "scalability": {
-      text: "Yes! The fine-pitch elastomer allows scaling to 1024 channels within the same 25mm footprint. I am future-proof.",
-      options: [ { text: "Got it, Back.", next: "innovation" } ]
-    },
-    "specs_menu": {
-      text: "Checking Diagnostics... Which parameter concerns you?",
-      options: [
-        { text: "Is it heavy? (Weight)", next: "weight" },
-        { text: "Does it get hot? (Thermal)", next: "thermal" },
-        { text: "How clean is the signal? (Noise)", next: "noise" },
-        { text: "Back to Menu", next: "root_menu" }
-      ]
-    },
-    "weight": {
-      text: "I am ultra-light. Detached weight is only 2.8g. Even housed, I am 57% lighter (6.6g) than competitors, reducing strain on the animal.",
-      options: [ { text: "Good for mice/rats.", next: "specs_menu" } ]
-    },
-    "thermal": {
-      text: "I stay cool. Steady-state temperature is 30.5°C, well below the 37°C biological threshold. No active cooling required.",
-      options: [ { text: "Safe confirmed.", next: "specs_menu" } ]
-    },
-    "noise": {
-      text: "Crystal clear. My noise floor is 2.68 ± 0.46 µV RMS, matching the theoretical limit of the Intan chips. No signal degradation.",
-      options: [ { text: "Great specs.", next: "specs_menu" } ]
-    },
-    "reliability_menu": {
-      text: "I am built to last. What is your concern?",
-      options: [
-        { text: "Lifespan (Cycles)", next: "cycles" },
-        { text: "What if I align it wrong?", next: "misalignment" },
-        { text: "Contact Impedance?", next: "impedance" },
-        { text: "Back to Menu", next: "root_menu" }
-      ]
-    },
-    "cycles": {
-      text: "Verified for 100+ mating cycles with >97% connection yield. The elastomer shows negligible wear.",
-      options: [ { text: "Solid.", next: "reliability_menu" } ]
-    },
-    "misalignment": {
-      text: "No problem. The elastomer has 'structural redundancy' (pitch < pad size). Even with radial misalignment, the connection holds.",
-      options: [ { text: "Very forgiving.", next: "reliability_menu" } ]
-    },
-    "impedance": {
-      text: "Low and stable. Contact impedance is consistently between 0.3 kΩ and 0.4 kΩ across the array.",
-      options: [ { text: "Acknowledged.", next: "reliability_menu" } ]
-    },
-    "usage_menu": {
-      text: "Designed for researchers. Ask me about usage:",
-      options: [
-        { text: "Is assembly difficult?", next: "assembly" },
-        { text: "Compatible Systems?", next: "system" },
-        { text: "For freely moving animals?", next: "animal" },
-        { text: "Back to Menu", next: "root_menu" }
-      ]
-    },
-    "assembly": {
-      text: "Easy. No specialized micro-soldering needed. It's a 'plug-and-play' assembly using standard tools.",
-      options: [ { text: "User friendly.", next: "usage_menu" } ]
-    },
-    "system": {
-      text: "Fully compatible with the Intan RHD recording system. Supports 64, 128, and 256 channel configurations.",
-      options: [ { text: "Perfect.", next: "usage_menu" } ]
-    },
-    "animal": {
-      text: "Yes. The low profile fits mechanical commutators, allowing natural behavior without cable twisting.",
-      options: [ { text: "Show me the files!", next: "show_badges" } ]
-    },
-    "show_badges": {
-      text: "Scroll to the bottom! 👇 Those icons are your gateway to the Code, Fabrication Files, and Demo Videos.",
-      options: [ { text: "Thanks, Guardian!", next: "close" } ]
-    }
-  };
+  // --- 🌍 双语数据源 ---
+  const dialogData_EN = {
+    "start": {
+      text: "Hi! I'm the Connector Guardian. I protect your neural interfaces.",
+      options: [ 
+          { text: "🎬 Watch Demo Video", next: "play_video" }, // 🔥 新增
+          { text: "🚀 Let's start!", next: "root_menu" } 
+      ]
+    },
+    // 🔥 新增：视频处理节点
+    "play_video": {
+       text: "Initiating Cinema Mode... Loading visual data.",
+       options: [ { text: "Close Video", next: "start" } ]
+    },
+    "root_menu": {
+      text: "Select a category to inspect:",
+      options: [
+        { text: "🌟 What's Special?", next: "innovation" },
+        { text: "📊 Specifications (Weight/Noise)", next: "specs_menu" },
+        { text: "🛡️ Reliability & Durability", next: "reliability_menu" },
+        { text: "🔧 Usage & Compatibility", next: "usage_menu" },
+        { text: "Just browsing", next: "close" }
+      ]
+    },
+    "innovation": {
+      text: "I feature a novel elastomeric interposer. This means NO precise alignment is needed and ZERO insertion force.",
+      options: [
+        { text: "Why is 'Zero Force' better?", next: "zero_force" },
+        { text: "Can it scale up?", next: "scalability" },
+        { text: "Back to Menu", next: "root_menu" } 
+      ]
+    },
+    "zero_force": {
+      text: "Traditional plugs require high force, risking probe fracture. My threaded cap converts rotation into gentle vertical pressure, protecting delicate films.",
+      options: [ { text: "Cool! Back.", next: "innovation" } ]
+    },
+    "scalability": {
+      text: "Yes! The fine-pitch elastomer allows scaling to 1024 channels within the same 25mm footprint. I am future-proof.",
+      options: [ { text: "Got it, Back.", next: "innovation" } ]
+    },
+    "specs_menu": {
+      text: "Checking Diagnostics... Which parameter concerns you?",
+      options: [
+        { text: "Is it heavy? (Weight)", next: "weight" },
+        { text: "Does it get hot? (Thermal)", next: "thermal" },
+        { text: "How clean is the signal? (Noise)", next: "noise" },
+        { text: "Back to Menu", next: "root_menu" }
+      ]
+    },
+    "weight": {
+      text: "I am ultra-light. Detached weight is only 2.8g. Even housed, I am 57% lighter (6.6g) than competitors, reducing strain on the animal.",
+      options: [ { text: "Good for mice/rats.", next: "specs_menu" } ]
+    },
+    "thermal": {
+      text: "I stay cool. Steady-state temperature is 30.5°C, well below the 37°C biological threshold. No active cooling required.",
+      options: [ { text: "Safe confirmed.", next: "specs_menu" } ]
+    },
+    "noise": {
+      text: "Crystal clear. My noise floor is 2.68 ± 0.46 µV RMS, matching the theoretical limit of the Intan chips. No signal degradation.",
+      options: [ { text: "Great specs.", next: "specs_menu" } ]
+    },
+    "reliability_menu": {
+      text: "I am built to last. What is your concern?",
+      options: [
+        { text: "Lifespan (Cycles)", next: "cycles" },
+        { text: "What if I align it wrong?", next: "misalignment" },
+        { text: "Contact Impedance?", next: "impedance" },
+        { text: "Back to Menu", next: "root_menu" }
+      ]
+    },
+    "cycles": {
+      text: "Verified for 100+ mating cycles with >97% connection yield. The elastomer shows negligible wear.",
+      options: [ { text: "Solid.", next: "reliability_menu" } ]
+    },
+    "misalignment": {
+      text: "No problem. The elastomer has 'structural redundancy' (pitch < pad size). Even with radial misalignment, the connection holds.",
+      options: [ { text: "Very forgiving.", next: "reliability_menu" } ]
+    },
+    "impedance": {
+      text: "Low and stable. Contact impedance is consistently between 0.3 kΩ and 0.4 kΩ across the array.",
+      options: [ { text: "Acknowledged.", next: "reliability_menu" } ]
+    },
+    "usage_menu": {
+      text: "Designed for researchers. Ask me about usage:",
+      options: [
+        { text: "Is assembly difficult?", next: "assembly" },
+        { text: "Compatible Systems?", next: "system" },
+        { text: "For freely moving animals?", next: "animal" },
+        { text: "Back to Menu", next: "root_menu" }
+      ]
+    },
+    "assembly": {
+      text: "Easy. No specialized micro-soldering needed. It's a 'plug-and-play' assembly using standard tools.",
+      options: [ { text: "User friendly.", next: "usage_menu" } ]
+    },
+    "system": {
+      text: "Fully compatible with the Intan RHD recording system. Supports 64, 128, and 256 channel configurations.",
+      options: [ { text: "Perfect.", next: "usage_menu" } ]
+    },
+    "animal": {
+      text: "Yes. The low profile fits mechanical commutators, allowing natural behavior without cable twisting.",
+      options: [ { text: "Show me the files!", next: "show_badges" } ]
+    },
+    "show_badges": {
+      text: "Scroll to the bottom! 👇 Those icons are your gateway to the Code, Fabrication Files, and Demo Videos.",
+      options: [ { text: "Thanks, Guardian!", next: "close" } ]
+    }
+  };
 
-  const dialogData_ZH = {
-    "start": {
-      text: "你好！我是易链的守护者。由我来保护你的脑机探针。",
-      options: [ 
-        { text: "🎬 观看演示视频", next: "play_video" },
-        { text: "🚀 开始探索！", next: "root_menu" } 
-      ]
-    },
-    "play_video": {
-       text: "正在启动影院模式... 调取视觉数据。",
-       options: [ { text: "关闭视频", next: "start" } ]
-    },
-    "root_menu": {
-      text: "系统已就绪。请选择想要查看的类别：",
-      options: [
-        { text: "🌟 核心亮点", next: "innovation" },
-        { text: "📊 规格参数 (重量/噪音)", next: "参数菜单" },
-        { text: "🛡️ 可靠性与耐久度", next: "可靠性菜单" },
-        { text: "🔧 使用与兼容性", next: "usage_menu" },
-        { text: "随便看看", next: "close" }
-      ]
-    },
-    "innovation": {
-      text: "我采用了新型弹性体互连技术 (Elastomeric Interposer)。这意味着无需精确对准，且实现了“零插入力”。",
-      options: [
-        { text: "“零插入力”有什么好处？", next: "零插入力" },
-        { text: "通道数能扩展吗？", next: "可拓展性" },
-        { text: "返回主菜单", next: "root_menu" } 
-      ]
-    },
-    "零插入力": {
-      text: "传统插头需要很大的力，容易弄断脆弱的探针。我的螺纹盖将旋转转化为轻柔的垂直压力，完美保护薄膜探针。",
-      options: [ { text: "很棒的设计！返回。", next: "innovation" } ]
-    },
-    "可拓展性": {
-      text: "当然！高密度弹性体允许在同样的 25mm 封装内扩展至 1024 通道。我是面向未来的设计。",
-      options: [ { text: "已知晓，返回。", next: "innovation" } ]
-    },
-    "参数菜单": {
-      text: "正在检查诊断数据... 你关心哪个参数？",
-      options: [
-        { text: "重不重？ (重量)", next: "weight" },
-        { text: "发热吗？ (热学)", next: "thermal" },
-        { text: "信号干净吗？ (噪音)", next: "noise" },
-        { text: "返回主菜单", next: "root_menu" }
-      ]
-    },
-    "weight": {
-      text: "我非常轻。拆卸后仅重 2.8g。即使含外壳，我也比竞品轻 57% (6.6g)，大大减轻了动物的负担。",
-      options: [ { text: "很适合小鼠/大鼠。", next: "specs_menu" } ]
-    },
-    "thermal": {
-      text: "我运转冷静。稳态温度仅为 30.5°C，远低于 37°C 的生物阈值。无需主动散热。",
-      options: [ { text: "安全确认。", next: "specs_menu" } ]
-    },
-    "noise": {
-      text: "噪声很小。我的本底噪声为 2.68 ± 0.46 µV RMS，接近了 Intan 芯片的理论极限。信号无损耗。",
-      options: [ { text: "参数很强。", next: "specs_menu" } ]
-    },
-    "可靠性菜单": {
-      text: "我经久耐用。猜你有可能担心这些？",
-      options: [
-        { text: "寿命 (贴合次数)", next: "cycles" },
-        { text: "如果对不准怎么办？", next: "misalignment" },
-        { text: "接触电阻多大？", next: "impedance" },
-        { text: "返回主菜单", next: "root_menu" }
-      ]
-    },
-    "cycles": {
-      text: "已验证 100 次以上的插拔循环，连接良率 >97%。弹性导电体几乎没有磨损。",
-      options: [ { text: "很靠谱，已知晓", next: "可靠性菜单" } ]
-    },
-    "misalignment": {
-      text: "弹性体具有“结构冗余”（间距小于焊盘尺寸）。即使径向没对准，依然能稳定连接。",
-      options: [ { text: "容错率很高，已知晓", next: "可靠性菜单" } ]
-    },
-    "impedance": {
-      text: "低且稳定。整个阵列的接触阻抗始终保持在 0.3 kΩ 到 0.4 kΩ 之间。",
-      options: [ { text: "已知晓", next: "可靠性菜单" } ]
-    },
-    "usage_menu": {
-      text: "专为相关领域人员设计。问我关于使用的问题：",
-      options: [
-        { text: "组装容易吗？", next: "assembly" },
-        { text: "兼容哪些采集系统？", next: "system" },
-        { text: "动物能自由活动吗？", next: "animal" },
-        { text: "返回主菜单", next: "root_menu" }
-      ]
-    },
-    "assembly": {
-      text: "非常容易.即拧即用的模块化设计，告别插拔带来的断针弯针，轻松建立连接",
-      options: [ { text: "已知晓", next: "usage_menu" } ]
-    },
-    "system": {
-      text: "完全兼容Intan RHD记录系统. 支持64，128，256通道设定.",
-      options: [ { text: "完美，已知晓", next: "usage_menu" } ]
-    },
-    "animal": {
-      text: "可以。低剖面设计适配机械换向器 (Commutator)，允许动物自然行为，线缆不打结。",
-      options: [ { text: "我想查看文件", next: "徽章指引" } ]
-    },
-    "徽章指引": {
-      text: "滑到最下面！👇红色图标是你通往代码、制造文件和演示视频的大门。",
-      options: [ { text: "谢谢易链守护者！", next: "关闭对话窗" } ]
-    }
-  };
-     
-  // 默认使用英文
-  let currentLang = 'en';
-  let dialogData = dialogData_EN;
+  const dialogData_ZH = {
+    "start": {
+      text: "你好！我是易链的守护者。由我来保护你的脑机探针。",
+      options: [ 
+        { text: "🎬 观看演示视频", next: "play_video" }, // 🔥 新增
+        { text: "🚀 开始探索！", next: "root_menu" } 
+      ]
+    },
+    // 🔥 新增：视频处理节点
+    "play_video": {
+       text: "正在启动影院模式... 调取视觉数据。",
+       options: [ { text: "关闭视频", next: "start" } ]
+    },
+    "root_menu": {
+      text: "系统已就绪。请选择想要查看的类别：",
+      options: [
+        { text: "🌟 核心亮点", next: "innovation" },
+        { text: "📊 规格参数 (重量/噪音)", next: "参数菜单" },
+        { text: "🛡️ 可靠性与耐久度", next: "可靠性菜单" },
+        { text: "🔧 使用与兼容性", next: "usage_menu" },
+        { text: "随便看看", next: "close" }
+      ]
+    },
+    "innovation": {
+      text: "我采用了新型弹性体互连技术 (Elastomeric Interposer)。这意味着无需精确对准，且实现了“零插入力”。",
+      options: [
+        { text: "“零插入力”有什么好处？", next: "零插入力" },
+        { text: "通道数能扩展吗？", next: "可拓展性" },
+        { text: "返回主菜单", next: "root_menu" } 
+      ]
+    },
+    "零插入力": {
+      text: "传统插头需要很大的力，容易弄断脆弱的探针。我的螺纹盖将旋转转化为轻柔的垂直压力，完美保护薄膜探针。",
+      options: [ { text: "很棒的设计！返回。", next: "innovation" } ]
+    },
+    "可拓展性": {
+      text: "当然！高密度弹性体允许在同样的 25mm 封装内扩展至 1024 通道。我是面向未来的设计。",
+      options: [ { text: "已知晓，返回。", next: "innovation" } ]
+    },
+    "参数菜单": {
+      text: "正在检查诊断数据... 你关心哪个参数？",
+      options: [
+        { text: "重不重？ (重量)", next: "weight" },
+        { text: "发热吗？ (热学)", next: "thermal" },
+        { text: "信号干净吗？ (噪音)", next: "noise" },
+        { text: "返回主菜单", next: "root_menu" }
+      ]
+    },
+    "weight": {
+      text: "我非常轻。拆卸后仅重 2.8g。即使含外壳，我也比竞品轻 57% (6.6g)，大大减轻了动物的负担。",
+      options: [ { text: "很适合小鼠/大鼠。", next: "specs_menu" } ]
+    },
+    "thermal": {
+      text: "我运转冷静。稳态温度仅为 30.5°C，远低于 37°C 的生物阈值。无需主动散热。",
+      options: [ { text: "安全确认。", next: "specs_menu" } ]
+    },
+    "noise": {
+      text: "噪声很小。我的本底噪声为 2.68 ± 0.46 µV RMS，接近了 Intan 芯片的理论极限。信号无损耗。",
+      options: [ { text: "参数很强。", next: "specs_menu" } ]
+    },
+    "可靠性菜单": {
+      text: "我经久耐用。猜你有可能担心这些？",
+      options: [
+        { text: "寿命 (贴合次数)", next: "cycles" },
+        { text: "如果对不准怎么办？", next: "misalignment" },
+        { text: "接触电阻多大？", next: "impedance" },
+        { text: "返回主菜单", next: "root_menu" }
+      ]
+    },
+    "cycles": {
+      text: "已验证 100 次以上的插拔循环，连接良率 >97%。弹性导电体几乎没有磨损。",
+      options: [ { text: "很靠谱，已知晓", next: "可靠性菜单" } ]
+    },
+    "misalignment": {
+      text: "弹性体具有“结构冗余”（间距小于焊盘尺寸）。即使径向没对准，依然能稳定连接。",
+      options: [ { text: "容错率很高，已知晓", next: "可靠性菜单" } ]
+    },
+    "impedance": {
+      text: "低且稳定。整个阵列的接触阻抗始终保持在 0.3 kΩ 到 0.4 kΩ 之间。",
+      options: [ { text: "已知晓", next: "可靠性菜单" } ]
+    },
+    "usage_menu": {
+      text: "专为相关领域人员设计。问我关于使用的问题：",
+      options: [
+        { text: "组装容易吗？", next: "assembly" },
+        { text: "兼容哪些采集系统？", next: "system" },
+        { text: "动物能自由活动吗？", next: "animal" },
+        { text: "返回主菜单", next: "root_menu" }
+      ]
+    },
+    "assembly": {
+      text: "非常容易.即拧即用的模块化设计，告别插拔带来的断针弯针，轻松建立连接",
+      options: [ { text: "已知晓", next: "usage_menu" } ]
+    },
+    "system": {
+      text: "完全兼容Intan RHD记录系统. 支持64，128，256通道设定.",
+      options: [ { text: "完美，已知晓", next: "usage_menu" } ]
+    },
+    "animal": {
+      text: "可以。低剖面设计适配机械换向器 (Commutator)，允许动物自然行为，线缆不打结。",
+      options: [ { text: "我想查看文件", next: "徽章指引" } ]
+    },
+    "徽章指引": {
+      text: "滑到最下面！👇红色图标是你通往代码、制造文件和演示视频的大门。",
+      options: [ { text: "谢谢易链守护者！", next: "关闭对话窗" } ]
+    }
+  };
+      
+  // 默认使用英文
+  let currentLang = 'en';
+  let dialogData = dialogData_EN;
 
-  let vantaEffect;
-  
-  document.addEventListener("DOMContentLoaded", function() {
-      if (window.VANTA) {
-        vantaEffect = VANTA.NET({
-          el: "#vanta-bg",
-          mouseControls: true, touchControls: true, gyroControls: false,
-          minHeight: 200.00, minWidth: 200.00, scale: 1.00, scaleMobile: 1.00,
-          color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00, spacing: 16.00, showDots: true
-        });
-      }
+  let vantaEffect;
+   
+  // 🔥 第一阶段：DOM 加载完成，立刻处理首屏
+  document.addEventListener("DOMContentLoaded", function() {
+      // 0. 🔥 初始化 Lenis 平滑滚动
+      // 这里可以调整 duration (惯性时长) 和 easing (缓动曲线)
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+        mouseMultiplier: 1,
+        smoothTouch: false, // 移动端通常保留原生滚动体验更好，如需开启改为 true
+        touchMultiplier: 2,
+      })
 
-      initMeteors();
+      // Lenis 动画循环
+      function raf(time) {
+        lenis.raf(time)
+        requestAnimationFrame(raf)
+      }
+      requestAnimationFrame(raf);
 
-      const images = document.querySelectorAll('#main_content img');
-      images.forEach((img, index) => {
-          if (index < 2) {
-              img.setAttribute('loading', 'eager'); 
-              img.setAttribute('fetchpriority', 'high'); 
-          } else {
-              if(!img.getAttribute('loading')) {
-                 img.setAttribute('loading', 'lazy');
-              }
-          }
-      });
-  });
+      // 1. 立即启动 Vanta 背景
+      if (window.VANTA) {
+        vantaEffect = VANTA.NET({
+          el: "#vanta-bg",
+          mouseControls: true, touchControls: true, gyroControls: false,
+          minHeight: 200.00, minWidth: 200.00, scale: 1.00, scaleMobile: 1.00,
+          color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00, spacing: 16.00, showDots: true
+        });
+      }
 
-  window.addEventListener('load', function() {
-      const heavyMedia = document.querySelectorAll('img[src$=".gif"], video');
-      heavyMedia.forEach(media => {
-          media.setAttribute('loading', 'eager');
-          if(media.tagName === 'VIDEO') {
-              media.setAttribute('preload', 'auto');
-          }
-      });
-  });
+      // 2. 启动流星特效
+      initMeteors();
 
-  const textsEN = ["Welcome to this webpage！", "Thanks for visiting us!", "Stay tuned!"];
-  const textsZH = ["欢迎访问本网页！", "感谢您的关注！", "欢迎常来访问！"];
-  let texts = textsEN; 
- 
-  let textIdx = 0, charIdx = 0, isDeleting = false;
-  function type() {
-    const currentText = texts[textIdx];
-    const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
-    document.getElementById('typewriter-text').textContent = display;
-    let speed = isDeleting ? 50 : 100;
-    if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
-    else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
-    setTimeout(type, speed);
-  }
+      // 3. 智能加载策略 - 阶段一
+      // 先把所有图片设为 lazy，防止阻塞首屏，除非它是前两张
+      const images = document.querySelectorAll('#main_content img');
+      images.forEach((img, index) => {
+          if (index < 2) {
+              // 首屏图片：立即加载
+              img.setAttribute('loading', 'eager'); 
+              img.setAttribute('fetchpriority', 'high'); 
+          } else {
+              // 其他图片：先暂缓
+              if(!img.getAttribute('loading')) {
+                 img.setAttribute('loading', 'lazy');
+              }
+          }
+      });
+  });
 
-  function initMeteors() {
-    const canvas = document.getElementById('meteor-canvas');
-    if(!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    function resizeCanvas() {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+  // 🔥 第二阶段：所有资源加载完毕（Page Load），开始静默下载动图
+  window.addEventListener('load', function() {
+      // 找到所有GIF图片和视频
+      const heavyMedia = document.querySelectorAll('img[src$=".gif"], video');
+      
+      heavyMedia.forEach(media => {
+          // 强制改为 Eager，利用空闲带宽下载
+          // 这样用户滑下去时，动图已经准备好了
+          media.setAttribute('loading', 'eager');
+          
+          // 如果是视频，设置预加载
+          if(media.tagName === 'VIDEO') {
+              media.setAttribute('preload', 'auto');
+          }
+      });
+  });
 
-    class Meteor {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.len = Math.random() * 100 + 50;
-        this.speed = Math.random() * 1 + 1;
-        this.size = Math.random() * 1 + 0.5;
-        this.angle = (Math.PI * 0.75) + (Math.random() - 0.5) * 0.5;
-        this.opacity = 0;
-        this.state = 'fadein'; 
-        this.life = 0;
-        this.maxLife = Math.random() * 30 + 20; 
-      }
-      update() {
-        this.x += Math.cos(this.angle) * this.speed;
-        this.y += Math.sin(this.angle) * this.speed;
-        if(this.state === 'fadein') {
-           this.opacity += 0.1;
-           if(this.opacity >= 1) this.state = 'active';
-        } else if(this.state === 'active') {
-           this.life++;
-           if(this.life > this.maxLife) this.state = 'fadeout';
-        } else if(this.state === 'fadeout') {
-           this.opacity -= 0.05;
-           if(this.opacity <= 0) this.reset();
-        }
-        if(this.x < -100 || this.x > width + 100 || this.y < -100 || this.y > height + 100) {
-           this.reset();
-        }
-      }
-      draw() {
-        if(this.opacity <= 0) return;
-        const tailX = this.x - Math.cos(this.angle) * this.len;
-        const tailY = this.y - Math.sin(this.angle) * this.len;
-        const gradient = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
-        gradient.addColorStop(0, `rgba(96, 165, 250, ${this.opacity})`); 
-        gradient.addColorStop(1, `rgba(59, 130, 246, 0)`);  
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(tailX, tailY);
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = this.size;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-      }
-    }
-    
-    const meteors = [];
-    const meteorCount = 6; 
-    for(let i=0; i<meteorCount; i++) {
-       const m = new Meteor();
-       m.opacity = 0; 
-       m.life = Math.random() * 50;
-       meteors.push(m);
-    }
-    
-    function animateMeteors() {
-      ctx.clearRect(0, 0, width, height);
-      meteors.forEach(m => { m.update(); m.draw(); });
-      requestAnimationFrame(animateMeteors);
-    }
-    animateMeteors();
-  }
- 
-  document.addEventListener("DOMContentLoaded", function() {
-    type();
-    const cursorDot = document.querySelector('.cursor-dot');
-    const cursorOutline = document.querySelector('.cursor-outline');
-    const container = document.querySelector('.container');
-    const pupils = document.querySelectorAll('.bot-pupil');
-    const botContainer = document.getElementById('bot-container');
-    const botSpeech = document.getElementById('bot-speech');
-       
-    const rpgDialogue = document.getElementById('rpg-dialogue');
-    const rpgText = document.getElementById('rpg-text');
-    const rpgOptions = document.getElementById('rpg-options');
-    const rpgClose = document.querySelector('.rpg-close');
-    let typeTimer = null;
- 
-    const welcomeModal = document.getElementById('welcome-modal');
-    const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
-    const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
-    const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
-    let modalIsZh = false; 
- 
-    setTimeout(() => {
-      welcomeModal.classList.add('show');
-    }, 100);
- 
-    let idleInterval;
-    let tipIndex = 0;
- 
-    function startIdleTips() {
-      if(idleInterval) clearInterval(idleInterval);
-      const enTips = ["Click me for guide!", "I'm here to help!"];
-      const zhTips = ["我是E-Link专属管家", "欢迎随时“敲”我哈！"];
-      const runCycle = () => {
-         const tips = currentLang === 'en' ? enTips : zhTips;
-         botSay(tips[tipIndex], 3000); 
-         tipIndex = (tipIndex + 1) % 2;
-      };
-      runCycle(); 
-      idleInterval = setInterval(runCycle, 3500);
-    }
- 
-    function closeModal() {
-      welcomeModal.classList.remove('show');
-      if (modalIsZh) {
-        if (currentLang !== 'zh') langToggle.click(); 
-      } else {
-        if (currentLang === 'zh') langToggle.click();
-      }
-      setTimeout(() => {
-          botContainer.classList.add('attention-jump'); 
-          startIdleTips();
-          setTimeout(() => {
-              botContainer.classList.remove('attention-jump');
-          }, 3200);
-      }, 100);
-    }
- 
-    modalKeepDarkBtn.addEventListener('click', closeModal);
-    modalSwitchLightBtn.addEventListener('click', () => {
-      themeToggle.click(); 
-      closeModal();        
-    });
- 
-    modalLangCheckbox.addEventListener('change', () => {
-      const enTexts = document.querySelectorAll('.m-en');
-      const zhTexts = document.querySelectorAll('.m-zh');
-      modalIsZh = modalLangCheckbox.checked;
-      if (modalIsZh) {
-        enTexts.forEach(el => el.style.display = 'none');
-        zhTexts.forEach(el => el.style.display = 'inline'); 
-      } else {
-        zhTexts.forEach(el => el.style.display = 'none');
-        enTexts.forEach(el => el.style.display = 'inline');
-      }
-    });
- 
-    const themeToggle = document.getElementById('theme-toggle');
-    const langToggle = document.getElementById('lang-toggle');
-    let isLight = false;
-       
-    themeToggle.addEventListener('click', () => {
-      isLight = !isLight;
-      document.body.classList.toggle('light-mode');
-      if (isLight) {
-        themeToggle.textContent = "🌙"; 
-        if (vantaEffect) vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
-      } else {
-        themeToggle.textContent = "☀️"; 
-        if (vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
-      }
-    });
- 
-    langToggle.addEventListener('click', () => {
-      const enContent = document.querySelectorAll('.lang-en');
-      const zhContent = document.querySelectorAll('.lang-zh');
-      if (currentLang === 'en') {
-           currentLang = 'zh';
-           dialogData = dialogData_ZH; 
-           texts = textsZH;            
-           langToggle.textContent = "中 / 英";
-           enContent.forEach(el => el.style.display = 'none');
-           zhContent.forEach(el => el.style.display = 'block');
-      } else {
-           currentLang = 'en';
-           dialogData = dialogData_EN;
-           texts = textsEN;
-           langToggle.textContent = "EN / CN";
-           enContent.forEach(el => el.style.display = 'block');
-           zhContent.forEach(el => el.style.display = 'none');
-      }
-      textIdx = 0; charIdx = 0; isDeleting = false;
-      if(rpgDialogue.classList.contains('active')) closeDialogue();
-      if (!rpgDialogue.classList.contains('active') && idleInterval) {
-           startIdleTips();
-      }
-    });
- 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = 100;
-    
-    // ⚡️ 性能优化：通过 requestAnimationFrame 节流鼠标移动事件，防止与滑动产生帧率抢占
-    let mouseTicking = false;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (!mouseTicking) {
-        window.requestAnimationFrame(() => {
-          if(cursorDot) { cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`; }
-          if(cursorOutline) { cursorOutline.animate({ left: `${mouseX}px`, top: `${mouseY}px` }, { duration: 100, fill: "forwards" }); }
-          if (window.innerWidth > 768 && container) {
-            const rx = (window.innerWidth / 2 - mouseX) / 50;
-            const ry = (window.innerHeight / 2 - mouseY) / 50;
-            container.style.transform = `rotateY(${rx * -1}deg) rotateX(${ry}deg)`;
-            const rect = container.getBoundingClientRect();
-            container.style.setProperty("--mouse-x", `${mouseX - rect.left}px`);
-            container.style.setProperty("--mouse-y", `${mouseY - rect.top}px`);
-          }
-          pupils.forEach(p => {
-            const rect = p.parentElement.getBoundingClientRect();
-            const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-            const angle = Math.atan2(mouseY - cy, mouseX - cx);
-            const dist = Math.min(6, Math.hypot(mouseX - cx, mouseY - cy) / 10);
-            p.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px))`;
-          });
-          mouseTicking = false;
-        });
-        mouseTicking = true;
-      }
-    }, { passive: true }); // 声明被动事件，提升浏览器处理优先级
- 
-    // ⚡️ 性能优化：为 scroll 事件配置节流和 passive: true，大幅减少页面重绘(Repaint)频率
-    let scrollTicking = false;
-    window.addEventListener('scroll', () => {
-      if (!scrollTicking) {
-        window.requestAnimationFrame(() => {
-          const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-          const pb = document.getElementById("progress-bar");
-          if(pb) pb.style.width = scrolled + "%";
-          if(botContainer && window.innerWidth > 768) {
-            if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
-            else { botContainer.classList.remove('fixed-mode'); }
-          }
-          scrollTicking = false;
-        });
-        scrollTicking = true;
-      }
-    }, { passive: true }); // 不阻塞滑动主干道
- 
-    function botSay(text, duration = 2000) {
-      if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
-      botSpeech.textContent = text;
-      botContainer.classList.add('speaking');
-      if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
-      botContainer.speechTimer = setTimeout(() => {
-        botContainer.classList.remove('speaking');
-      }, duration);
-    }
+  const textsEN = ["Welcome to this webpage！", "Thanks for visiting us!", "Stay tuned!"];
+  const textsZH = ["欢迎访问本网页！", "感谢您的关注！", "欢迎常来访问！"];
+  let texts = textsEN; // 默认文本
+  
+  let textIdx = 0, charIdx = 0, isDeleting = false;
+  function type() {
+    const currentText = texts[textIdx];
+    const display = isDeleting ? currentText.substring(0, charIdx--) : currentText.substring(0, charIdx++);
+    document.getElementById('typewriter-text').textContent = display;
+    let speed = isDeleting ? 50 : 100;
+    if (!isDeleting && charIdx === currentText.length + 1) { isDeleting = true; speed = 2000; } 
+    else if (isDeleting && charIdx === 0) { isDeleting = false; textIdx = (textIdx + 1) % texts.length; speed = 500; }
+    setTimeout(type, speed);
+  }
 
-    const videoModal = document.getElementById('video-modal');
-    const guardianVideo = document.getElementById('guardian-video');
+  // --- 🔥 神经元流星特效逻辑 --- 
+  function initMeteors() {
+    const canvas = document.getElementById('meteor-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-    window.openVideoModal = function() {
-      videoModal.classList.add('show');
-      botContainer.classList.add('guide-mode');
-      const clickText = currentLang === 'en' ? "Click the Play button here! 👉" : "请点击中间的播放按钮！👉";
-      botSay(clickText, 4000); 
-      closeDialogue(); 
-    }
+    class Meteor {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.len = Math.random() * 100 + 50;
+        this.speed = Math.random() * 1 + 1;
+        this.size = Math.random() * 1 + 0.5;
+        this.angle = (Math.PI * 0.75) + (Math.random() - 0.5) * 0.5;
+        this.opacity = 0;
+        this.state = 'fadein'; // fadein, active, fadeout
+        this.life = 0;
+        this.maxLife = Math.random() * 30 + 20; // 存活帧数
+      }
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+        if(this.state === 'fadein') {
+           this.opacity += 0.1;
+           if(this.opacity >= 1) this.state = 'active';
+        } else if(this.state === 'active') {
+           this.life++;
+           if(this.life > this.maxLife) this.state = 'fadeout';
+        } else if(this.state === 'fadeout') {
+           this.opacity -= 0.05;
+           if(this.opacity <= 0) this.reset();
+        }
+        if(this.x < -100 || this.x > width + 100 || this.y < -100 || this.y > height + 100) {
+           this.reset();
+        }
+      }
+      draw() {
+        if(this.opacity <= 0) return;
+        const tailX = this.x - Math.cos(this.angle) * this.len;
+        const tailY = this.y - Math.sin(this.angle) * this.len;
+        const gradient = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
+        gradient.addColorStop(0, `rgba(96, 165, 250, ${this.opacity})`); 
+        gradient.addColorStop(1, `rgba(59, 130, 246, 0)`);  
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = this.size;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    }
+    
+    const meteors = [];
+    const meteorCount = 6; 
+    for(let i=0; i<meteorCount; i++) {
+       const m = new Meteor();
+       m.opacity = 0; 
+       m.life = Math.random() * 50;
+       meteors.push(m);
+    }
+    
+    function animateMeteors() {
+      ctx.clearRect(0, 0, width, height);
+      meteors.forEach(m => { m.update(); m.draw(); });
+      requestAnimationFrame(animateMeteors);
+    }
+    animateMeteors();
+  }
+ 
+  document.addEventListener("DOMContentLoaded", function() {
+    type();
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    const container = document.querySelector('.container');
+    const pupils = document.querySelectorAll('.bot-pupil');
+    const botContainer = document.getElementById('bot-container');
+    const botSpeech = document.getElementById('bot-speech');
+        
+    const rpgDialogue = document.getElementById('rpg-dialogue');
+    const rpgText = document.getElementById('rpg-text');
+    const rpgOptions = document.getElementById('rpg-options');
+    const rpgClose = document.querySelector('.rpg-close');
+    let typeTimer = null;
+ 
+    // --- 🔥 弹窗逻辑 ---
+    const welcomeModal = document.getElementById('welcome-modal');
+    const modalKeepDarkBtn = document.getElementById('modal-keep-dark-btn');
+    const modalSwitchLightBtn = document.getElementById('modal-switch-light-btn');
+    const modalLangCheckbox = document.getElementById('modal-lang-toggle-checkbox');
+    let modalIsZh = false; 
+ 
+    setTimeout(() => {
+      welcomeModal.classList.add('show');
+    }, 100);
+ 
+    // --- 🤖 提示语轮播 ---
+    let idleInterval;
+    let tipIndex = 0;
+ 
+    function startIdleTips() {
+      if(idleInterval) clearInterval(idleInterval);
+      const enTips = ["Click me for guide!", "I'm here to help!"];
+      const zhTips = ["我是E-Link专属管家", "欢迎随时“敲”我哈！"];
+      const runCycle = () => {
+         const tips = currentLang === 'en' ? enTips : zhTips;
+         botSay(tips[tipIndex], 3000); 
+         tipIndex = (tipIndex + 1) % 2;
+      };
+      runCycle(); 
+      idleInterval = setInterval(runCycle, 3500);
+    }
+ 
+    function closeModal() {
+      welcomeModal.classList.remove('show');
+      if (modalIsZh) {
+        if (currentLang !== 'zh') langToggle.click(); 
+      } else {
+        if (currentLang === 'zh') langToggle.click();
+      }
+      setTimeout(() => {
+          botContainer.classList.add('attention-jump'); 
+          startIdleTips();
+          setTimeout(() => {
+              botContainer.classList.remove('attention-jump');
+          }, 3200);
+      }, 100);
+    }
+ 
+    modalKeepDarkBtn.addEventListener('click', closeModal);
+    modalSwitchLightBtn.addEventListener('click', () => {
+      themeToggle.click(); 
+      closeModal();         
+    });
+ 
+    modalLangCheckbox.addEventListener('change', () => {
+      const enTexts = document.querySelectorAll('.m-en');
+      const zhTexts = document.querySelectorAll('.m-zh');
+      modalIsZh = modalLangCheckbox.checked;
+      if (modalIsZh) {
+        enTexts.forEach(el => el.style.display = 'none');
+        zhTexts.forEach(el => el.style.display = 'inline'); 
+      } else {
+        zhTexts.forEach(el => el.style.display = 'none');
+        enTexts.forEach(el => el.style.display = 'inline');
+      }
+    });
+ 
+    // --- 切换逻辑 ---
+    const themeToggle = document.getElementById('theme-toggle');
+    const langToggle = document.getElementById('lang-toggle');
+    let isLight = false;
+        
+    themeToggle.addEventListener('click', () => {
+      isLight = !isLight;
+      document.body.classList.toggle('light-mode');
+      if (isLight) {
+        themeToggle.textContent = "🌙"; 
+        if (vantaEffect) vantaEffect.setOptions({ color: 0x2563eb, backgroundColor: 0xf1f5f9, points: 12.00, maxDistance: 24.00 });
+      } else {
+        themeToggle.textContent = "☀️"; 
+        if (vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6, backgroundColor: 0x0a0a0f, points: 18.00, maxDistance: 28.00 });
+      }
+    });
+ 
+    langToggle.addEventListener('click', () => {
+      const enContent = document.querySelectorAll('.lang-en');
+      const zhContent = document.querySelectorAll('.lang-zh');
+      if (currentLang === 'en') {
+           currentLang = 'zh';
+           dialogData = dialogData_ZH; 
+           texts = textsZH;            
+           langToggle.textContent = "中 / 英";
+           enContent.forEach(el => el.style.display = 'none');
+           zhContent.forEach(el => el.style.display = 'block');
+      } else {
+           currentLang = 'en';
+           dialogData = dialogData_EN;
+           texts = textsEN;
+           langToggle.textContent = "EN / CN";
+           enContent.forEach(el => el.style.display = 'block');
+           zhContent.forEach(el => el.style.display = 'none');
+      }
+      textIdx = 0; charIdx = 0; isDeleting = false;
+      if(rpgDialogue.classList.contains('active')) closeDialogue();
+      if (!rpgDialogue.classList.contains('active') && idleInterval) {
+           startIdleTips();
+      }
+    });
+ 
+    let mouseX = window.innerWidth / 2;
+    let mouseY = 100;
+ 
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if(cursorDot) { cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`; }
+      if(cursorOutline) { cursorOutline.animate({ left: `${mouseX}px`, top: `${mouseY}px` }, { duration: 100, fill: "forwards" }); }
+      if (window.innerWidth > 768 && container) {
+        const rx = (window.innerWidth / 2 - mouseX) / 50;
+        const ry = (window.innerHeight / 2 - mouseY) / 50;
+        container.style.transform = `rotateY(${rx * -1}deg) rotateX(${ry}deg)`;
+        const rect = container.getBoundingClientRect();
+        container.style.setProperty("--mouse-x", `${mouseX - rect.left}px`);
+        container.style.setProperty("--mouse-y", `${mouseY - rect.top}px`);
+      }
+      pupils.forEach(p => {
+        const rect = p.parentElement.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        const angle = Math.atan2(mouseY - cy, mouseX - cx);
+        const dist = Math.min(6, Math.hypot(mouseX - cx, mouseY - cy) / 10);
+        p.style.transform = `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px))`;
+      });
+    });
+ 
+    window.addEventListener('scroll', () => {
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      const pb = document.getElementById("progress-bar");
+      if(pb) pb.style.width = scrolled + "%";
+      if(botContainer && window.innerWidth > 768) {
+        if(window.scrollY > 200) { botContainer.classList.add('fixed-mode'); } 
+        else { botContainer.classList.remove('fixed-mode'); }
+      }
+    });
+ 
+    function botSay(text, duration = 2000) {
+      if(!botSpeech || !botContainer || rpgDialogue.classList.contains('active')) return; 
+      botSpeech.textContent = text;
+      botContainer.classList.add('speaking');
+      if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer);
+      botContainer.speechTimer = setTimeout(() => {
+        botContainer.classList.remove('speaking');
+      }, duration);
+    }
 
-    window.closeVideoModal = function() {
-      videoModal.classList.remove('show');
-      guardianVideo.pause(); 
-      botContainer.classList.remove('guide-mode');
-      const backText = currentLang === 'en' ? "Did you see that mechanism?" : "看到那个机械结构了吗？";
-      setTimeout(() => botSay(backText, 3000), 500);
-    }
-    
-    videoModal.addEventListener('click', (e) => {
-      if(e.target === videoModal) closeVideoModal();
-    });
+    // --- 🎬 视频控制逻辑 ---
+    const videoModal = document.getElementById('video-modal');
+    const guardianVideo = document.getElementById('guardian-video');
 
-    function showDialogueNode(nodeKey, isFastMode = false) {
-      if (nodeKey === 'play_video') {
-         const loadingText = currentLang === 'en' ? "Accessing Video Feed..." : "正在接入视频信号...";
-         botSay(loadingText, 2000);
-         setTimeout(() => {
-             openVideoModal();
-         }, 1000);
-         return; 
-      }
+    window.openVideoModal = function() {
+      videoModal.classList.add('show');
+      // 🔥 机器人进入引导模式
+      botContainer.classList.add('guide-mode');
+      const clickText = currentLang === 'en' ? "Click the Play button here! 👉" : "请点击中间的播放按钮！👉";
+      botSay(clickText, 4000); 
+      closeDialogue(); 
+    }
 
-      if(nodeKey === 'close') { 
-           closeDialogue(); 
-           botContainer.classList.add('interaction-done');
-           const byeText = currentLang === 'en' ? "Nice chatting with you!" : "很高兴与你交谈！";
-           botSay(byeText, 3000); 
-           return; 
-      }   
-      
-      const node = dialogData[nodeKey];
-      if(!node) return;
-      rpgOptions.innerHTML = ''; 
-      if(typeTimer) clearInterval(typeTimer);
- 
-      const showButtons = () => {
-           node.options.forEach((opt, idx) => {
-             const btn = document.createElement('div');
-             btn.className = 'rpg-btn'; 
-             btn.textContent = '> ' + opt.text;
-             
-             const isBackAction = opt.text.includes("Back") || opt.text.includes("返回");
- 
-             if(isFastMode) {
-                 btn.style.opacity = 1;
-                 btn.style.transform = 'translateX(0)';
-                 btn.style.animation = 'none'; 
-             } else {
-                 btn.style.animationDelay = `${idx * 0.1}s`;
-             }
- 
-             btn.onclick = (e) => { 
-                 e.stopPropagation(); 
-                 showDialogueNode(opt.next, isBackAction); 
-             };
-             rpgOptions.appendChild(btn);
-           });
-      };
- 
-      if (isFastMode) {
-           rpgText.textContent = node.text; 
-           showButtons();
-      } else {
-           rpgText.textContent = '';
-           let i = 0;
-           typeTimer = setInterval(() => {
-             rpgText.textContent += node.text.charAt(i); i++;
-             if(i >= node.text.length) {
-               clearInterval(typeTimer);
-               showButtons();
-             }
-           }, 30);
-      }
-    }
- 
-    function openDialogue() {
-      if(rpgDialogue.classList.contains('active')) return;
-      rpgDialogue.classList.add('active');
-      botContainer.classList.add('speaking');
-      botContainer.classList.add('hint-removed'); 
-      showDialogueNode('start');
-    }
- 
-    function closeDialogue() {
-      rpgDialogue.classList.remove('active');
-      botContainer.classList.remove('speaking');
-      setTimeout(() => { rpgText.textContent = ''; rpgOptions.innerHTML = ''; }, 300);
-    }
- 
-    if(botContainer) {
-      botContainer.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (idleInterval) {
-            clearInterval(idleInterval);
-            idleInterval = null;
-        }
-        if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
-        botSpeech.textContent = "";                    
-        botContainer.classList.remove('speaking'); 
-        if(rpgDialogue.classList.contains('active')) closeDialogue();
-        else openDialogue();
-      });
-    }
- 
-    setTimeout(() => {
-         const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
-         botSay(guideText, 60000); 
-    }, 1000);
- 
-    const badges = document.querySelectorAll('.nav-badges a');
-    badges.forEach(b => {
-      b.addEventListener('mouseenter', () => {
-        document.body.classList.add('badge-hovering', 'hovering');
-        if(vantaEffect) vantaEffect.setOptions({ color: 0x60a5fa });
-        const accessText = currentLang === 'en' ? "Accessing..." : "正在访问...";
-        botSay(accessText, 1500);
-      });
-      b.addEventListener('mouseleave', () => {
-        document.body.classList.remove('badge-hovering', 'hovering');
-        if(vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6 });
-      });
-      b.addEventListener('click', function(e) {
-        e.preventDefault();
-        const url = this.href;
-        badges.forEach((sib, idx) => {
-            const img = sib.querySelector('img');
-            img.style.animationDelay = `${Math.abs(idx - [...badges].indexOf(this)) * 0.06}s`;
-            img.classList.add('rippling');
-        });
-        setTimeout(() => window.location.href = url, 500);
-      });
-    });
-  });
+    window.closeVideoModal = function() {
+      videoModal.classList.remove('show');
+      guardianVideo.pause(); 
+      // 🔥 机器人归位
+      botContainer.classList.remove('guide-mode');
+      const backText = currentLang === 'en' ? "Did you see that mechanism?" : "看到那个机械结构了吗？";
+      setTimeout(() => botSay(backText, 3000), 500);
+    }
+     
+    videoModal.addEventListener('click', (e) => {
+      if(e.target === videoModal) closeVideoModal();
+    });
+
+    function showDialogueNode(nodeKey, isFastMode = false) {
+      // 🔥 拦截播放指令
+      if (nodeKey === 'play_video') {
+         const loadingText = currentLang === 'en' ? "Accessing Video Feed..." : "正在接入视频信号...";
+         botSay(loadingText, 2000);
+         setTimeout(() => {
+             openVideoModal();
+         }, 1000);
+         return; 
+      }
+
+      if(nodeKey === 'close') { 
+           closeDialogue(); 
+           botContainer.classList.add('interaction-done');
+           const byeText = currentLang === 'en' ? "Nice chatting with you!" : "很高兴与你交谈！";
+           botSay(byeText, 3000); 
+           return; 
+      }    
+      
+      const node = dialogData[nodeKey];
+      if(!node) return;
+      rpgOptions.innerHTML = ''; 
+      if(typeTimer) clearInterval(typeTimer);
+ 
+      const showButtons = () => {
+           node.options.forEach((opt, idx) => {
+             const btn = document.createElement('div');
+             btn.className = 'rpg-btn'; 
+             btn.textContent = '> ' + opt.text;
+             
+             const isBackAction = opt.text.includes("Back") || opt.text.includes("返回");
+ 
+             if(isFastMode) {
+                 btn.style.opacity = 1;
+                 btn.style.transform = 'translateX(0)';
+                 btn.style.animation = 'none'; 
+             } else {
+                 btn.style.animationDelay = `${idx * 0.1}s`;
+             }
+ 
+             btn.onclick = (e) => { 
+                 e.stopPropagation(); 
+                 showDialogueNode(opt.next, isBackAction); 
+             };
+             rpgOptions.appendChild(btn);
+           });
+      };
+ 
+      if (isFastMode) {
+           rpgText.textContent = node.text; 
+           showButtons();
+      } else {
+           rpgText.textContent = '';
+           let i = 0;
+           typeTimer = setInterval(() => {
+             rpgText.textContent += node.text.charAt(i); i++;
+             if(i >= node.text.length) {
+               clearInterval(typeTimer);
+               showButtons();
+             }
+           }, 30);
+      }
+    }
+ 
+    function openDialogue() {
+      if(rpgDialogue.classList.contains('active')) return;
+      rpgDialogue.classList.add('active');
+      botContainer.classList.add('speaking');
+      botContainer.classList.add('hint-removed'); 
+      showDialogueNode('start');
+    }
+ 
+    function closeDialogue() {
+      rpgDialogue.classList.remove('active');
+      botContainer.classList.remove('speaking');
+      setTimeout(() => { rpgText.textContent = ''; rpgOptions.innerHTML = ''; }, 300);
+    }
+ 
+    if(botContainer) {
+      botContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (idleInterval) {
+            clearInterval(idleInterval);
+            idleInterval = null;
+        }
+        if(botContainer.speechTimer) clearTimeout(botContainer.speechTimer); 
+        botSpeech.textContent = "";                     
+        botContainer.classList.remove('speaking'); 
+        if(rpgDialogue.classList.contains('active')) closeDialogue();
+        else openDialogue();
+      });
+    }
+ 
+    setTimeout(() => {
+         const guideText = currentLang === 'en' ? "Click me for guide!" : "点击我答疑解惑";
+         botSay(guideText, 60000); 
+    }, 1000);
+ 
+    const badges = document.querySelectorAll('.nav-badges a');
+    badges.forEach(b => {
+      b.addEventListener('mouseenter', () => {
+        document.body.classList.add('badge-hovering', 'hovering');
+        if(vantaEffect) vantaEffect.setOptions({ color: 0x60a5fa });
+        const accessText = currentLang === 'en' ? "Accessing..." : "正在访问...";
+        botSay(accessText, 1500);
+      });
+      b.addEventListener('mouseleave', () => {
+        document.body.classList.remove('badge-hovering', 'hovering');
+        if(vantaEffect) vantaEffect.setOptions({ color: 0x3b82f6 });
+      });
+      b.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.href;
+        badges.forEach((sib, idx) => {
+            const img = sib.querySelector('img');
+            img.style.animationDelay = `${Math.abs(idx - [...badges].indexOf(this)) * 0.06}s`;
+            img.classList.add('rippling');
+        });
+        setTimeout(() => window.location.href = url, 500);
+      });
+    });
+ 
+  });
 </script>
 </body>
 </html>
